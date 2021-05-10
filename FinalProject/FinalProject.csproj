@@ -155,6 +155,11 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="DTOs\ClinicDTO.cs" />
+    <Compile Include="DTOs\SignInUser.cs" />
+    <Compile Include="DTOs\SignUpDoctor.cs" />
+    <Compile Include="DTOs\SignUpUser.cs" />
+    <Compile Include="DTOs\UserDTO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -224,7 +229,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="DTOs\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
