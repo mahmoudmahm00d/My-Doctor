@@ -17,7 +17,7 @@ namespace FinalProject.Controllers.api
         //api/get
         public IHttpActionResult Get()
         {
-            return Ok(db.Users.ToList();
+            return Ok(db.Users.ToList());
         }
         //api/get/id
         public IHttpActionResult Get(int id)
