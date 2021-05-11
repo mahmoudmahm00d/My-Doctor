@@ -29,10 +29,8 @@ namespace FinalProject.DTOs
             get { return gender == Genders.Male ? "Male" : "Female"; }
         }
 
-
         public string Jop { get; set; }
 
-        public UserType UserType { get; set; }
         public byte UserTypeId { get; set; }
     }
 }

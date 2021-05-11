@@ -1,5 +1,5 @@
-﻿using Graduate.DTOs;
-using Graduate.Models;
+﻿using FinalProject.DTOs;
+using FinalProject.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 
-namespace Graduate.Controllers.api
+namespace FinalProject.Controllers.api
 {
     public class ClinicsController : ApiController
     {

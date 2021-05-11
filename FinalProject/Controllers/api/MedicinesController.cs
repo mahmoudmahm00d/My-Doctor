@@ -1,4 +1,4 @@
-﻿using Graduate.Models;
+﻿using FinalProject.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Mvc;
 
-namespace Graduate.Controllers.api
+namespace FinalProject.Controllers.api
 {
     public class MedicinesController : ApiController
     {
@@ -27,10 +27,11 @@ namespace Graduate.Controllers.api
             return Ok(medicine);
         }
 
-        public IHttpActionResult Create([Bind(Exclude ="MedicineId")] MedicineDTO medicine)
+        public IHttpActionResult Create([Bind(Exclude ="MedicineId")] Medicine medicine)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Invalid Medicine");
+
             var medicinetocreate = new Medicine();
 
             try

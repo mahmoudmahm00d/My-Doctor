@@ -1,4 +1,6 @@
-﻿using FinalProject.Models;
+﻿using AutoMapper;
+using FinalProject.DTOs;
+using FinalProject.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +12,12 @@ namespace FinalProject.Controllers.api
 {
     public class UsersController : ApiController
     {
-
         private MyAppContext db = new MyAppContext();
 
         //api/get
         public IHttpActionResult Get()
         {
-            return Ok(db.Users.ToList());
+            return Ok(db.Users.ToList();
         }
         //api/get/id
         public IHttpActionResult Get(int id)
