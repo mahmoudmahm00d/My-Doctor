@@ -5,6 +5,7 @@ namespace FinalProject.DTOs
 {
     public class SignUpUser
     {
+        public int UserId { get; set; }
         [Required]
         [MaxLength(50)]
         public string FirstName { get; set; }
@@ -22,13 +23,13 @@ namespace FinalProject.DTOs
         public Genders Gender { get; set; }
 
         [Required]
-        public string PhoneNumber { get; set; }
+        public string UserPhone { get; set; }
 
         [Required]
-        public string Email { get; set; }
+        public string UserEmail { get; set; }
 
         [Required]
-        public string Password { get; set; }
+        public string UserPassword { get; set; }
 
         [Required]
         [Compare("Password")]

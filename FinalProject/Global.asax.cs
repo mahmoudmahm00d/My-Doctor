@@ -7,6 +7,9 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using AutoMapper;
+using FinalProject.DTOs;
+using FinalProject.App_Start;
 
 namespace FinalProject
 {
@@ -19,6 +22,8 @@ namespace FinalProject
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             GlobalConfiguration.Configure(WebApiConfig.Register);
+
+            Mapper.Initialize(c => c.AddProfile<MapperProfile>());
 
             //Default Values
             MyAppContext db = new MyAppContext();
@@ -34,9 +39,12 @@ namespace FinalProject
             {
                 UserType[] userTypes = new UserType[] { new UserType { UserTypeName = "PublicUser" }
                     ,new UserType { UserTypeName = "Doctor" }
-                    ,new UserType { UserTypeName = "Pahrmasist" }};
+                    ,new UserType { UserTypeName = "Pahrmacist" }};
                 db.Usertypes.AddRange(userTypes);
                 db.SaveChanges();
+                Application.Add("PublicUser", userTypes[0].UserTypeId);
+                Application.Add("Doctor", userTypes[1].UserTypeId);
+                Application.Add("Pharmacist", userTypes[2].UserTypeId);
             }
         }
     }
