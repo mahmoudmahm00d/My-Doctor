@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Mvc;
 using FinalProject.Models;
 
 namespace FinalProject.Controllers.api
@@ -13,7 +14,7 @@ namespace FinalProject.Controllers.api
         private MyAppContext db = new MyAppContext();
 
         // GET: api/MedicineTypes
-        
+
         public IHttpActionResult GetMedicineTypes()
         {
             return Ok(db.MedicineTypes.ToList());
@@ -25,9 +26,7 @@ namespace FinalProject.Controllers.api
         {
             MedicineType medicineType = await db.MedicineTypes.FindAsync(id);
             if (medicineType == null)
-            {
                 return NotFound();
-            }
 
             return Ok(medicineType);
         }
@@ -59,7 +58,7 @@ namespace FinalProject.Controllers.api
             }
             catch (DbUpdateConcurrencyException)
             {
-                
+
             }
 
             return StatusCode(HttpStatusCode.NoContent);
@@ -67,7 +66,7 @@ namespace FinalProject.Controllers.api
 
         // POST: api/MedicineTypes
         [ResponseType(typeof(MedicineType))]
-        public async Task<IHttpActionResult> PostMedicineType(MedicineType medicineType)
+        public async Task<IHttpActionResult> PostMedicineType([Bind(Exclude = "MedicineTypeId")]MedicineType medicineType)
         {
             if (!ModelState.IsValid)
             {
@@ -83,16 +82,10 @@ namespace FinalProject.Controllers.api
             catch (DbUpdateException)
             {
                 if (db.MedicineTypes.Count(e => e.MedicineTypeId == medicineType.MedicineTypeId) > 0)
-                {
                     return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = medicineType.MedicineTypeId }, medicineType);
+            return Created(Request.RequestUri.ToString() + "/" + medicineType.MedicineTypeId, medicineType);
         }
 
 
