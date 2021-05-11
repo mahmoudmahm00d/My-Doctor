@@ -69,39 +69,6 @@ namespace FinalProject.Controllers.api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        //ToDo
-        /*
-        // POST: api/UserTypes
-        [ResponseType(typeof(UserType))]
-        public async Task<IHttpActionResult> PostUserType(UserType UserType)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.Usertypes.Add(UserType);
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (db.Usertypes.Count(e => e.UserTypeId == UserType.UserTypeId) > 0)
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtRoute("DefaultApi", new { id = UserType.UserTypeId }, UserType);
-        }
-        */
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
