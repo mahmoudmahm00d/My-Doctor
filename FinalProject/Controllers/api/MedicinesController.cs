@@ -45,5 +45,20 @@ namespace FinalProject.Controllers.api
 
             return Created(Request.RequestUri, medicine);
         }
+
+        public IHttpActionResult Delete(int id)
+        {
+            Medicine medicine = db.Medicines.Find(id);
+            if (medicine == null)
+                return NotFound();
+
+            if (medicine.PharmacyMedicines == null && medicine.Prescriptions == null)
+            {
+                db.Medicines.Remove(medicine);
+                db.SaveChanges();
+                return Ok(medicine);
+            }
+            return BadRequest("Can't Delete Medicine");
+        }
     }
 }
