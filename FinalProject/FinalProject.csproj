@@ -168,6 +168,7 @@
     <Compile Include="App_Start\MapperProfile.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\api\CitiesController.cs" />
     <Compile Include="Controllers\api\ClinicsController.cs" />
     <Compile Include="Controllers\api\ClinicTypesController.cs" />
     <Compile Include="Controllers\api\MedicinesController.cs" />
