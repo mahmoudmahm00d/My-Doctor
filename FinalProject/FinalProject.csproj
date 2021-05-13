@@ -196,6 +196,10 @@
     <Compile Include="Migrations\202105130915301_modifySomeFields.designer.cs">
       <DependentUpon>202105130915301_modifySomeFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202105131822214_AddCertificateToPharmaciesTable.cs" />
+    <Compile Include="Migrations\202105131822214_AddCertificateToPharmaciesTable.designer.cs">
+      <DependentUpon>202105131822214_AddCertificateToPharmaciesTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\ClinicDTO.cs" />
     <Compile Include="DTOs\Doctor.cs" />
     <Compile Include="DTOs\LocationDTO.cs" />
@@ -400,6 +404,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202105130915301_modifySomeFields.resx">
       <DependentUpon>202105130915301_modifySomeFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202105131822214_AddCertificateToPharmaciesTable.resx">
+      <DependentUpon>202105131822214_AddCertificateToPharmaciesTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
