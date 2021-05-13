@@ -19,6 +19,8 @@ namespace FinalProject.Models
         [StringLength(255)]
         public string PharmacyLocation { get; set; }
 
+        public string Certificate { get; set; }
+
         public bool IsActivePharmacy { get; set; }
 
         public IEnumerable<PharmacyMedicines> PharmacyMedicines { get; set; }
