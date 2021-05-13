@@ -1,20 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using FinalProject.DTOs;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace FinalProject.DTOs
+namespace FinalProject.ViewModels
 {
-    public class ClinicDTO
+    public class ClinicViewModel
     {
-        public int ClinicId { get; set; }
-
         [Required]
         [MaxLength(200)]
         public string ClinicName { get; set; }
-
+        
         [Required]
         public byte ClinicTypeId { get; set; }
 
-        public int UserId { get; set; }
+        public Doctor Doctor { get; set; }
 
         public string ClinicPhone { get; set; }
 

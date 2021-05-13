@@ -11,6 +11,13 @@ namespace FinalProject.App_Start
             Mapper.CreateMap<User, UserDTO>();
             Mapper.CreateMap<UserDTO, User>();
             Mapper.CreateMap<SignUpUser, User>();
+            Mapper.CreateMap<User, Doctor>();
+
+            Mapper.CreateMap<Location, LocationDTO>();
+            Mapper.CreateMap<Schedule, ScheduleDTO>();
+
+            Mapper.CreateMap<ScheduleDTO, Schedule>();
+            Mapper.CreateMap<LocationDTO, Location>();
         }
     }
 }

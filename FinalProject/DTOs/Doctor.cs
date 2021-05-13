@@ -2,10 +2,8 @@
 
 namespace FinalProject.DTOs
 {
-    public class UserDTO
+    public class Doctor
     {
-        public int UserId { get; set; }
-
         public string FirstName { get; set; }
 
         public string FatherName { get; set; }
@@ -28,7 +26,5 @@ namespace FinalProject.DTOs
         {
             get { return gender == Genders.Male ? "Male" : "Female"; }
         }
-
-        public string Jop { get; set; }
     }
 }

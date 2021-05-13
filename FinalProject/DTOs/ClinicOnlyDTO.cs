@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FinalProject.DTOs
 {
-    public class ClinicDTO
+    public class ClinicOnlyDTO
     {
         public int ClinicId { get; set; }
 
@@ -14,13 +13,8 @@ namespace FinalProject.DTOs
         [Required]
         public byte ClinicTypeId { get; set; }
 
-        public int UserId { get; set; }
-
         public string ClinicPhone { get; set; }
 
         public string ClinicEmail { get; set; }
-
-        public LocationDTO Location { get; set; }
-        public IEnumerable<ScheduleDTO> Schedule { get; set; }
     }
 }

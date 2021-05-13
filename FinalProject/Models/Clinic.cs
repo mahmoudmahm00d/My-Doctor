@@ -28,7 +28,7 @@ namespace FinalProject.Models
         public bool IsActiveClinic { get; set; }
 
         public Location Location { get; set; }
-        public virtual IEnumerable<Schedule> Schedules { get; set; }
+        public virtual IList<Schedule> Schedules { get; set; }
         public virtual IEnumerable<Appointment> Appointments { get; set; }
         public virtual IEnumerable<Vacation> Vacations { get; set; }
     }

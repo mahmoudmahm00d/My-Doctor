@@ -176,7 +176,13 @@
     <Compile Include="Controllers\api\UsersController.cs" />
     <Compile Include="Controllers\api\UserTypesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="DTOs\AppointmentDTO.cs" />
     <Compile Include="DTOs\ClinicDTO.cs" />
+    <Compile Include="DTOs\ClinicOnlyDTO.cs" />
+    <Compile Include="ViewModels\ClinicDTO.cs" />
+    <Compile Include="DTOs\Doctor.cs" />
+    <Compile Include="DTOs\LocationDTO.cs" />
+    <Compile Include="DTOs\ScheduleDTO.cs" />
     <Compile Include="DTOs\SignInUser.cs" />
     <Compile Include="DTOs\SignUpDoctor.cs" />
     <Compile Include="DTOs\SignUpUser.cs" />
