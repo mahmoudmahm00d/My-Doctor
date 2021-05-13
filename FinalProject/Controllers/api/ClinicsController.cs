@@ -9,6 +9,8 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using FinalProject.DTOs;
+using System.Web;
+using System.IO;
 
 namespace FinalProject.Controllers.api
 {
@@ -45,20 +47,7 @@ namespace FinalProject.Controllers.api
         //    return Ok(Mapper.Map<Clinic, ClinicDTO>(clinic));
         //}
 
-        [HttpPost]
-        public IHttpActionResult Create(ClinicDTO clinic)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest("Invalid Clinic Properties");
-
-            int userId = db.Clinics.Select(c => c.UserId == clinic.UserId).Count();
-
-            if (userId > 1)
-                return BadRequest();
-
-            db.Clinics.Add(Mapper.Map<ClinicDTO, Clinic>(clinic));
-            return Created(Request.RequestUri.ToString(), clinic);
-        }
+        
 
         [HttpPut]
         public IHttpActionResult Edit(int id, ClinicDTO clinic)

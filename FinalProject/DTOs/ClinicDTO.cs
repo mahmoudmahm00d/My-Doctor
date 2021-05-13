@@ -14,7 +14,7 @@ namespace FinalProject.DTOs
         [Required]
         public byte ClinicTypeId { get; set; }
 
-        public int UserId { get; set; }
+        public UserDTO ForUser { get; set; }
 
         public string ClinicPhone { get; set; }
 

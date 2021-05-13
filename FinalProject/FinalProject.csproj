@@ -168,17 +168,28 @@
     <Compile Include="App_Start\MapperProfile.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\api\CitiesController.cs" />
     <Compile Include="Controllers\api\ClinicsController.cs" />
     <Compile Include="Controllers\api\ClinicTypesController.cs" />
     <Compile Include="Controllers\api\MedicinesController.cs" />
     <Compile Include="Controllers\api\MedicineTypesController.cs" />
+    <Compile Include="Controllers\api\PharmaciesController.cs" />
     <Compile Include="Controllers\api\UsersController.cs" />
     <Compile Include="Controllers\api\UserTypesController.cs" />
+    <Compile Include="Controllers\ClinicsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ManagementController.cs" />
+    <Compile Include="Controllers\MedicinesController.cs" />
+    <Compile Include="Controllers\MedicineTypesController.cs" />
+    <Compile Include="Controllers\PharmaciesController.cs" />
+    <Compile Include="Controllers\SignUpRequestsController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="DTOs\AppointmentDTO.cs" />
     <Compile Include="DTOs\ClinicDTO.cs" />
     <Compile Include="DTOs\ClinicOnlyDTO.cs" />
+    <Compile Include="DTOs\PharmacyDTO.cs" />
+    <Compile Include="DTOs\PharmacyOnlyDTO.cs" />
     <Compile Include="ViewModels\ClinicDTO.cs" />
     <Compile Include="DTOs\Doctor.cs" />
     <Compile Include="DTOs\LocationDTO.cs" />
@@ -256,6 +267,15 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Certificates\" />
+    <Folder Include="Views\Accounts\" />
+    <Folder Include="Views\Clinics\" />
+    <Folder Include="Views\Management\" />
+    <Folder Include="Views\Medicines\" />
+    <Folder Include="Views\MedicineTypes\" />
+    <Folder Include="Views\Pharmacies\" />
+    <Folder Include="Views\SignUpRequests\" />
+    <Folder Include="Views\Users\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

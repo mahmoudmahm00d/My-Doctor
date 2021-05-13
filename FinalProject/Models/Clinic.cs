@@ -23,6 +23,8 @@ namespace FinalProject.Models
         [StringLength(255)]
         public string ClinicEmail { get; set; }
 
+        public string Certificate { get; set; }
+
         public byte VisitDuration { get; set; }
 
         public bool IsActiveClinic { get; set; }
