@@ -47,7 +47,18 @@ namespace FinalProject.Controllers.api
         //    return Ok(Mapper.Map<Clinic, ClinicDTO>(clinic));
         //}
 
-        
+        [HttpPost]
+        public IHttpActionResult AddDay(int clinicId, ScheduleDTO day)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var clinic = db.Clinics.FirstOrDefault(c => c.ClinicId == clinicId);
+            clinic.Schedules.Add(Mapper.Map<ScheduleDTO, Schedule>(day));
+            db.SaveChanges();
+
+            return Ok(day);
+        }
 
         [HttpPut]
         public IHttpActionResult Edit(int id, ClinicDTO clinic)

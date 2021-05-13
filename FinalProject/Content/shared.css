@@ -1,0 +1,107 @@
+:root {
+  --background-color: #f4f4f4;
+  --primary-text-color: #00a68e;
+  --navbar-color:#353535;
+}
+
+
+button,
+button:focus,
+a,
+a:hover{
+    outline: none;
+    text-decoration: none;
+    border: none;
+}
+a{
+  text-align: right;
+}
+ul{
+  list-style: none;
+}
+
+body {
+  background-color: var(--background-color);
+  font-family: "Segoe UI";
+  text-align: right;
+}
+
+.btn {
+  border-radius: 0.5rem;
+}
+
+.text-color-primary {
+  color: var(--primary-text-color);
+}
+
+.background-color-primary {
+  background-color: #00a68e;
+  color: #fff;
+}
+
+/* -- For CRUD Forms --*/
+.main-center {
+  padding: 5rem 1rem;
+  width: 75vw;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+}
+
+.placeholder-center {
+  text-align: center;
+}
+.placeholder-center::placeholder {
+  text-align: center;
+}
+
+.round-this {
+  border-radius: 0.5rem ;
+}
+
+.input-group-text {
+  background-color: white;
+  border-left-width: 0;
+  width: 2.8rem;
+  text-align: center;
+  border-top-right-radius: 0.5rem !important;
+  border-bottom-right-radius: 0.5rem !important;
+}
+
+.input-group {
+  border-radius: 0.5rem;
+}
+
+input {
+  border-right-width: 0;
+  border-top-left-radius: 0.5rem !important;
+  border-bottom-left-radius: 0.5rem !important;
+}
+
+input::placeholder {
+  text-align: right;
+}
+
+/* -- Sing In-- */
+  /* -- OR -- */
+/* -- Sing Up-- */
+.between-line {
+  position: relative;
+  height: 2rem;
+  line-height: 2rem;
+  background-color: var(--background-color);
+}
+
+.between-line::before {
+  content: "";
+  width: 150%;
+  height: 0.1rem;
+  background-color: #707070;
+  position: absolute;
+  top: 1rem;
+  left: -25%;
+  z-index: -1;
+}

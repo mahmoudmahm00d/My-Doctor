@@ -1,0 +1,63 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+    <title>@ViewBag.Title</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    @Styles.Render("~/Content/css")
+</head>
+
+<body>
+    <nav class="Navbar">
+        <div class="Navbar-nav">
+            <div class="row w-100">
+                <button type="button" class="mr-auto" id="dropdown-menu-btn">
+                    <svg id="menu" xmlns="http://www.w3.org/2000/svg" width="24" height="27.065"
+                         viewBox="0 0 36 27.065">
+                        <path id="Path_854" data-name="Path 854"
+                              d="M2,6.924A1.865,1.865,0,0,1,3.8,5H36.2A1.865,1.865,0,0,1,38,6.924a1.865,1.865,0,0,1-1.8,1.924H3.8A1.865,1.865,0,0,1,2,6.924Z"
+                              transform="translate(-2 -5)" fill="#fff" />
+                        <path id="Path_855" data-name="Path 855"
+                              d="M2,12.957a1.865,1.865,0,0,1,1.8-1.924H36.2a1.929,1.929,0,0,1,0,3.849H3.8A1.865,1.865,0,0,1,2,12.957Z"
+                              transform="translate(-2 0.576)" fill="#fff" />
+                        <path id="Path_856" data-name="Path 856"
+                              d="M3.8,17.064a1.929,1.929,0,0,0,0,3.849H36.2a1.929,1.929,0,0,0,0-3.849Z"
+                              transform="translate(-2 6.151)" fill="#fff" />
+                    </svg>
+                </button>
+                @Html.ActionLink("MyDoctor", "Index", "Management", new { @class = "Nav-link logo" })
+            </div>
+            <div class="options-menu">
+                @Html.ActionLink("طلبات التسجيل", "Index", "SignUpRequests", new { @class = "Nav-link" })
+                @Html.ActionLink("العيادات", "Index", "Clinics", new { @class = "Nav-link" })
+                @Html.ActionLink("المستخدمين", "Index", "Users", new { @class = "Nav-link" })
+                @Html.ActionLink("الأدوية", "Index", "Medicines", new { @class = "Nav-link" })
+                @Html.ActionLink("المدن", "Index", "Cities", new { @class = "Nav-link" })
+                @Html.ActionLink("الإدارة", "Index", "Management", new { @class = "Nav-link" })
+            </div>
+        </div>
+    </nav>
+    <div class="Main-body">
+        @RenderBody()
+    </div>
+
+    <!-- Scripts -->
+    @Scripts.Render("~/bundles/bootstrap")
+    <script>
+        /*-- Close & Open Option-Menu --*/
+        var menu = $('.options-menu');
+        $('#dropdown-menu-btn').on('click', () => {
+            if (menu.hasClass('closed-menu')) {
+                menu.removeClass('closed-menu');
+                menu.addClass('opened-menu');
+            }
+            else {
+                menu.removeClass('opened-menu');
+                menu.addClass('closed-menu');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -35,7 +35,7 @@ namespace FinalProject.Controllers
             string path = Path.Combine(Server.MapPath("~/Certificates"), certifacte.FileName);
             clinicInDB.Certificate = path;
             db.Clinics.Add(clinicInDB);
-
+            db.SaveChanges();
             return RedirectToAction("Index");
         }
     }

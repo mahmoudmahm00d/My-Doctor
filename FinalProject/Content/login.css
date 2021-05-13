@@ -1,0 +1,24 @@
+.main-login {
+  padding: 5rem 1rem;
+
+  width: 75vw;
+  min-height: 75vh;
+
+  display: flex;
+  flex-direction: column;
+
+  position: relative;
+  top: 10vh;
+}
+
+.main-login h1 {
+  font-size: 42pt;
+}
+
+.main-login p {
+  font-size: 0.85rem;
+}
+
+.main-login input {
+  border-right-width: 0;
+}
