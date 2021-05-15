@@ -16,23 +16,25 @@ namespace FinalProject.DTOs
         [MaxLength(50)]
         public string LastName { get; set; }
 
-        [Required]
+        [Required(false)]
         public string Jop { get; set; }
 
         [Range(0,2)]
+        [Required(false)]
         public Genders Gender { get; set; }
 
         [Required]
         public string UserPhone { get; set; }
 
         [Required]
+        [EmailAddress]
         public string UserEmail { get; set; }
 
         [Required]
         public string UserPassword { get; set; }
 
         [Required]
-        [Compare("Password")]
+        [Compare("UserPassword")]
         public string ConfirmPassword { get; set; }
     }
 }

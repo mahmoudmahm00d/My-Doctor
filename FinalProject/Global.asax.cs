@@ -37,14 +37,16 @@ namespace FinalProject
             count = db.Usertypes.Count();
             if (count == 0)
             {
-                UserType[] userTypes = new UserType[] { new UserType { UserTypeName = "PublicUser" }
-                    ,new UserType { UserTypeName = "Doctor" }
-                    ,new UserType { UserTypeName = "Pahrmacist" }};
-                db.Usertypes.AddRange(userTypes);
+                var user = new UserType {UserTypeId = 10, UserTypeName = "PublicUser" };
+                var doctor = new UserType {UserTypeId =20, UserTypeName = "Doctor" };
+                var pharmacist = new UserType {UserTypeId =30, UserTypeName = "Pahrmacist" };
+                db.Usertypes.Add(user);
+                db.Usertypes.Add(doctor);
+                db.Usertypes.Add(pharmacist);
                 db.SaveChanges();
-                Application.Add("PublicUser", userTypes[0].UserTypeId);
-                Application.Add("Doctor", userTypes[1].UserTypeId);
-                Application.Add("Pharmacist", userTypes[2].UserTypeId);
+                Application.Add("PublicUser", user.UserTypeId);
+                Application.Add("Doctor", doctor.UserTypeId);
+                Application.Add("Pharmacist", pharmacist.UserTypeId);
             }
         }
     }

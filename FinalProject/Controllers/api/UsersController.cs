@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FinalProject.DTOs;
+using FinalProject.Services;
 using FinalProject.Models;
 using System;
 using System.Collections.Generic;
@@ -57,7 +58,9 @@ namespace FinalProject.Controllers.api
         //api/login
         public IHttpActionResult Login(string email, string password)
         {
-            var user = db.Users.FirstOrDefault(u => u.UserEmail == email && u.UserPassword == password);
+            var user = db.Users.FirstOrDefault(u => u.UserEmail == email 
+                && AppServices.VerifayPasswrod( password, u.UserPassword));
+
             if (user == null)
             {
                 return NotFound();
@@ -73,18 +76,44 @@ namespace FinalProject.Controllers.api
             if (CheckEmailIfExist(user.UserEmail))
                 return BadRequest("Invalid Email");
 
-            var application = new HttpApplication();
-            var userdb = Mapper.Map<SignUpUser, User>(user);
+            var publicUserType = db.Usertypes.FirstOrDefault(u => u.UserTypeName == "PublicUser");
+            var userInDb = Mapper.Map<SignUpUser, User>(user);
 
-            userdb.VerCode = GenerateRandomNumber();
-            userdb.UserTypeId = (byte)application.Application["PublicUser"];
+            user.UserPassword = AppServices.HashPassword(user.UserPassword);
+            userInDb.VerCode = AppServices.GenerateRandomNumber();
+            userInDb.UserTypeId = publicUserType.UserTypeId;
 
-            db.Users.Add(userdb);
+            db.Users.Add(userInDb);
             db.SaveChanges();
-            user.UserId = userdb.UserId;
+            user.UserId = userInDb.UserId;
             //ToDo
             //Send Email Code
             return Ok(user);
+        }
+        public IHttpActionResult SignUp(SignUpDoctor doctor)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid Format");
+
+            if (CheckEmailIfExist(doctor.UserEmail))
+                return BadRequest("Invalid Email");
+
+            var application = new HttpApplication();
+
+            if (doctor.UserTypeId != (byte)application.Application["Pharmacist"] && doctor.UserTypeId == (byte)application.Application["Doctor"])
+                return BadRequest();
+
+            var userdb = Mapper.Map<SignUpUser, User>(doctor);
+
+            userdb.VerCode = AppServices.GenerateRandomNumber();
+
+            db.Users.Add(userdb);
+            db.SaveChanges();
+            doctor.UserId = userdb.UserId;
+            //ToDo
+            //Send Email Code
+
+            return Ok(doctor);
         }
         //api/ConfirmEmail?email=email&code=code
         public IHttpActionResult ConfirmEmail(string email, string code)
@@ -109,7 +138,7 @@ namespace FinalProject.Controllers.api
             if (user == null)
                 return NotFound();
 
-            user.VerCode = GenerateRandomNumber();
+            user.VerCode = AppServices.GenerateRandomNumber();
             db.SaveChanges();
             return Ok("Email Send");
         }
@@ -150,16 +179,6 @@ namespace FinalProject.Controllers.api
                 int count = db.Users.Select(u => u.UserEmail == email).Count();
                 return count == 0;
             }
-        }
-        public static string GenerateRandomNumber()
-        {
-            Random random = new Random();
-            string code = "";
-            for (int i = 0; i < 6; i++)
-            {
-                code += random.Next(0, 10).ToString();
-            }
-            return code;
         }
     }
 }

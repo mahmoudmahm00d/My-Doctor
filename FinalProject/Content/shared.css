@@ -105,3 +105,6 @@ input::placeholder {
   left: -25%;
   z-index: -1;
 }
+.text-danger{
+    font-size:.75rem;
+}
