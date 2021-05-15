@@ -94,7 +94,7 @@ namespace FinalProject.Controllers
 
             UserType userType = db.Usertypes.FirstOrDefault(u => u.UserTypeName == "PublicUser");
 
-            var userInDb = db.Users.FirstOrDefault(u => u.UserEmail == user.Email
+            var userInDb = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == user.Email
                 && AppServices.VerifayPasswrod(user.Password, u.UserPassword)
                 && u.UserTypeId != userType.UserTypeId);
 

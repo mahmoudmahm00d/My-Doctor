@@ -58,7 +58,7 @@ namespace FinalProject.Controllers.api
         //api/login
         public IHttpActionResult Login(string email, string password)
         {
-            var user = db.Users.FirstOrDefault(u => u.UserEmail == email 
+            var user = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == email 
                 && AppServices.VerifayPasswrod( password, u.UserPassword));
 
             if (user == null)
@@ -90,31 +90,31 @@ namespace FinalProject.Controllers.api
             //Send Email Code
             return Ok(user);
         }
-        public IHttpActionResult SignUp(SignUpDoctor doctor)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest("Invalid Format");
+        //public IHttpActionResult SignUp(SignUpDoctor doctor)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest("Invalid Format");
 
-            if (CheckEmailIfExist(doctor.UserEmail))
-                return BadRequest("Invalid Email");
+        //    if (CheckEmailIfExist(doctor.UserEmail))
+        //        return BadRequest("Invalid Email");
 
-            var application = new HttpApplication();
+        //    var application = new HttpApplication();
 
-            if (doctor.UserTypeId != (byte)application.Application["Pharmacist"] && doctor.UserTypeId == (byte)application.Application["Doctor"])
-                return BadRequest();
+        //    if (doctor.UserTypeId != (byte)application.Application["Pharmacist"] && doctor.UserTypeId == (byte)application.Application["Doctor"])
+        //        return BadRequest();
 
-            var userdb = Mapper.Map<SignUpUser, User>(doctor);
+        //    var userdb = Mapper.Map<SignUpUser, User>(doctor);
 
-            userdb.VerCode = AppServices.GenerateRandomNumber();
+        //    userdb.VerCode = AppServices.GenerateRandomNumber();
 
-            db.Users.Add(userdb);
-            db.SaveChanges();
-            doctor.UserId = userdb.UserId;
-            //ToDo
-            //Send Email Code
+        //    db.Users.Add(userdb);
+        //    db.SaveChanges();
+        //    doctor.UserId = userdb.UserId;
+        //    //ToDo
+        //    //Send Email Code
 
-            return Ok(doctor);
-        }
+        //    return Ok(doctor);
+        //}
         //api/ConfirmEmail?email=email&code=code
         public IHttpActionResult ConfirmEmail(string email, string code)
         {
@@ -134,7 +134,7 @@ namespace FinalProject.Controllers.api
 
         public IHttpActionResult ForgetPassword(string email)
         {
-            var user = db.Users.FirstOrDefault(u => u.UserEmail == email);
+            var user = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == email);
             if (user == null)
                 return NotFound();
 
@@ -148,7 +148,7 @@ namespace FinalProject.Controllers.api
             if (password == confirmPassword)
                 return BadRequest("Password Not Match");
 
-            var user = db.Users.FirstOrDefault(u => u.UserEmail == email);
+            var user = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == email);
             if (user == null)
                 return NotFound();
             user.UserPassword = password;
@@ -159,7 +159,7 @@ namespace FinalProject.Controllers.api
 
         public IHttpActionResult Editprofile([Bind(Exclude = "Gender,UserId,UserTypeId")]UserDTO user)
         {
-            var userdb = db.Users.FirstOrDefault(u => u.UserId == user.UserId);
+            var userdb = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserId == user.UserId);
             if (userdb == null)
                 return NotFound();
 

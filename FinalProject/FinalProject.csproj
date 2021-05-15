@@ -403,6 +403,7 @@
     <Content Include="Views\Clinics\Index.cshtml" />
     <Content Include="Views\Shared\_Empty.cshtml" />
     <Content Include="Views\Accounts\SignIn.cshtml" />
+    <Content Include="Views\Accounts\ConfirmUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
