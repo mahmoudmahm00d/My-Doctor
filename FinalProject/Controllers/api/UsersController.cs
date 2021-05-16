@@ -116,6 +116,7 @@ namespace FinalProject.Controllers.api
         //    return Ok(doctor);
         //}
         //api/ConfirmEmail?email=email&code=code
+
         public IHttpActionResult ConfirmEmail(string email, string code)
         {
             var user = db.Users.FirstOrDefault(u => u.UserEmail == email);

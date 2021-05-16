@@ -404,6 +404,7 @@
     <Content Include="Views\Shared\_Empty.cshtml" />
     <Content Include="Views\Accounts\SignIn.cshtml" />
     <Content Include="Views\Accounts\ConfirmUser.cshtml" />
+    <Content Include="Views\Clinics\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
