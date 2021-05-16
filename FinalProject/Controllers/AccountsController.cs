@@ -55,7 +55,7 @@ namespace FinalProject.Controllers
 
         public ActionResult ConfirmUser(int id)
         {
-            var user = db.Users.FirstOrDefault(u => u.UserId == id);
+            var user = db.Users.Where(u => u.Locked == true).FirstOrDefault(u => u.UserId == id);
             if (user == null)
                 return HttpNotFound();
 
@@ -65,7 +65,7 @@ namespace FinalProject.Controllers
         [HttpPost]
         public ActionResult ConfirmUser(int id, string code)
         {
-            var user = db.Users.FirstOrDefault(u => u.UserId == id);
+            var user = db.Users.Where(u => u.Locked == true).FirstOrDefault(u => u.UserId == id);
             if (user == null)
                 return HttpNotFound();
 
