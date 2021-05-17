@@ -1,11 +1,11 @@
 ﻿@model FinalProject.DTOs.SignInUser
 
 @{
-                /**/
+    /**/
 
-                ViewBag.Title = "SignIn";
-                Layout = "~/Views/Shared/_Empty.cshtml";
-                ViewBag.Styles = Styles.Render("~/Content/loginStyle");
+    ViewBag.Title = "SignIn";
+    Layout = "~/Views/Shared/_Empty.cshtml";
+    ViewBag.Styles = Styles.Render("~/Content/loginStyle");
 }
 
 <div class="main-login mx-auto">
@@ -77,5 +77,6 @@
     }
 </div>
 
-@Scripts.Render("~/bundles/jquery")
-@Scripts.Render("~/bundles/jqueryval")
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

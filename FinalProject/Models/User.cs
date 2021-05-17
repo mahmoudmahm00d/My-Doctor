@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace FinalProject.Models
@@ -19,6 +20,9 @@ namespace FinalProject.Models
         public string LastName { get; set; }
 
         public Genders Gender { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime Birth { get; set; }
 
         [StringLength(50)]
         public string Jop { get; set; }

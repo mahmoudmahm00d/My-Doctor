@@ -108,3 +108,6 @@ input::placeholder {
 .text-danger{
     font-size:.75rem;
 }
+.field-validation-error{
+    color:red
+}

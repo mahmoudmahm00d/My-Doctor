@@ -178,7 +178,7 @@ namespace FinalProject.Controllers.api
             using (MyAppContext db = new MyAppContext())
             {
                 int count = db.Users.Select(u => u.UserEmail == email).Count();
-                return count == 0;
+                return count != 0;
             }
         }
     }

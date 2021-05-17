@@ -18,6 +18,7 @@ namespace FinalProject.Controllers
         public ActionResult SignUp()
         {
             var userTypes = db.Usertypes.Where(u => u.UserTypeName != "PublicUser").Select(u => u);
+            
             SignUpDoctorViewModel signUp = new SignUpDoctorViewModel { UserTypes = userTypes };
             return View(signUp);
         }
@@ -33,10 +34,7 @@ namespace FinalProject.Controllers
                 ModelState.AddModelError("Email", "Invalid Email");
                 return RedirectToAction("SignUp");
             }
-            var doctorType = db.Usertypes.FirstOrDefault(u => u.UserTypeName == "Doctor");
-            var PharmacistType = db.Usertypes.FirstOrDefault(u => u.UserTypeName == "Pharmacist");
-            if (doctor.UserTypeId != doctor.UserTypeId
-                && doctor.UserTypeId != PharmacistType.UserTypeId)
+            if (doctor.UserTypeId != 20 && doctor.UserTypeId != 30)
             {
                 ModelState.AddModelError("UserType", "Invalid User Type");
                 return RedirectToAction("SignUp");

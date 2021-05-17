@@ -215,6 +215,12 @@
     <Compile Include="Migrations\202105131822214_AddCertificateToPharmaciesTable.designer.cs">
       <DependentUpon>202105131822214_AddCertificateToPharmaciesTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202105160752506_AddBirthToUserTable.cs" />
+    <Compile Include="Migrations\202105160752506_AddBirthToUserTable.designer.cs">
+      <DependentUpon>202105160752506_AddBirthToUserTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Min22Years.cs" />
+    <Compile Include="Models\StrongPassword.cs" />
     <Compile Include="Services\Services.cs" />
     <Compile Include="ViewModels\ClinicDTO.cs" />
     <Compile Include="DTOs\Doctor.cs" />
@@ -428,6 +434,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202105131822214_AddCertificateToPharmaciesTable.resx">
       <DependentUpon>202105131822214_AddCertificateToPharmaciesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202105160752506_AddBirthToUserTable.resx">
+      <DependentUpon>202105160752506_AddBirthToUserTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

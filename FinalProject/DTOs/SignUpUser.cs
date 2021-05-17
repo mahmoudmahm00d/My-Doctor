@@ -1,4 +1,5 @@
 ﻿using FinalProject.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace FinalProject.DTOs
@@ -16,14 +17,17 @@ namespace FinalProject.DTOs
         [MaxLength(50)]
         public string LastName { get; set; }
 
-        [Required(false)]
         public string Jop { get; set; }
 
-        [Range(0,2)]
-        [Required(false)]
+        [Range(0,(int)1)]
         public Genders Gender { get; set; }
 
+        [Min22YearsIfADocotor]
+        [DataType(DataType.Date)]
+        public DateTime Birth { get; set; }
+
         [Required]
+        [RegularExpression("^\\+9639[0-9]{8}",ErrorMessage ="Invalid phone number")]
         public string UserPhone { get; set; }
 
         [Required]
@@ -31,10 +35,15 @@ namespace FinalProject.DTOs
         public string UserEmail { get; set; }
 
         [Required]
+        [MinLength(8)]
+        [StrongPassword]
         public string UserPassword { get; set; }
 
         [Required]
         [Compare("UserPassword")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        public byte UserTypeId { get; set; }
     }
 }

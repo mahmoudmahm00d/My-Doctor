@@ -22,12 +22,7 @@ namespace FinalProject.DTOs
             }
         }
 
-        private Genders gender;
-
-        public string Gender
-        {
-            get { return gender == Genders.Male ? "Male" : "Female"; }
-        }
+        public Genders Gender { get; set; }
 
         public string Jop { get; set; }
     }
