@@ -58,14 +58,19 @@ namespace FinalProject.Controllers.api
         //api/login
         public IHttpActionResult Login(string email, string password)
         {
-            var user = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == email
-                && AppServices.VerifayPasswrod(password, u.UserPassword));
+            var user = db.Users.Where(u => u.Locked == false)
+                .FirstOrDefault(u => u.UserEmail == email && u.UserTypeId == 10);//Public User
 
             if (user == null)
-            {
                 return NotFound();
-            }
-            return Ok(user);
+
+            bool passwordVerified = AppServices.VerifayPasswrod(password, user.UserPassword);
+            //ToDo
+            //Send Token
+            if (passwordVerified)
+                return Ok(user.UserId);
+
+            return NotFound();
         }
         //api/signup
         public IHttpActionResult SignUp([FromBody]SignUpUser user)
@@ -76,20 +81,19 @@ namespace FinalProject.Controllers.api
             if (CheckEmailIfExist(user.UserEmail))
                 return BadRequest("Invalid Email");
 
-            var publicUserType = db.Usertypes.FirstOrDefault(u => u.UserTypeName == "PublicUser");
             var userInDb = Mapper.Map<SignUpUser, User>(user);
 
             user.UserPassword = AppServices.HashPassword(user.UserPassword);
             userInDb.VerCode = AppServices.GenerateRandomNumber();
-            userInDb.UserTypeId = publicUserType.UserTypeId;
+            userInDb.UserTypeId = 10;
             userInDb.Locked = true;
 
             db.Users.Add(userInDb);
             db.SaveChanges();
-            user.UserId = userInDb.UserId;
+
             //ToDo
             //Send Email Code
-            return Ok(user);
+            return Ok();
         }
         //public IHttpActionResult SignUp(SignUpDoctor doctor)
         //{
@@ -118,21 +122,21 @@ namespace FinalProject.Controllers.api
         //}
         //api/ConfirmEmail?email=email&code=code
 
-        public IHttpActionResult ConfirmEmail(string email, string code)
-        {
-            var user = db.Users.FirstOrDefault(u => u.UserEmail == email);
-            if (user == null)
-                return NotFound();
+        //public IHttpActionResult ConfirmEmail(string email, string code)
+        //{
+        //    var user = db.Users.FirstOrDefault(u => u.UserEmail == email);
+        //    if (user == null)
+        //        return NotFound();
 
-            if (user.VerCode == code)
-            {
-                user.Locked = false;
-                user.VerCode = string.Empty;
-                db.SaveChanges();
-                return Ok("Confirmed");
-            }
-            return BadRequest("Code Not Match");
-        }
+        //    if (user.VerCode == code)
+        //    {
+        //        user.Locked = false;
+        //        user.VerCode = string.Empty;
+        //        db.SaveChanges();
+        //        return Ok("Confirmed");
+        //    }
+        //    return BadRequest("Code Not Match");
+        //}
 
         public IHttpActionResult ForgetPassword(string email)
         {
