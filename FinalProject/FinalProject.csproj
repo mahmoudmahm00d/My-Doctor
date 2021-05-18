@@ -201,7 +201,6 @@
     <Compile Include="Controllers\MedicinesController.cs" />
     <Compile Include="Controllers\MedicineTypesController.cs" />
     <Compile Include="Controllers\PharmaciesController.cs" />
-    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="DTOs\AppointmentDTO.cs" />
     <Compile Include="DTOs\ClinicDTO.cs" />
     <Compile Include="DTOs\ClinicOnlyDTO.cs" />
@@ -419,8 +418,6 @@
     <Folder Include="Views\Medicines\" />
     <Folder Include="Views\MedicineTypes\" />
     <Folder Include="Views\Pharmacies\" />
-    <Folder Include="Views\SignUpRequests\" />
-    <Folder Include="Views\Users\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

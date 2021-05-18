@@ -58,8 +58,8 @@ namespace FinalProject.Controllers.api
         //api/login
         public IHttpActionResult Login(string email, string password)
         {
-            var user = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == email 
-                && AppServices.VerifayPasswrod( password, u.UserPassword));
+            var user = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == email
+                && AppServices.VerifayPasswrod(password, u.UserPassword));
 
             if (user == null)
             {
@@ -68,7 +68,7 @@ namespace FinalProject.Controllers.api
             return Ok(user);
         }
         //api/signup
-        public IHttpActionResult SignUp(SignUpUser user)
+        public IHttpActionResult SignUp([FromBody]SignUpUser user)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Invalid Format");
@@ -82,6 +82,7 @@ namespace FinalProject.Controllers.api
             user.UserPassword = AppServices.HashPassword(user.UserPassword);
             userInDb.VerCode = AppServices.GenerateRandomNumber();
             userInDb.UserTypeId = publicUserType.UserTypeId;
+            userInDb.Locked = true;
 
             db.Users.Add(userInDb);
             db.SaveChanges();
@@ -141,7 +142,10 @@ namespace FinalProject.Controllers.api
 
             user.VerCode = AppServices.GenerateRandomNumber();
             db.SaveChanges();
-            return Ok("Email Send");
+
+            //ToDo
+            //Add Email Service
+            return Ok("Email Sent");
         }
 
         public IHttpActionResult ResetPassword(string email, string password, string confirmPassword)
@@ -150,15 +154,18 @@ namespace FinalProject.Controllers.api
                 return BadRequest("Password Not Match");
 
             var user = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == email);
+
             if (user == null)
                 return NotFound();
+
             user.UserPassword = password;
             user.VerCode = string.Empty;
             db.SaveChanges();
+
             return Ok("Password Reset");
         }
 
-        public IHttpActionResult Editprofile([Bind(Exclude = "Gender,UserId,UserTypeId")]UserDTO user)
+        public IHttpActionResult Editprofile([FromBody, Bind(Exclude = "Gender,UserId,UserTypeId")]UserDTO user)
         {
             var userdb = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserId == user.UserId);
             if (userdb == null)

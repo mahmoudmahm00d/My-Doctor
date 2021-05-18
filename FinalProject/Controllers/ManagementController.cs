@@ -13,5 +13,23 @@ namespace FinalProject.Controllers
         {
             return View();
         }
+
+        // GET: Pharmacies
+        public ActionResult Pharmacies()
+        {
+            return View();
+        }
+
+        // GET: Clinics
+        public ActionResult Clinics()
+        {
+            return View();
+        }
+
+        // GET: SignUpRequest
+        public ActionResult SignUpRequest()
+        {
+            return View();
+        }
     }
 }

@@ -18,12 +18,13 @@ namespace FinalProject.Controllers
         public ActionResult SignUp()
         {
             var userTypes = db.Usertypes.Where(u => u.UserTypeName != "PublicUser").Select(u => u);
-            
+
             SignUpDoctorViewModel signUp = new SignUpDoctorViewModel { UserTypes = userTypes };
             return View(signUp);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult SignUp(SignUpDoctor doctor)
         {
             if (!ModelState.IsValid)
@@ -31,12 +32,12 @@ namespace FinalProject.Controllers
 
             if (api.UsersController.CheckEmailIfExist(doctor.UserEmail))
             {
-                ModelState.AddModelError("Email", "Invalid Email");
+                ModelState.AddModelError("", "Invalid Email");
                 return RedirectToAction("SignUp");
             }
             if (doctor.UserTypeId != 20 && doctor.UserTypeId != 30)
             {
-                ModelState.AddModelError("UserType", "Invalid User Type");
+                ModelState.AddModelError("", "Invalid User Type");
                 return RedirectToAction("SignUp");
             }
             doctor.UserPassword = AppServices.HashPassword(doctor.UserPassword);
@@ -51,8 +52,11 @@ namespace FinalProject.Controllers
             return RedirectToAction("ConfirmUser", new { id = doctor.UserId });
         }
 
-        public ActionResult ConfirmUser(int id)
+        public ActionResult ConfirmUser(int? id)
         {
+            if (!id.HasValue)
+                return RedirectToAction("SignIn");
+
             var user = db.Users.Where(u => u.Locked == true).FirstOrDefault(u => u.UserId == id);
             if (user == null)
                 return HttpNotFound();
@@ -61,17 +65,26 @@ namespace FinalProject.Controllers
         }
 
         [HttpPost]
-        public ActionResult ConfirmUser(int id, string code)
+        [ValidateAntiForgeryToken]
+        public ActionResult ConfirmUser(int? id, string code)
         {
+            if (!id.HasValue || code.Length < 6)
+                return RedirectToAction("SignIn");
+
             var user = db.Users.Where(u => u.Locked == true).FirstOrDefault(u => u.UserId == id);
+
             if (user == null)
                 return HttpNotFound();
 
             if (user.VerCode == code)
             {
                 user.Locked = false;
-                RedirectToAction("SignIn");
+                user.VerCode = string.Empty;
+                db.SaveChanges();
+                return RedirectToAction("SignIn");
             }
+            //ToDo
+            //Do more security things
             ModelState.AddModelError("", "Code not match");
             return View();
         }
@@ -82,28 +95,35 @@ namespace FinalProject.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult SignIn(SignInUser user)
         {
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("Login", "Incorrect Email Or Password");
+                ModelState.AddModelError("", "Incorrect Email Or Password");
                 return View();
             }
 
-            UserType userType = db.Usertypes.FirstOrDefault(u => u.UserTypeName == "PublicUser");
+            var userInDb = db.Users.Where(u => u.Locked == false)
+                .FirstOrDefault(u => u.UserEmail == user.Email
+                && (u.UserTypeId != 20 || u.UserTypeId != 30));
 
-            var userInDb = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == user.Email
-                && AppServices.VerifayPasswrod(user.Password, u.UserPassword)
-                && u.UserTypeId != userType.UserTypeId);
-
-            if (userInDb != null)
+            if (userInDb == null)
             {
-                return RedirectToAction("Index", "Clinics");
+                ModelState.AddModelError("", "Incorrect Email Or Password");
+                return View();
             }
 
-            ModelState.AddModelError("", "Incorrect email or password");
-            return View();
+            bool passwordVerified = AppServices.VerifayPasswrod(user.Password, userInDb.UserPassword);
 
+            if (!passwordVerified)
+            {
+                ModelState.AddModelError("", "Incorrect Email Or Password");
+                return View();
+            }
+
+            Session["UserId"] = userInDb.UserId;
+            return RedirectToAction("Index", "Clinics");
         }
     }
 }

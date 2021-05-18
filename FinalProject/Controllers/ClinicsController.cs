@@ -17,12 +17,18 @@ namespace FinalProject.Controllers
         // GET: Clinics
         public ActionResult Index()
         {
+            if (SessionIsNull())
+                return RedirectToAction("SignIn", "Accounts");
+
             return View();
         }
 
         [HttpPost]
         public ActionResult Create(ClinicDTO clinic, HttpPostedFileBase certifacte)
         {
+            if(SessionIsNull())
+                return RedirectToAction("SignIn", "Accounts");
+
             if (!ModelState.IsValid || certifacte == null || certifacte.ContentLength == 0)
                 return View();
 
@@ -34,9 +40,12 @@ namespace FinalProject.Controllers
             var clinicInDB = Mapper.Map<ClinicDTO, Clinic>(clinic);
             string path = Path.Combine(Server.MapPath("~/Certificates"), certifacte.FileName);
             clinicInDB.Certificate = path;
+            clinicInDB.IsActiveClinic = false;
             db.Clinics.Add(clinicInDB);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+
+        public bool SessionIsNull() => Session["UserId"] == null;
     }
 }
