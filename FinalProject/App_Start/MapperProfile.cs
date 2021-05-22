@@ -16,9 +16,14 @@ namespace FinalProject.App_Start
 
             Mapper.CreateMap<Clinic, ClinicDTO>();
             Mapper.CreateMap<Clinic, ClinicOnlyDTO>();
+            //ToDo
+            Mapper.CreateMap<Clinic, MapObject>()
+                .ForMember(c => c.Langtude , s => s.MapFrom(c => c.Location.Langtude))
+                .ForMember(c => c.Latitude, s => s.MapFrom(c => c.Location.Latitude));
 
             Mapper.CreateMap<Pharmacy, PharmacyDTO>();
             Mapper.CreateMap<Pharmacy, PharmacyOnlyDTO>();
+            Mapper.CreateMap<Pharmacy, MapObject>();
 
             //To Domain Classes
             Mapper.CreateMap<UserDTO, User>()

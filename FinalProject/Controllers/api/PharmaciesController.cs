@@ -28,9 +28,8 @@ namespace FinalProject.Controllers.api
             var clinic = db.Pharmacies.Include(c => c.ForUser).FirstOrDefault(c => c.PharmacyId == id);
 
             if (clinic == null)
-            {
                 return NotFound();
-            }
+
             return Ok(Mapper.Map<Pharmacy, PharmacyDTO>(clinic));
         }
 

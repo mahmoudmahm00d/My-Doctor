@@ -24,21 +24,18 @@ namespace FinalProject.Controllers.api
         }
 
         // GET: api/UserTypes/5
-        [ResponseType(typeof(UserType))]
-        public async Task<IHttpActionResult> GetUserType(byte id)
+        public IHttpActionResult GetUserType(byte id)
         {
-            UserType UserType = await db.Usertypes.FindAsync(id);
+            UserType UserType =  db.Usertypes.Find(id);
             if (UserType == null)
             {
                 return NotFound();
             }
-
             return Ok(UserType);
         }
 
         // PUT: api/UserTypes/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutUserType(byte id, UserType userType)
+        public  IHttpActionResult PutUserType(byte id, UserType userType)
         {
             if (!ModelState.IsValid)
             {
@@ -59,7 +56,7 @@ namespace FinalProject.Controllers.api
 
             try
             {
-                await db.SaveChangesAsync();
+                db.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
