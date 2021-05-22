@@ -30,7 +30,7 @@ namespace FinalProject.Controllers
             if (!ModelState.IsValid)
                 return RedirectToAction("SignUp");
 
-            if (api.UsersController.CheckEmailIfExist(doctor.UserEmail))
+            if (AppServices.CheckEmailIfExist(doctor.UserEmail))
             {
                 ModelState.AddModelError("", "Invalid Email");
                 return RedirectToAction("SignUp");
@@ -81,6 +81,8 @@ namespace FinalProject.Controllers
                 user.Locked = false;
                 user.VerCode = string.Empty;
                 db.SaveChanges();
+                if (user.UserTypeId == 10)
+                    return new EmptyResult();
                 return RedirectToAction("SignIn");
             }
             //ToDo

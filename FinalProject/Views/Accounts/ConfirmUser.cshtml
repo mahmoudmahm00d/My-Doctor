@@ -8,11 +8,13 @@
     <h2 class="text-color-primary">Confirm Email</h2>
     @using (Html.BeginForm())
     {
+        @Html.AntiForgeryToken()
+
         <div class="form-group">
             <input id="code" type="text" name="code" class="form-control" placeholder="XXXXXX" />
         </div>
         <div class="form-group">
-            <button id="code" type="submit"  class="btn background-color-primary round-this">
+            <button id="code" type="submit" class="btn background-color-primary round-this">
                 Confirm
             </button>
         </div>

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FinalProject.DTOs;
 using FinalProject.Models;
+using FinalProject.ViewModels;
 
 namespace FinalProject.App_Start
 {
@@ -9,7 +10,10 @@ namespace FinalProject.App_Start
         public MapperProfile()
         {
             Mapper.CreateMap<User, UserDTO>();
+            Mapper.CreateMap<UserType, UserTypeDTO>();
+            Mapper.CreateMap<User, UsersManageViewModel>();
             Mapper.CreateMap<User, Doctor>();
+            Mapper.CreateMap<object, User>();
 
             Mapper.CreateMap<Location, LocationDTO>();
             Mapper.CreateMap<Schedule, ScheduleDTO>();
@@ -28,6 +32,9 @@ namespace FinalProject.App_Start
             //To Domain Classes
             Mapper.CreateMap<UserDTO, User>()
                 .ForMember(u => u.UserId, op => op.Ignore());
+
+            Mapper.CreateMap<UserTypeDTO, UserType>()
+                .ForMember(u => u.UserTypeId, op => op.Ignore());
 
             Mapper.CreateMap<ClinicDTO, Clinic>()
                 .ForMember(c => c.ForUser, op => op.Ignore())

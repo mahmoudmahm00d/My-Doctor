@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FinalProject.DTOs;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,8 +8,8 @@ namespace FinalProject.Models
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var user = (SignUpDoctor)validationContext.ObjectInstance;
-            //var user =  Mapper.Map<object,User>(validationContext.ObjectInstance) ;
+            //var user = (SignUpDoctor)validationContext.ObjectInstance;
+            var user = Mapper.Map<object, User>(validationContext.ObjectInstance);
 
             if (user.UserTypeId == 10)
                 return ValidationResult.Success;

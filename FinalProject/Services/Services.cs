@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FinalProject.Models;
+using System;
+using System.Linq;
 
 namespace FinalProject.Services
 {
@@ -13,6 +15,22 @@ namespace FinalProject.Services
                 code += random.Next(0, 10).ToString();
             }
             return code;
+        }
+
+        public static bool CheckEmailIfExist(string email)
+        {
+            using (MyAppContext db = new MyAppContext())
+            {
+                int count = db.Users.Where(u => u.UserEmail == email).Count();
+                return count != 0;
+            }
+        }
+
+        public static string TokenEncoding(string email, string password)
+        {
+            string input = email + ":" + password;
+            byte[] array = System.Text.Encoding.ASCII.GetBytes(input);
+            return Convert.ToBase64String(array);
         }
 
         public static string HashPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);

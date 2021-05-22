@@ -1,4 +1,4 @@
-﻿using FinalProject.DTOs;
+﻿using AutoMapper;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
@@ -8,8 +8,11 @@ namespace FinalProject.Models
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var user = (SignUpDoctor)validationContext.ObjectInstance;
-            
+            var user = Mapper.Map<object, User>(validationContext.ObjectInstance);
+
+            if(string.IsNullOrEmpty(user.UserPassword))
+                return new ValidationResult("Password is requierd");
+
             Regex r1 = new Regex("[0-9]");
             Regex r2 = new Regex("[A-Z]");
 

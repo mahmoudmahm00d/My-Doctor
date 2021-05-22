@@ -3,6 +3,7 @@ using FinalProject.DTOs;
 using FinalProject.Services;
 using FinalProject.Models;
 using System;
+using System.Data.Entity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -10,9 +11,12 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web;
 using System.Web.Mvc;
+using FinalProject.ViewModels;
 
 namespace FinalProject.Controllers.api
 {
+
+    [System.Web.Mvc.Route("api/users")]
     public class UsersController : ApiController
     {
         private MyAppContext db = new MyAppContext();
@@ -20,7 +24,7 @@ namespace FinalProject.Controllers.api
         //api/get
         public IHttpActionResult Get()
         {
-            return Ok(db.Users.ToList());
+            return Ok(db.Users.Include(u => u.UserType).Select(Mapper.Map<User,UsersManageViewModel>));
         }
         //api/get/id
         public IHttpActionResult Get(int id)
@@ -32,58 +36,74 @@ namespace FinalProject.Controllers.api
             }
             return Ok(user);
         }
-        //api/getusers/usertypeid
-        public IHttpActionResult GetUsers(byte userTypeId)
-        {
-            var users = db.Users.Select(u => u.UserTypeId == userTypeId);
-            if (users == null)
-                return NotFound();
 
-            return Ok(users.ToList());
+        public IHttpActionResult Doctors()
+        {
+            return Ok(db.Users.Include(u => u.UserType).Select(Mapper.Map<User,UsersManageViewModel>));
         }
+
+        public IHttpActionResult Doctors(int id)
+        {
+            var user = db.Users.FirstOrDefault(u => u.UserId == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+
         //api/userscount/
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("api/users/count")]
         public IHttpActionResult UsersCount()
         {
             return Ok(db.Users.Count());
         }
         //api/userscount/usertypeid
-        public IHttpActionResult UsersCount(byte userTypeId)
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("api/users/count/{id}")]
+        public IHttpActionResult UsersCount(byte Id)
         {
-            var users = db.Users.Select(u => u.UserTypeId == userTypeId);
-            if (users == null)
-                return NotFound();
-
-            return Ok(users.Count());
+            return Ok(db.Users.Where(u => u.UserTypeId == Id).Count());
         }
-        //api/login
-        public IHttpActionResult Login(string email, string password)
-        {
-            var user = db.Users.Where(u => u.Locked == false)
-                .FirstOrDefault(u => u.UserEmail == email && u.UserTypeId == 10);//Public User
 
-            if (user == null)
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("api/users/signin")]
+        public IHttpActionResult SignIn([FromBody]SignInUser user)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var userInDb = db.Users.Where(u => u.Locked == false)
+                .FirstOrDefault(u => u.UserEmail == user.Email && u.UserTypeId == 10);//Public User
+
+            if (userInDb == null)
                 return NotFound();
 
-            bool passwordVerified = AppServices.VerifayPasswrod(password, user.UserPassword);
+            bool passwordVerified = AppServices.VerifayPasswrod(user.Password, userInDb.UserPassword);
             //ToDo
             //Send Token
             if (passwordVerified)
-                return Ok(user.UserId);
-
+            {
+                string userToken = AppServices.TokenEncoding(user.Email, user.Password);
+                return Ok(new { userId = userInDb.UserId, token = userToken });
+            }
             return NotFound();
         }
-        //api/signup
+
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("api/users/signup")]
         public IHttpActionResult SignUp([FromBody]SignUpUser user)
         {
-            if (!ModelState.IsValid)
-                return BadRequest("Invalid Format");
+            if (!ModelState.IsValid || user.UserTypeId != 10)
+                return BadRequest("Invalid properties");
 
-            if (CheckEmailIfExist(user.UserEmail))
+            if (AppServices.CheckEmailIfExist(user.UserEmail))
                 return BadRequest("Invalid Email");
 
             var userInDb = Mapper.Map<SignUpUser, User>(user);
 
-            user.UserPassword = AppServices.HashPassword(user.UserPassword);
+            userInDb.UserPassword = AppServices.HashPassword(user.UserPassword);
             userInDb.VerCode = AppServices.GenerateRandomNumber();
             userInDb.UserTypeId = 10;
             userInDb.Locked = true;
@@ -95,49 +115,13 @@ namespace FinalProject.Controllers.api
             //Send Email Code
             return Ok();
         }
-        //public IHttpActionResult SignUp(SignUpDoctor doctor)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest("Invalid Format");
 
-        //    if (CheckEmailIfExist(doctor.UserEmail))
-        //        return BadRequest("Invalid Email");
+        // For security
+        
 
-        //    var application = new HttpApplication();
 
-        //    if (doctor.UserTypeId != (byte)application.Application["Pharmacist"] && doctor.UserTypeId == (byte)application.Application["Doctor"])
-        //        return BadRequest();
-
-        //    var userdb = Mapper.Map<SignUpUser, User>(doctor);
-
-        //    userdb.VerCode = AppServices.GenerateRandomNumber();
-
-        //    db.Users.Add(userdb);
-        //    db.SaveChanges();
-        //    doctor.UserId = userdb.UserId;
-        //    //ToDo
-        //    //Send Email Code
-
-        //    return Ok(doctor);
-        //}
-        //api/ConfirmEmail?email=email&code=code
-
-        //public IHttpActionResult ConfirmEmail(string email, string code)
-        //{
-        //    var user = db.Users.FirstOrDefault(u => u.UserEmail == email);
-        //    if (user == null)
-        //        return NotFound();
-
-        //    if (user.VerCode == code)
-        //    {
-        //        user.Locked = false;
-        //        user.VerCode = string.Empty;
-        //        db.SaveChanges();
-        //        return Ok("Confirmed");
-        //    }
-        //    return BadRequest("Code Not Match");
-        //}
-
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("api/users/ForgetPassword")]
         public IHttpActionResult ForgetPassword(string email)
         {
             var user = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == email);
@@ -152,6 +136,8 @@ namespace FinalProject.Controllers.api
             return Ok("Email Sent");
         }
 
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("api/users/ResetPassword")]
         public IHttpActionResult ResetPassword(string email, string password, string confirmPassword)
         {
             if (password == confirmPassword)
@@ -166,10 +152,16 @@ namespace FinalProject.Controllers.api
             user.VerCode = string.Empty;
             db.SaveChanges();
 
+            //ToDo
+            //Send email
+
             return Ok("Password Reset");
         }
 
-        public IHttpActionResult Editprofile([FromBody, Bind(Exclude = "Gender,UserId,UserTypeId")]UserDTO user)
+        [System.Web.Http.HttpPost]
+        [UsersAuthentication]
+        [System.Web.Http.Route("api/users/EditProfile")]
+        public IHttpActionResult EditProfile([FromBody, Bind(Exclude = "Gender,UserId,UserTypeId")]UserDTO user)
         {
             var userdb = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserId == user.UserId);
             if (userdb == null)
@@ -182,15 +174,6 @@ namespace FinalProject.Controllers.api
 
             db.SaveChanges();
             return Ok("Profile Edited");
-        }
-
-        public static bool CheckEmailIfExist(string email)
-        {
-            using (MyAppContext db = new MyAppContext())
-            {
-                int count = db.Users.Select(u => u.UserEmail == email).Count();
-                return count != 0;
-            }
         }
     }
 }
