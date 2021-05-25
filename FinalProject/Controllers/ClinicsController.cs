@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using FinalProject.DTOs;
 using FinalProject.Models;
+using FinalProject.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -44,11 +44,45 @@ namespace FinalProject.Controllers
 
             var clinicInDB = Mapper.Map<ClinicDTO, Clinic>(clinic);
             string path = Path.Combine(Server.MapPath("~/Certificates"), certifacte.FileName);
+            certifacte.SaveAs(path);
             clinicInDB.Certificate = path;
             clinicInDB.IsActiveClinic = false;
             db.Clinics.Add(clinicInDB);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        public ActionResult AddDay()
+        {
+            AddDayViewModel model = new AddDayViewModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult AddDay(ScheduleDTO day)
+        {
+            //todo
+            //Add Session
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Invalid Schedule");
+                return View();
+            }
+            var schedule = Mapper.Map<ScheduleDTO, Schedule>(day);
+            schedule.ClinicId = Convert.ToInt32(Session["ClinicId"]);
+            db.Schedules.Add(schedule);
+            db.SaveChanges();
+            return RedirectToAction("Schedule");
+        }
+
+        public ActionResult Schedule()
+        {
+            return View();
+        }
+
+        public ActionResult EditLocation()
+        {
+            return View();
         }
 
         public bool SessionIsNull() => Session["UserId"] == null;

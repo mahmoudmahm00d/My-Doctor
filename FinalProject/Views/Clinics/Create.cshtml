@@ -6,7 +6,7 @@
 }
 
 
-@using (Html.BeginForm("Create","Clinics",FormMethod.Post,new { @class = "top-25" }))
+@using (Html.BeginForm("Create", "Clinics", FormMethod.Post, new { @class = "top-25" }))
 {
     @Html.AntiForgeryToken()
 
@@ -36,7 +36,9 @@
     <div class="form-group">
         <div class="col-lg-5 col-md-6">
             <span>صورة عن الشهادة</span>
-            <input id="file" type="file" class="btn btn-default round-this" />
+            <input id="file" type="file" accept=".png,.jpg" max-size="10" class="btn btn-default round-this" />
+            @*ToDo*@
+            @*limit File Size*@
         </div>
     </div>
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })

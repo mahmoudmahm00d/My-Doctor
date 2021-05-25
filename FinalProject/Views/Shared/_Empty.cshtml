@@ -9,7 +9,7 @@
     <style>body{direction:rtl}</style>
 </head>
 <body>
-    @RenderBody()
+    <div class="container">@RenderBody()</div>
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/jquery")
     @RenderSection("scripts", required: false)

@@ -231,6 +231,7 @@
     <Compile Include="Filters\StrongPassword.cs" />
     <Compile Include="Authentication\UsersAuthenticationAttribute.cs" />
     <Compile Include="Services\Services.cs" />
+    <Compile Include="ViewModels\AddDayViewModel.cs" />
     <Compile Include="ViewModels\ClinicDTO.cs" />
     <Compile Include="DTOs\Doctor.cs" />
     <Compile Include="DTOs\LocationDTO.cs" />
@@ -423,6 +424,7 @@
     <Content Include="Views\Accounts\ConfirmUser.cshtml" />
     <Content Include="Views\Clinics\Create.cshtml" />
     <Content Include="Views\Shared\_Clinic.cshtml" />
+    <Content Include="Views\Clinics\AddDay.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

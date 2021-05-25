@@ -1,0 +1,47 @@
+﻿@model FinalProject.ViewModels.AddDayViewModel
+
+@{
+    ViewBag.Title = "AddDay";
+    Layout = "~/Views/Shared/_Empty.cshtml";
+}
+
+
+@using (Html.BeginForm("AddDay", "Clinics", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row main-header">
+        <h1 class="mx-auto text-color-primary">
+            إضافة يوم
+        </h1>
+    </div>
+
+    <div class="main-form pt-4 text-center">
+
+        <div class="form-group mx-auto round-this col-lg-5 col-md-6 px-0">
+            @Html.DropDownListFor(model => model.Day.Day, new SelectList(Model.SelectDays, "Value", "Name"), "اختار يوم", new { @class = "form-control round-this m-1 shadow" })
+            @Html.ValidationMessageFor(model => model.Day.ScheduleId, "", new { @class = "text-danger" })
+        </div>
+
+
+        <div class="form-group mx-auto round-this col-lg-5 col-md-6 shadow px-0">
+            @Html.EditorFor(model => model.Day.FromDate, new { htmlAttributes = new { @class = "form-control round-this placeholder-center" } })
+            @Html.ValidationMessageFor(model => model.Day.FromDate, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mx-auto round-this col-lg-5 col-md-6 shadow px-0">
+            @Html.EditorFor(model => model.Day.ToDate, new { htmlAttributes = new { @class = "form-control round-this placeholder-center" } })
+            @Html.ValidationMessageFor(model => model.Day.ToDate, "", new { @class = "text-danger" })
+        </div>
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            <input type="submit" value="إضافة يوم" class="btn background-color-primary mx-auto col-lg-5 col-md-6 shadow mx-auto" />
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
