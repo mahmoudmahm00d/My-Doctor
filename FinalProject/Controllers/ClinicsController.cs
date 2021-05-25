@@ -23,11 +23,16 @@ namespace FinalProject.Controllers
             return View();
         }
 
+        public ActionResult Create()
+        {
+            return View();
+        }
+
         [HttpPost]
         public ActionResult Create(ClinicDTO clinic, HttpPostedFileBase certifacte)
         {
-            if(SessionIsNull())
-                return RedirectToAction("SignIn", "Accounts");
+            //if(SessionIsNull())
+            //    return RedirectToAction("SignIn", "Accounts");
 
             if (!ModelState.IsValid || certifacte == null || certifacte.ContentLength == 0)
                 return View();

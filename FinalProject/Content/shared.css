@@ -120,3 +120,10 @@ input {
 .input-validation-error {
     border-color: red;
 }
+
+@media only screen and (min-width:768) {
+    .top-25 {
+        position: relative;
+        top: 25vh;
+    }
+}

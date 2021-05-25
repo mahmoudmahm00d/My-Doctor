@@ -306,6 +306,7 @@
     <Content Include="Content\bootstrap-reboot.css.map" />
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-3.6.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.6.0.js" />
     <Content Include="Scripts\jquery-3.6.0.min.js" />
@@ -421,6 +422,7 @@
     <Content Include="Views\Accounts\SignIn.cshtml" />
     <Content Include="Views\Accounts\ConfirmUser.cshtml" />
     <Content Include="Views\Clinics\Create.cshtml" />
+    <Content Include="Views\Shared\_Clinic.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

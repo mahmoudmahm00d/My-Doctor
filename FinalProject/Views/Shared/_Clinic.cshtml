@@ -7,8 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     @Styles.Render("~/Content/css")
 </head>
-
-<body>
+<body dir="rtl">
     <nav class="Navbar">
         <div class="Navbar-nav">
             <div class="row w-100">
@@ -26,15 +25,14 @@
                               transform="translate(-2 6.151)" fill="#fff" />
                     </svg>
                 </button>
-                @Html.ActionLink("MyDoctor", "Index", "Management", new { @class = "Nav-link logo" })
+                <div class="Nav-link logo">
+                    MyDoctor
+                </div>
+                @*@Html.ActionLink("MyDoctor", "Index", "Clinics", new { @class = "Nav-link logo" })*@
             </div>
             <div class="options-menu">
-                @Html.ActionLink("طلبات التسجيل", "Index", "SignUpRequests", new { @class = "Nav-link" })
-                @Html.ActionLink("العيادات", "Index", "Clinics", new { @class = "Nav-link" })
-                @Html.ActionLink("المستخدمين", "Index", "Users", new { @class = "Nav-link" })
-                @Html.ActionLink("الأدوية", "Index", "Medicines", new { @class = "Nav-link" })
-                @Html.ActionLink("المدن", "Index", "Cities", new { @class = "Nav-link" })
-                @Html.ActionLink("الإدارة", "Index", "Management", new { @class = "Nav-link" })
+                @Html.ActionLink("المواعيد", "Index", "Clinics", new { @class = "Nav-link" })
+                @Html.ActionLink("الإدارة", "Management", "Clinics", new { @class = "Nav-link" })
             </div>
         </div>
     </nav>
