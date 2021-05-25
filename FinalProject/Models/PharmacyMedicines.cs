@@ -9,11 +9,13 @@ namespace FinalProject.Models
         public Pharmacy PharmacyFrom { get; set; }
         [Key]
         [Column(Order = 1)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int PharmacyId { get; set; }
 
         public Medicine MedicineFrom { get; set; }
         [Key]
         [Column(Order = 2)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int MedicineId { get; set; }
 
         public bool Available { get; set; }

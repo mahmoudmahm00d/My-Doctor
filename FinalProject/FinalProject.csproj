@@ -230,6 +230,10 @@
     <Compile Include="Filters\Min22Years.cs" />
     <Compile Include="Filters\StrongPassword.cs" />
     <Compile Include="Authentication\UsersAuthenticationAttribute.cs" />
+    <Compile Include="Migrations\202105250645046_AddIdentityToAlmostAllTables.cs" />
+    <Compile Include="Migrations\202105250645046_AddIdentityToAlmostAllTables.designer.cs">
+      <DependentUpon>202105250645046_AddIdentityToAlmostAllTables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Services\Services.cs" />
     <Compile Include="ViewModels\AddDayViewModel.cs" />
     <Compile Include="ViewModels\ClinicDTO.cs" />
@@ -425,6 +429,7 @@
     <Content Include="Views\Clinics\Create.cshtml" />
     <Content Include="Views\Shared\_Clinic.cshtml" />
     <Content Include="Views\Clinics\AddDay.cshtml" />
+    <Content Include="Views\Clinics\Schedule.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -453,6 +458,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202105180710490_SplitPharmacyLocationToLanAndLat.resx">
       <DependentUpon>202105180710490_SplitPharmacyLocationToLanAndLat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202105250645046_AddIdentityToAlmostAllTables.resx">
+      <DependentUpon>202105250645046_AddIdentityToAlmostAllTables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

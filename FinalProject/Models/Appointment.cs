@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinalProject.Models
 {
     public class Appointment
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int AppointmentId { get; set; }
 
         public Clinic Clinic { get; set; }

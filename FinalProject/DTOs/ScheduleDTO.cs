@@ -9,10 +9,10 @@ namespace FinalProject.DTOs
         public int ScheduleId { get; set; }
 
         [DataType(DataType.Time)]
-        public DateTime FromDate { get; set; }
+        public DateTime FromTime { get; set; }
 
         [DataType(DataType.Time)]
-        public DateTime ToDate { get; set; }
+        public DateTime ToTime { get; set; }
         public Days Day { get; set; }
     }
 }

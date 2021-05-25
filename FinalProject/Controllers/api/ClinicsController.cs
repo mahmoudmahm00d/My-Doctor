@@ -60,6 +60,13 @@ namespace FinalProject.Controllers.api
             return Ok(day);
         }
 
+        [HttpGet]
+        public IHttpActionResult Schedule(int clinicId)
+        {
+            var schedule = db.Schedules.Where(c => c.ClinicId == clinicId).Select(Mapper.Map<Schedule, ScheduleDTO>);
+            return Ok(schedule);
+        }
+
         [HttpPut]
         public IHttpActionResult Edit(int id, ClinicDTO clinic)
         {

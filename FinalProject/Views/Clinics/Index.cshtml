@@ -1,17 +1,24 @@
-﻿
-@{
-    Layout = null;
+﻿@{
+    /**/
+
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Clinic.cshtml";
 }
 
-<!DOCTYPE html>
+<div class="col-md-10">
+    <table id="appointments">
+        <tr>
+            <td></td>
+        </tr>
+    </table>
+</div>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
-<body>
-    <div> 
-    </div>
-</body>
-</html>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            
+        $("#appointments")
+        });
+    </script>
+}

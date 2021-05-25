@@ -9,10 +9,12 @@ namespace FinalProject.Models
         public virtual Clinic ClinicFrom { get; set; }
         [Key]
         [Column(Order = 1)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ClinicId { get; set; }
 
         [Key]
         [Column(Order = 2)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
 

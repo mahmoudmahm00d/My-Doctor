@@ -1,15 +1,12 @@
-﻿using FinalProject.Models;
-using System;
-using System.Collections.Generic;
+﻿using AutoMapper;
+using FinalProject.App_Start;
+using FinalProject.Models;
+using FinalProject.Services;
 using System.Linq;
-using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using AutoMapper;
-using FinalProject.DTOs;
-using FinalProject.App_Start;
 
 namespace FinalProject
 {
@@ -30,23 +27,37 @@ namespace FinalProject
             int count = db.Managers.Count();
             if (count == 0)
             {
-                Manager manager = new Manager { ManagerEmail = "mydocmanager@gmail.com", ManagerPassword = "P@ssw0rd" };
+                Manager manager = new Manager
+                {
+                    ManagerEmail = "mydocmanager@gmail.com",
+                    ManagerPassword = AppServices.HashPassword("P@ssw0rd")
+                };
                 db.Managers.Add(manager);
                 db.SaveChanges();
             }
             count = db.Usertypes.Count();
             if (count == 0)
             {
-                var user = new UserType {UserTypeId = 10, UserTypeName = "PublicUser" };
-                var doctor = new UserType {UserTypeId =20, UserTypeName = "Doctor" };
-                var pharmacist = new UserType {UserTypeId =30, UserTypeName = "Pahrmacist" };
+                var user = new UserType { UserTypeId = 10, UserTypeName = "PublicUser" };
+                var doctor = new UserType { UserTypeId = 20, UserTypeName = "Doctor" };
+                var pharmacist = new UserType { UserTypeId = 30, UserTypeName = "Pahrmacist" };
                 db.Usertypes.Add(user);
                 db.Usertypes.Add(doctor);
                 db.Usertypes.Add(pharmacist);
                 db.SaveChanges();
-                Application.Add("PublicUser", user.UserTypeId);
-                Application.Add("Doctor", doctor.UserTypeId);
-                Application.Add("Pharmacist", pharmacist.UserTypeId);
+            }
+            count = db.MedicineTypes.Count();
+            if (count == 0)
+            {
+                var capsule = new MedicineType { MedicineTypeId = 10, MedicineTypeName = "capsule" };
+                var pills = new MedicineType { MedicineTypeId = 20, MedicineTypeName = "pills" };
+                var injection = new MedicineType { MedicineTypeId = 30, MedicineTypeName = "injection" };
+                var Liquid = new MedicineType { MedicineTypeId = 30, MedicineTypeName = "Liquid" };
+                db.MedicineTypes.Add(capsule);
+                db.MedicineTypes.Add(pills);
+                db.MedicineTypes.Add(injection);
+                db.MedicineTypes.Add(Liquid);
+                db.SaveChanges();
             }
         }
     }

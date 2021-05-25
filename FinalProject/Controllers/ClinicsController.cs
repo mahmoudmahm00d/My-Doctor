@@ -68,6 +68,12 @@ namespace FinalProject.Controllers
                 ModelState.AddModelError("", "Invalid Schedule");
                 return View();
             }
+            if (day.FromTime > day.ToTime)
+            {
+                ModelState.AddModelError("", "");
+                return View();
+            }
+
             var schedule = Mapper.Map<ScheduleDTO, Schedule>(day);
             schedule.ClinicId = Convert.ToInt32(Session["ClinicId"]);
             db.Schedules.Add(schedule);
@@ -80,7 +86,32 @@ namespace FinalProject.Controllers
             return View();
         }
 
-        public ActionResult EditLocation()
+        public ActionResult AppointmentDetails()
+        {
+            return View();
+        }
+
+        //public ActionResult AppointmentDetails()
+        //{
+        //    return View();
+        //}
+
+        public ActionResult Location()
+        {
+            return View();
+        }
+
+        public ActionResult EditClinicProfile()
+        {
+            return View();
+        }
+
+        public ActionResult EditPassword()
+        {
+            return View();
+        }
+
+        public ActionResult EditEmail()
         {
             return View();
         }
