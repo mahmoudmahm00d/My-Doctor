@@ -12,6 +12,7 @@ using System.Web.Http;
 using System.Web;
 using System.Web.Mvc;
 using FinalProject.ViewModels;
+using FinalProject.Authentication;
 
 namespace FinalProject.Controllers.api
 {
@@ -29,7 +30,7 @@ namespace FinalProject.Controllers.api
         //api/get/id
         public IHttpActionResult Get(int id)
         {
-            var user = db.Users.FirstOrDefault(u => u.UserId == id);
+            var user = db.Users.Where(u => u.UserId == id).Select(Mapper.Map<User,UserDTO>);
             if (user == null)
             {
                 return NotFound();
@@ -37,14 +38,18 @@ namespace FinalProject.Controllers.api
             return Ok(user);
         }
 
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("api/doctors")]
         public IHttpActionResult Doctors()
         {
-            return Ok(db.Users.Include(u => u.UserType).Select(Mapper.Map<User,UsersManageViewModel>));
+            return Ok(db.Users.Include(u => u.UserType).Where(u=> u.UserTypeId == 20).Select(Mapper.Map<User,UsersManageViewModel>));
         }
 
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("api/doctors/{id}")]
         public IHttpActionResult Doctors(int id)
         {
-            var user = db.Users.FirstOrDefault(u => u.UserId == id);
+            var user = db.Users.Where(u => u.UserId == id && u.UserTypeId == 20).Select(Mapper.Map<User, UsersManageViewModel>);
             if (user == null)
             {
                 return NotFound();
@@ -121,7 +126,8 @@ namespace FinalProject.Controllers.api
 
 
         [System.Web.Http.HttpPost]
-        [System.Web.Http.Route("api/users/ForgetPassword")]
+        [UsersAuthentication]
+        [System.Web.Http.Route("api/users/ForgetPassword/{email}")]
         public IHttpActionResult ForgetPassword(string email)
         {
             var user = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == email);
@@ -137,23 +143,20 @@ namespace FinalProject.Controllers.api
         }
 
         [System.Web.Http.HttpPost]
+        [UsersAuthentication]
         [System.Web.Http.Route("api/users/ResetPassword")]
-        public IHttpActionResult ResetPassword(string email, string password, string confirmPassword)
+        public IHttpActionResult ChangePassword([FromBody] ChangePasswordDTO data)
         {
-            if (password == confirmPassword)
-                return BadRequest("Password Not Match");
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-            var user = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == email);
+            var user = db.Users.Where(u => u.Locked == false && u.UserId == data.UserId).FirstOrDefault();
 
-            if (user == null)
-                return NotFound();
+            if (!AppServices.VerifayPasswrod(data.UserPassword,user.UserPassword))
+                return BadRequest();
 
-            user.UserPassword = password;
-            user.VerCode = string.Empty;
+            user.UserPassword = AppServices.HashPassword(data.UserPassword);
             db.SaveChanges();
-
-            //ToDo
-            //Send email
 
             return Ok("Password Reset");
         }

@@ -1,4 +1,5 @@
 ﻿using FinalProject.Controllers.api;
+using FinalProject.Models;
 using FinalProject.Services;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 
-namespace FinalProject.Models
+namespace FinalProject.Authentication
 {
     public class UsersAuthenticationAttribute : AuthorizationFilterAttribute
     {
@@ -23,7 +24,7 @@ namespace FinalProject.Models
             }
             else
             {
-                string authenticationToken = actionContext.Request.Headers.Authorization.Parameter;
+                string authenticationToken = actionContext.Request.Headers.Authorization.Scheme;
                 string decodedAuthentication = Encoding.UTF8.GetString(Convert.FromBase64String(authenticationToken));
                 string[] emailPassword = decodedAuthentication.Split(':');
                 string email = emailPassword[0];

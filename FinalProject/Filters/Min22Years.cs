@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
+using FinalProject.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace FinalProject.Models
+namespace FinalProject.Filters
 {
     public class Min22YearsIfADocotor : ValidationAttribute
     {

@@ -1,4 +1,5 @@
-﻿using FinalProject.Models;
+﻿using FinalProject.Filters;
+using FinalProject.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 

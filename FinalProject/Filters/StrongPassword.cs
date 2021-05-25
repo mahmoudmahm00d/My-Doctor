@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
+using FinalProject.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace FinalProject.Models
+namespace FinalProject.Filters
 {
     public class StrongPassword : ValidationAttribute
     {

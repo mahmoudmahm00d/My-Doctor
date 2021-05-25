@@ -204,6 +204,7 @@
     <Compile Include="Controllers\MedicineTypesController.cs" />
     <Compile Include="Controllers\PharmaciesController.cs" />
     <Compile Include="DTOs\AppointmentDTO.cs" />
+    <Compile Include="DTOs\ChangePasswordDTO.cs" />
     <Compile Include="DTOs\ClinicDTO.cs" />
     <Compile Include="DTOs\ClinicOnlyDTO.cs" />
     <Compile Include="DTOs\MapObject.cs" />
