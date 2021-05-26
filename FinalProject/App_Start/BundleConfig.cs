@@ -18,14 +18,17 @@ namespace FinalProject
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js",
-                      "~/Scripts/jquery-{version}.js"));
+                      "~/Scripts/jquery-{version}.js",
+                      "~/Scripts/DataTables/jquery.datatables.js",
+                      "~/Scripts/DataTables/datatables.bootstrap.js"));
 
             bundles.Add(new StyleBundle("~/Content/loginStyle").Include("~/Content/login.css"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/management.css",
-                      "~/Content/shared.css"));
+                      "~/Content/shared.css",
+                      "~/Content/datatables/css/datatables.bootstap.css"));
         }
     }
 }

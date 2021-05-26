@@ -46,19 +46,19 @@ namespace FinalProject
                 db.Usertypes.Add(pharmacist);
                 db.SaveChanges();
             }
-            count = db.MedicineTypes.Count();
-            if (count == 0)
-            {
-                var capsule = new MedicineType { MedicineTypeId = 10, MedicineTypeName = "capsule" };
-                var pills = new MedicineType { MedicineTypeId = 20, MedicineTypeName = "pills" };
-                var injection = new MedicineType { MedicineTypeId = 30, MedicineTypeName = "injection" };
-                var Liquid = new MedicineType { MedicineTypeId = 30, MedicineTypeName = "Liquid" };
-                db.MedicineTypes.Add(capsule);
-                db.MedicineTypes.Add(pills);
-                db.MedicineTypes.Add(injection);
-                db.MedicineTypes.Add(Liquid);
-                db.SaveChanges();
-            }
+            //count = db.MedicineTypes.Count();
+            //if (count == 0)
+            //{
+            //    var capsule = new MedicineType {  MedicineTypeName = "capsule" };
+            //    var pills = new MedicineType {  MedicineTypeName = "pills" };
+            //    var injection = new MedicineType { MedicineTypeName = "injection" };
+            //    var Liquid = new MedicineType { MedicineTypeName = "Liquid" };
+            //    db.MedicineTypes.Add(capsule);
+            //    db.MedicineTypes.Add(pills);
+            //    db.MedicineTypes.Add(injection);
+            //    db.MedicineTypes.Add(Liquid);
+            //    db.SaveChanges();
+            //}
         }
     }
 }

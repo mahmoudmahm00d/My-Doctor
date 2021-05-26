@@ -34,18 +34,32 @@ namespace FinalProject.Controllers.api
             }
             return Ok(Mapper.Map<Clinic, ClinicDTO>(clinic));
         }
-        //TdDo
-        //[HttpGet]
-        //public IHttpActionResult GetAppointments(int id)
-        //{
-        //    var clinic = db.Clinics.FirstOrDefault(c => c.ClinicId == id);
-        //    if (clinic == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    clinic.Appointments..Select();
-        //    return Ok(Mapper.Map<Clinic, ClinicDTO>(clinic));
-        //}
+        [HttpGet]
+        public IHttpActionResult GetUnconirmedAppointments(int id)
+        {
+            var appointments = db.Appointments
+                .Include("User")
+                .Where(a => a.ClinicId == id && a.Confirmed == false)
+                .Select(Mapper.Map<Appointment,AppointmentDTO>);
+
+            if (appointments == null)
+            {
+                return NotFound();
+            }
+            return Ok(appointments);
+        }
+
+        [HttpPost]
+        public IHttpActionResult ConfirmAppointment(int id)
+        {
+            var appointment = db.Appointments.Find(id);
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+            appointment.Confirmed = true;
+            return Ok();
+        }
 
         [HttpPost]
         public IHttpActionResult AddDay(int clinicId, ScheduleDTO day)

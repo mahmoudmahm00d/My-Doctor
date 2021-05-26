@@ -70,7 +70,13 @@ namespace FinalProject.Controllers
             }
             if (day.FromTime > day.ToTime)
             {
-                ModelState.AddModelError("", "");
+                ModelState.AddModelError("", "invalid schedule");
+                return View();
+            }
+            var check = db.Schedules.FirstOrDefault(s => s.FromTime.Hour <= day.FromTime.Hour && s.FromTime.Hour <= s.ToTime.Hour);
+            if (check != null)
+            {
+                ModelState.AddModelError("", "invalid schedule");
                 return View();
             }
 
@@ -79,6 +85,11 @@ namespace FinalProject.Controllers
             db.Schedules.Add(schedule);
             db.SaveChanges();
             return RedirectToAction("Schedule");
+        }
+
+        public ActionResult Appointments()
+        {
+            return View();
         }
 
         public ActionResult Schedule()
@@ -91,14 +102,26 @@ namespace FinalProject.Controllers
             return View();
         }
 
-        //public ActionResult AppointmentDetails()
-        //{
-        //    return View();
-        //}
-
         public ActionResult Location()
         {
-            return View();
+            var cities = db.Cities.Where(c => c.IsActiveCity == true).Select(Mapper.Map<City,CityDTO>);
+            LocationViewModel model = new LocationViewModel {Cities = cities }; 
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Location(LocationDTO location)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Invalid Location");
+                return View();
+            }
+            var locationToDb = Mapper.Map<LocationDTO, Location>(location);
+            locationToDb.ClinicId = Convert.ToInt32(Session["ClinicId"]);
+            db.Locations.Add(locationToDb);
+            db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         public ActionResult EditClinicProfile()

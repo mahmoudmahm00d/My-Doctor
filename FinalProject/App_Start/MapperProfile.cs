@@ -15,11 +15,14 @@ namespace FinalProject.App_Start
             Mapper.CreateMap<User, Doctor>();
             Mapper.CreateMap<object, User>();
 
+            Mapper.CreateMap<City, CityDTO>();
             Mapper.CreateMap<Location, LocationDTO>();
             Mapper.CreateMap<Schedule, ScheduleDTO>();
 
             Mapper.CreateMap<Clinic, ClinicDTO>();
             Mapper.CreateMap<Clinic, ClinicOnlyDTO>();
+            Mapper.CreateMap<Appointment, AppointmentDTO>();
+
             //ToDo
             Mapper.CreateMap<Clinic, MapObject>()
                 .ForMember(c => c.Langtude , s => s.MapFrom(c => c.Location.Langtude))
@@ -47,6 +50,9 @@ namespace FinalProject.App_Start
             Mapper.CreateMap<PharmacyDTO, Pharmacy>()
                 .ForMember(c => c.ForUser, op => op.Ignore())
                 .ForMember(c => c.PharmacyId, op => op.Ignore());
+
+            Mapper.CreateMap<CityDTO, City>()
+                .ForMember(u => u.CityId, op => op.Ignore());
 
             Mapper.CreateMap<PharmacyOnlyDTO, Pharmacy>()
                 .ForMember(u => u.PharmacyId, op => op.Ignore())
