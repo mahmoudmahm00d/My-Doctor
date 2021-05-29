@@ -239,6 +239,10 @@
     <Compile Include="Migrations\202105251111422_RenameDateColumnsInScheduleTable.designer.cs">
       <DependentUpon>202105251111422_RenameDateColumnsInScheduleTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202105260556496_AddIdentityToMedicineTypesTable.cs" />
+    <Compile Include="Migrations\202105260556496_AddIdentityToMedicineTypesTable.designer.cs">
+      <DependentUpon>202105260556496_AddIdentityToMedicineTypesTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Services\Services.cs" />
     <Compile Include="ViewModels\AddDayViewModel.cs" />
     <Compile Include="ViewModels\ClinicDTO.cs" />
@@ -444,6 +448,7 @@
     <Content Include="Content\DataTables\images\sort_desc_disabled.png" />
     <Content Include="Content\DataTables\swf\flashExport.swf" />
     <Content Include="Content\login.css" />
+    <Content Include="Content\Logo W.svg" />
     <Content Include="Content\management.css" />
     <Content Include="Content\shared.css" />
     <Content Include="favicon.ico" />
@@ -708,6 +713,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202105251111422_RenameDateColumnsInScheduleTable.resx">
       <DependentUpon>202105251111422_RenameDateColumnsInScheduleTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202105260556496_AddIdentityToMedicineTypesTable.resx">
+      <DependentUpon>202105260556496_AddIdentityToMedicineTypesTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -1,13 +1,8 @@
 ﻿using AutoMapper;
 using FinalProject.DTOs;
 using FinalProject.Models;
-using FinalProject.ViewModels;
-using System;
 using System.Data.Entity;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 
 namespace FinalProject.Controllers.api
@@ -23,14 +18,16 @@ namespace FinalProject.Controllers.api
         }
 
         [HttpGet]
+        [Route("api/pharmaciesMedicines/{id}")]//PhramacyId
         public IHttpActionResult Get(int id)
         {
-            var clinic = db.Pharmacies.Include(c => c.ForUser).FirstOrDefault(c => c.PharmacyId == id);
+            var query = from pm in db.PharmacyMedicines
+                        where pm.PharmacyId == id
+                        join m in db.Medicines
+                        on pm.MedicineId equals m.MedicineId
+                        select new { m.MedicineId, m.NameAR, m.NameEN, pm.Available };
 
-            if (clinic == null)
-                return NotFound();
-
-            return Ok(Mapper.Map<Pharmacy, PharmacyDTO>(clinic));
+            return Ok(query);
         }
 
         [HttpPost]

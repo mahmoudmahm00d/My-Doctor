@@ -5,28 +5,39 @@
 }
 
 <div class="container">
-    <table id="appointments" class="table table-hover">
-        <tr>
-            <td>helo</td>
-            <td>helo</td>
-            <td>helo</td>
-            <td>helo</td>
-            <td>helo</td>
-        </tr>
-        <tr>
-            <td>malo</td>
-            <td>malo</td>
-            <td>malo</td>
-            <td>malo</td>
-            <td>malo</td>
-        </tr>
-        <tr>
-            <td>Khalo</td>
-            <td>Khalo</td>
-            <td>Khalo</td>
-            <td>Khalo</td>
-            <td>Khalo</td>
-        </tr>
+    <table id="tableid"  class="table table-hover table-responsive ">
+        <thead>
+            <tr>
+                <td>helo</td>
+                <td>helo</td>
+                <td>helo</td>
+                <td>helo</td>
+                <td>helo</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>helo</td>
+                <td>helo</td>
+                <td>helo</td>
+                <td>helo</td>
+                <td>helo</td>
+            </tr>
+            <tr>
+                <td>malo</td>
+                <td>malo</td>
+                <td>malo</td>
+                <td>malo</td>
+                <td>malo</td>
+            </tr>
+            <tr>
+                <td>Khalo</td>
+                <td>Khalo</td>
+                <td>Khalo</td>
+                <td>Khalo</td>
+                <td>Khalo</td>
+            </tr>
+        </tbody>
     </table>
 </div>
 
@@ -34,7 +45,7 @@
 @section Scripts{
     <script>
         $(document).ready(function () {
-            $("#appointments").DataTable();
+            $("#tableid").DataTable();
         })
     </script>
 }

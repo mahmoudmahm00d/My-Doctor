@@ -49,6 +49,8 @@ namespace FinalProject.Controllers
             doctor.UserId = userInDb.UserId;
             //ToDo
             //Send Email Code
+            AppServices.SendConfirmEmail(userInDb.UserEmail,userInDb.VerCode,userInDb.UserId);
+
             return RedirectToAction("ConfirmUser", new { id = doctor.UserId });
         }
 

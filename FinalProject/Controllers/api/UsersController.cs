@@ -118,6 +118,7 @@ namespace FinalProject.Controllers.api
 
             //ToDo
             //Send Email Code
+            AppServices.SendConfirmEmail(userInDb.UserEmail,userInDb.VerCode,userInDb.UserId);
             return Ok();
         }
 
@@ -139,6 +140,7 @@ namespace FinalProject.Controllers.api
 
             //ToDo
             //Add Email Service
+
             return Ok("Email Sent");
         }
 

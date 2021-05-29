@@ -7,7 +7,7 @@ namespace FinalProject.Models
     public class MedicineType
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public byte MedicineTypeId { get; set; }
 
         [Required]

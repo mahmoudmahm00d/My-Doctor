@@ -1,6 +1,7 @@
 ﻿using FinalProject.Models;
 using System;
 using System.Linq;
+using System.Net.Mail;
 
 namespace FinalProject.Services
 {
@@ -33,7 +34,34 @@ namespace FinalProject.Services
             return Convert.ToBase64String(array);
         }
 
+        public static void SendConfirmEmail(string email, string code, int id)
+        {
+            string url = "http://mydoctorapp-001-site1.ctempurl.com/accounts/confirmuser/"+id;
+
+            try
+            {
+                MailMessage mail = new MailMessage();
+                SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+
+                mail.From = new MailAddress("mydoctorappteam@gmail.com");
+                mail.To.Add(email);
+                mail.Subject = "Confirm Your Account";
+                mail.Body = $"<h1> Your Verfication Code </h1><br>{code}<br>click on link below to confirm your account<br><a href={url}>Validate Here</a> ";
+
+                SmtpServer.Port = 587;
+                SmtpServer.Credentials = new System.Net.NetworkCredential("mydoctorappteam@gmail.com", "MAHM54321oud123");
+                SmtpServer.EnableSsl = true;
+
+                SmtpServer.Send(mail);
+            }
+            catch (System.Exception ex)
+            {
+            }
+        }
+
         public static string HashPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);
+
+
 
         public static bool VerifayPasswrod(string password, string hashedPassword) => BCrypt.Net.BCrypt.Verify(password, hashedPassword);
     }

@@ -1,15 +1,22 @@
-﻿@{
+﻿@Model 
+@{
     /**/
 
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Clinic.cshtml";
 }
 
 <div class="col-md-10">
     <table id="appointments">
-        <tr>
-            <td></td>
-        </tr>
+        <thead>
+            <tr>
+                <th>اسم المريض</th>
+                <th>تاريخ الزيارة</th>
+                <th>مضمون الزيارة</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
     </table>
 </div>
 
@@ -18,7 +25,10 @@
     <script>
         $(document).ready(function () {
             
-        $("#appointments")
+            $("#appointments").DataTable({
+                ajax: {
+                    url:"api/clinics/patients/"
+                });
         });
     </script>
 }

@@ -121,8 +121,16 @@ input {
     border-color: red;
 }
 
+#map {
+    position: relative;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    min-height: 50vh;
+}
+
 @media only screen and (min-width:768) {
-    .top-25 {
+    .top-padding {
         position: relative;
         top: 25vh;
     }

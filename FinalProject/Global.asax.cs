@@ -2,7 +2,10 @@
 using FinalProject.App_Start;
 using FinalProject.Models;
 using FinalProject.Services;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -21,6 +24,7 @@ namespace FinalProject
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             Mapper.Initialize(c => c.AddProfile<MapperProfile>());
+
 
             //Default Values
             MyAppContext db = new MyAppContext();
@@ -46,19 +50,25 @@ namespace FinalProject
                 db.Usertypes.Add(pharmacist);
                 db.SaveChanges();
             }
-            //count = db.MedicineTypes.Count();
-            //if (count == 0)
-            //{
-            //    var capsule = new MedicineType {  MedicineTypeName = "capsule" };
-            //    var pills = new MedicineType {  MedicineTypeName = "pills" };
-            //    var injection = new MedicineType { MedicineTypeName = "injection" };
-            //    var Liquid = new MedicineType { MedicineTypeName = "Liquid" };
-            //    db.MedicineTypes.Add(capsule);
-            //    db.MedicineTypes.Add(pills);
-            //    db.MedicineTypes.Add(injection);
-            //    db.MedicineTypes.Add(Liquid);
-            //    db.SaveChanges();
-            //}
+            count = db.MedicineTypes.Count();
+            if (count == 0)
+            {
+                var medicineTypes = new List<MedicineType> {
+                    new MedicineType { MedicineTypeName = "capsule" },
+                    new MedicineType { MedicineTypeName = "pills" },
+                    new MedicineType { MedicineTypeName = "injection" },
+                    new MedicineType { MedicineTypeName = "Liquid" }
+                };
+                db.MedicineTypes.AddRange(medicineTypes);
+                db.SaveChanges();
+            }
+            count = db.Cities.Count();
+            if (count == 0)
+            {
+                var city =  new City { CityName = "Damascus" };
+                db.Cities.Add(city);
+                db.SaveChanges();
+            }
         }
     }
 }

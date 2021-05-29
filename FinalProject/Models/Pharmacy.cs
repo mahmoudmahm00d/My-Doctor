@@ -17,11 +17,6 @@ namespace FinalProject.Models
 
         public User ForUser { get; set; }
         public int UserId { get; set; }
-
-        //[Required]
-        //[StringLength(255)]
-        //public string PharmacyLocation { get; set; }
-
         public double Langtude { get; set; }
         public double Latitude { get; set; }
 

@@ -5,6 +5,7 @@ using FinalProject.ViewModels;
 using System;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
 
@@ -104,6 +105,8 @@ namespace FinalProject.Controllers
 
         public ActionResult Location()
         {
+            
+
             var cities = db.Cities.Where(c => c.IsActiveCity == true).Select(Mapper.Map<City,CityDTO>);
             LocationViewModel model = new LocationViewModel {Cities = cities }; 
             return View(model);
