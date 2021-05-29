@@ -128,7 +128,11 @@ namespace FinalProject.Controllers
             }
 
             Session["UserId"] = userInDb.UserId;
-            return RedirectToAction("Index", "Clinics");
+            Session["UserTypeId"] = userInDb.UserTypeId;
+
+            if(userInDb.UserTypeId == 20)
+                return RedirectToAction("Index", "Clinics");
+            return RedirectToAction("Index", "Pharmacies");
         }
     }
 }
