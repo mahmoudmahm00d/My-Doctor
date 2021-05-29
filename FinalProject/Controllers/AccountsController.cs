@@ -41,14 +41,15 @@ namespace FinalProject.Controllers
                 return RedirectToAction("SignUp");
             }
             doctor.UserPassword = AppServices.HashPassword(doctor.UserPassword);
+            doctor = AppServices.TrimStringProperties(doctor);
+            doctor.UserEmail = doctor.UserEmail.ToLower();
             var userInDb = Mapper.Map<SignUpDoctor, User>(doctor);
             userInDb.VerCode = AppServices.GenerateRandomNumber();
 
             db.Users.Add(userInDb);
             db.SaveChanges();
             doctor.UserId = userInDb.UserId;
-            //ToDo
-            //Send Email Code
+
             AppServices.SendConfirmEmail(userInDb.UserEmail,userInDb.VerCode,userInDb.UserId);
 
             return RedirectToAction("ConfirmUser", new { id = doctor.UserId });

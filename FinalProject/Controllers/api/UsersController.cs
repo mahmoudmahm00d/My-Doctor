@@ -109,6 +109,8 @@ namespace FinalProject.Controllers.api
             var userInDb = Mapper.Map<SignUpUser, User>(user);
 
             userInDb.UserPassword = AppServices.HashPassword(user.UserPassword);
+            userInDb = AppServices.TrimStringProperties(userInDb);
+            userInDb.UserEmail = userInDb.UserEmail.ToLower();
             userInDb.VerCode = AppServices.GenerateRandomNumber();
             userInDb.UserTypeId = 10;
             userInDb.Locked = true;

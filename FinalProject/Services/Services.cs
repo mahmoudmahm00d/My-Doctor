@@ -7,6 +7,20 @@ namespace FinalProject.Services
 {
     public static class AppServices
     {
+        public static TSelf TrimStringProperties<TSelf>(TSelf input)
+        {
+            var stringProperties = input.GetType().GetProperties()
+                .Where(p => p.PropertyType == typeof(string) && p.CanWrite);
+
+            foreach (var stringProperty in stringProperties)
+            {
+                string currentValue = (string)stringProperty.GetValue(input, null);
+                if (currentValue != null)
+                    stringProperty.SetValue(input, currentValue.Trim(), null);
+            }
+            return input;
+        }
+
         public static string GenerateRandomNumber()
         {
             Random random = new Random();
