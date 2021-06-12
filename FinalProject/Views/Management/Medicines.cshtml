@@ -1,0 +1,102 @@
+﻿
+@{
+    ViewBag.Title = "Medicines";
+    Layout = "~/Views/Shared/_Managment.cshtml";
+}
+
+<h4 class="text-color-primary">الادوية</h4>
+
+    @Html.ActionLink("إضافة مدينة", "AddMedicine", "Management", new { @class = "btn background-color-primary" })
+<div class="col">
+</div>
+
+<div class="col-md-12 mt-3 table-responsive">
+    <table id="medicines" class="table table-hover col-12 bg-light border">
+        <thead>
+            <tr>
+                <th>الاسم بالعربي</th>
+                <th>الاسم بالانجليزي</th>
+                <th>نوع الدواء</th>
+                <th>فعال</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <script>
+         $(document).ready(function () {
+
+             var table = $("#medicines").DataTable({
+                ajax: {
+                    url: "/api/Management/Medicines",
+                    dataSrc: ""
+                },
+                columns: [
+                    { data: "nameAR" },
+                    { data: "nameEN" },
+                    { data: "isActiveMedicine" },
+                    { data: "medicineType" },
+                    {
+                        data: "medicineId",
+                        render: function (data) {
+                            return `<a href='EditMedicine/${data}'>تعديل</a>`;
+                        }
+                    },
+                    {
+                        data: "medicineId",
+                        render: function (data) {
+                            return `<button class="btn btn-sm js-delete btn-outline-danger" data-id='${data}'>حذف</button>`;
+                        }
+                    }
+                ], dom: '<"row w-100 pb-3" <"px-3" f> <"px-3 mr-auto" l>>' +
+                    '<"col-12"t>' +
+                    '<"col-12" <"row"p><"row" i>>'
+            });
+            table.on('click', '.js-delete', (button) => {
+                var btn = button.target;
+                var b = $(this);
+                Swal.fire({
+                    customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton: 'btn btn-light border'
+                    },
+                    icon: 'warning',
+                    title: 'هل تريد حذف الدواء',
+                    showCancelButton: true,
+                    confirmButtonText: `Delete`,
+                    confirmButtonColor: `#dc3545`, 
+                }).then((result) => {
+                    if (result.dismiss === Swal.isConfirmed) {
+                        $.ajax({
+                            url: `/api/Management/Medicines/${btn.attributes[1].value}`,
+                            method: 'DELETE',
+                            success: function () {
+                                Swal.fire({
+                                    title: 'تمت',
+                                    icon: 'success',
+                                    text: 'تم حذف الدواء بنجاح',
+                                    timer: 2000
+                                });
+                                table.row(btn.parentElement.parentElement).remove().draw();
+                            }
+                            , error: function () {
+                                Swal.fire({
+                                    title: 'خطأ',
+                                    icon: 'error',
+                                    text: 'لا يمكن حذف الدواء',
+                                    timer: 2000
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}
+

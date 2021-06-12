@@ -1,0 +1,56 @@
+﻿@model FinalProject.DTOs.Doctor
+@{
+    ViewBag.Title = "DoctorDetails";
+    Layout = "~/Views/Shared/_Managment.cshtml";
+}
+
+<h4 class="mx-auto text-color-primary">معلومات الطبيب</h4>
+<div class="form-group round-this col-lg-5 col-md-6  px-0">
+    <label class="text-secondary">الاسم</label>
+    <div>
+        @Html.DisplayFor(model => model.FirstName, new { @class = "bg-light border" })
+    </div>
+</div>
+@if (Model.FatherName != null)
+{
+    <div class="form-group round-this col-lg-5 col-md-6  px-0">
+        <label class="text-secondary">اسم الاب</label>
+        <div>
+
+            @Html.DisplayFor(model => model.FatherName, new { @class = "bg-light border" })
+        </div>
+    </div>
+}
+<div class="form-group round-this col-lg-5 col-md-6  px-0">
+    <label class="text-secondary">الكنية</label>
+    <div>
+        @Html.DisplayFor(model => model.LastName, new { @class = "bg-light border" })
+    </div>
+</div>
+<div class="form-group table-responsive round-this col-lg-5 col-md-6  px-0">
+
+    <table class="table col table-hover bg-light border">
+        <thead>
+            <tr>
+                <th>الشهادات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Certificates.Any())
+            {
+                foreach (var item in Model.Certificates)
+                {
+                    <tr>
+                        <td>@item.CertifcateDescription</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td>لا يوجد شهادات لعرضها</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

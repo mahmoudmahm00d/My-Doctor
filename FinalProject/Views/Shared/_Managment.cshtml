@@ -8,7 +8,7 @@
     @Styles.Render("~/Content/css")
 </head>
 
-<body>
+<body dir="rtl">
     <nav class="Navbar">
         <div class="Navbar-nav">
             <div class="row w-100">
@@ -28,17 +28,17 @@
                 </button>
                 @Html.ActionLink("MyDoctor", "Index", "Management", new { @class = "Nav-link logo" })
             </div>
-            <div class="options-menu">
-                @Html.ActionLink("طلبات التسجيل", "Index", "SignUpRequests", new { @class = "Nav-link" })
-                @Html.ActionLink("العيادات", "Index", "Clinics", new { @class = "Nav-link" })
-                @Html.ActionLink("المستخدمين", "Index", "Users", new { @class = "Nav-link" })
-                @Html.ActionLink("الأدوية", "Index", "Medicines", new { @class = "Nav-link" })
-                @Html.ActionLink("المدن", "Index", "Cities", new { @class = "Nav-link" })
-                @Html.ActionLink("الإدارة", "Index", "Management", new { @class = "Nav-link" })
+            <div class="options-menu closed-menu">
+                @Html.ActionLink("طلبات التسجيل", "Index", "Management", new { @class = "Nav-link" })
+                @Html.ActionLink("العيادات", "Clinics", "Management", new { @class = "Nav-link" })
+                @Html.ActionLink("المستخدمين", "Users", "Management", new { @class = "Nav-link" })
+                @Html.ActionLink("الأدوية", "Medicines", "Management", new { @class = "Nav-link" })
+                @Html.ActionLink("المدن", "Cities", "Management", new { @class = "Nav-link" })
+                @Html.ActionLink("الإدارة", "Management", "Management", new { @class = "Nav-link" })
             </div>
         </div>
     </nav>
-    <div class="Main-body">
+    <div class="Main-body pt-md-5">
         @RenderBody()
     </div>
 

@@ -1,22 +1,41 @@
-﻿@Model 
-@{
-    /**/
-
-    ViewBag.Title = "Index";
+﻿@{
+    ViewBag.Title = "المرضى";
     Layout = "~/Views/Shared/_Clinic.cshtml";
 }
 
-<div class="col-md-10">
-    <table id="appointments">
+@if (@Model != true)//Checks if the clinic active
+{
+    <div class="col">
+        <div class="alert row alert-primary" role="alert">
+            <div class="col-md-4 py-1">
+                لم يتم تفعيل  العيادة بعد
+            </div>
+            <div class="col-md-4">
+                @Html.ActionLink("تحديد موقع العيادة", "Location", "Clinic", new { @class = "btn col btn-outline-info" })
+            </div>
+            <div class="col-md-4">
+                @Html.ActionLink("تحديد أوقات الدوام", "Schedule", "Clinic", new { @class = "btn col btn-outline-info" })
+            </div>
+        </div>
+    </div>
+}
+<div class="col">
+    @Html.ActionLink("إضافة يوم", "AddMedicine", "Pharmacies", new { @class = "btn background-color-primary" })
+</div>
+<h4 class="text-color-primary">الأدوية</h4>
+
+<div class="col-md-12 mt-3 table-responsive">
+    <table id="appointments" class="table table-hover col-12 bg-light border">
         <thead>
             <tr>
-                <th>اسم المريض</th>
-                <th>تاريخ الزيارة</th>
-                <th>مضمون الزيارة</th>
+                <th>الاسم بالعربي</th>
+                <th>الاسم بالانجليوي</th>
+                <th>متاح</th>
+                <th></th>
+                <th></th>
             </tr>
         </thead>
-        <tbody>
-        </tbody>
+        <tbody></tbody>
     </table>
 </div>
 
@@ -24,11 +43,25 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            
+
             $("#appointments").DataTable({
                 ajax: {
-                    url:"api/clinics/patients/"
-                });
+                    url: "/api/clinics/patients/@Session["ClinicId"]",
+                    dataSrc: ""
+                },
+                columns: [
+                    { data: "patientName" },
+                    { data: "date" },
+                    {
+                        data: "appointmentId",
+                        render: function (data) {
+                            return `<a href='clinics/AppointmentDetails/${data}'>عرض مضمون الزيارة</a>`;
+                        }
+                    }
+                ], dom: '<"row w-100 pb-3" <"px-3" f> <"px-3 mr-auto" l>>' +
+                    '<"col-12"t>' +
+                    '<"col-12" <"row"p><"row" i>>'
+            });
         });
     </script>
 }

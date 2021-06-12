@@ -17,7 +17,7 @@ namespace FinalProject.Models
 
         public User ForUser { get; set; }
         public int UserId { get; set; }
-        public double Langtude { get; set; }
+        public double Longtude { get; set; }
         public double Latitude { get; set; }
 
         public string Certificate { get; set; }

@@ -1,0 +1,47 @@
+﻿@{
+                ViewBag.Title = "المواعيد";
+                Layout = "~/Views/Shared/_Clinic.cshtml";
+}
+
+<h4 class="text-color-primary">المواعيد القادمة</h4>
+
+<div class="col-md-12 mt-3 table-responsive">
+    <table id="appointments" class="table table-hover col-12 bg-light border">
+        <thead>
+            <tr>
+                <th>اسم المريض</th>
+                <th>تاريخ الزيارة</th>
+                <th>مضمون الزيارة</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $("#appointments").DataTable({
+                ajax: {
+                    url: "/api/clinics/upcommingAppointment/@Session["ClinicId"]",
+                    dataSrc: ""
+                },
+                columns: [
+                    { data: "patientName" },
+                    { data: "date" },
+                    { data: "time" },
+                    {
+                        data: "apointmentId",
+                        render: function (data) {
+                            return `<a href='clinics/AppointmentDetails/${data}'>عرض مضمون الزيارة</a>`;
+                        }
+                    }
+                ], dom: '<"row w-100 pb-3" <"px-3" f> <"px-3 mr-auto" l>>' +
+                    '<"col-12"t>' +
+                    '<"col-12" <"row"p><"row" i>>'
+            });
+        });
+    </script>
+}

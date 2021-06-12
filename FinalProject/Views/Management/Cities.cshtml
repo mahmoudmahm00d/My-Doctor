@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewBag.Title = "Cities";
+    Layout = "~/Views/Shared/_Managment.cshtml";
+}
+
+
+
+
+
+<h4 class="text-color-primary">المدن</h4>
+
+<div class="col">
+    @Html.ActionLink("إضافة مدينة", "AddCity", "Management", new { @class = "btn background-color-primary" })
+</div>
+
+<div class="col-md-12 mt-3 table-responsive">
+    <table id="clinics" class="table table-hover col-12 bg-light border">
+        <thead>
+            <tr>
+                <th>اسم المدينة</th>
+                <th>فعالة</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var table = $("#clinics").DataTable({
+                ajax: {
+                    url: "/api/Management/Cities",
+                    dataSrc: ""
+                },
+                columns: [
+                    { data: "cityName" },
+                    { data: "isActiveCity" },
+                    {
+                        data: "cityId",
+                        render: function (data) {
+                            return `<a href='EditCity/${data}' class='btn btn-sm border'>تعديل</a>`;
+                        }
+                    },
+                ], dom: '<"row w-100 pb-3" <"px-3" f> <"px-3 mr-auto" l>>' +
+                    '<"col-12"t>' +
+                    '<"col-12" <"row"p><"row" i>>'
+            });
+        });
+    </script>
+}

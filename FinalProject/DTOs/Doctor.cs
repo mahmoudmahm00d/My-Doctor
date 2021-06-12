@@ -1,9 +1,12 @@
 ﻿using FinalProject.Models;
+using System.Collections.Generic;
 
 namespace FinalProject.DTOs
 {
     public class Doctor
     {
+        public int UserId { get; set; }
+
         public string FirstName { get; set; }
 
         public string FatherName { get; set; }
@@ -21,5 +24,7 @@ namespace FinalProject.DTOs
         }
 
         public Genders Gender { get; set; }
+
+        public IEnumerable<Certifcate> Certificates { get; set; }
     }
 }

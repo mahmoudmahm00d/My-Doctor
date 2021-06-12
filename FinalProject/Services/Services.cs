@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace FinalProject.Services
 {
@@ -41,6 +42,15 @@ namespace FinalProject.Services
             }
         }
 
+        public static bool IsValidTime(string time)
+        {
+            Regex regex1 = new Regex("2[0-3]{1}\\:[0-5]{1}[0-9]{1}");
+            Regex regex2 = new Regex("[0-2]{1}[0-9]{1}\\:[0-5]{1}[0-9]{1}");
+            if (time.StartsWith("2"))
+                return regex1.IsMatch(time);
+            return regex2.IsMatch(time);
+        }
+
         public static string TokenEncoding(string email, string password)
         {
             string input = email + ":" + password;
@@ -63,19 +73,17 @@ namespace FinalProject.Services
                 mail.Body = $"<h1> Your Verfication Code </h1><br>{code}<br>click on link below to confirm your account<br><a href={url}>Validate Here</a> ";
 
                 SmtpServer.Port = 587;
-                SmtpServer.Credentials = new System.Net.NetworkCredential("mydoctorappteam@gmail.com", "MAHM54321oud123");
+                SmtpServer.Credentials = new System.Net.NetworkCredential("mydoctorappteam@gmail.com", "MYDOC2021tor");
                 SmtpServer.EnableSsl = true;
 
                 SmtpServer.Send(mail);
             }
-            catch (System.Exception ex)
+            catch
             {
             }
         }
 
         public static string HashPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);
-
-
 
         public static bool VerifayPasswrod(string password, string hashedPassword) => BCrypt.Net.BCrypt.Verify(password, hashedPassword);
     }

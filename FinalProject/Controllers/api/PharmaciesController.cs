@@ -18,47 +18,45 @@ namespace FinalProject.Controllers.api
         }
 
         [HttpGet]
-        [Route("api/pharmaciesMedicines/{id}")]//PhramacyId
+        [Route("api/pharmacies/Medicines/{id}")]//PhramacyId
         public IHttpActionResult Get(int id)
         {
-            var query = from pm in db.PharmacyMedicines
-                        where pm.PharmacyId == id
-                        join m in db.Medicines
-                        on pm.MedicineId equals m.MedicineId
-                        select new { m.MedicineId, m.NameAR, m.NameEN, pm.Available };
+            var medicines = db.PharmacyMedicines.Include(p => p.MedicineFrom).Include(m=>m.MedicineFrom.MedicineType).Where(p => p.PharmacyId == id).Select(p => p).ToList();
+            if (medicines.Count < 1)
+                return Ok(medicines);
 
-            return Ok(query);
+            var result = medicines.Select(m => new
+            {
+                medicineId = m.MedicineId,
+                nameAR = m.MedicineFrom.NameAR,
+                nameEN = m.MedicineFrom.NameEN,
+                medicineType = m.MedicineFrom.MedicineType.MedicineTypeName,
+                available = m.Available
+            });
+
+            return Ok(result);
         }
 
-        [HttpPost]
-        public IHttpActionResult Create(PharmacyDTO pharmacy)
+        [HttpDelete]
+        [Route("api/pharmacies/Medicines/{pharmacyId}/{id}")]//PhramacyId
+        public IHttpActionResult DeleteMedicine(int id, int pharmacyId)
         {
-            if (!ModelState.IsValid)
-                return BadRequest("Invalid Clinic Properties");
-
-            int userId = db.Pharmacies.Select(c => c.UserId == pharmacy.ForUser.UserId).Count();
-
-            if (userId > 1)
-                return BadRequest();
-
-            db.Pharmacies.Add(Mapper.Map<PharmacyDTO, Pharmacy>(pharmacy));
-            return Created(Request.RequestUri.ToString(), pharmacy);
-        }
-
-        [HttpPut]
-        public IHttpActionResult Edit(int id, PharmacyOnlyDTO pharmacy)
-        {
-            if (!ModelState.IsValid || pharmacy.PharmacyId != id)
-                return BadRequest("Invalid Clinic Properties");
-
-            var pharmacyInDb = db.Pharmacies.Find(id);
-
-            if (pharmacyInDb == null)
+            var medicineInDb = db.PharmacyMedicines.Where(p => p.PharmacyId == pharmacyId).FirstOrDefault(p => p.MedicineId == id);
+            if (medicineInDb == null)
                 return NotFound();
 
-            Mapper.Map(pharmacy, pharmacyInDb);
+            var medicine = db.PharmacyMedicines.Where(m => m.MedicineId == id).Select(m => m);
+            if (medicine.Count() < 2)
+            {
+                var med = db.Medicines.FirstOrDefault(m => m.MedicineId == id);
+                db.Medicines.Remove(med);
+                db.SaveChanges();
+                return Ok();
+            }
+
+            db.PharmacyMedicines.Remove(medicineInDb);
             db.SaveChanges();
-            return Ok(pharmacy);
+            return Ok();
         }
     }
 }

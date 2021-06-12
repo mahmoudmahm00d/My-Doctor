@@ -6,6 +6,11 @@ namespace FinalProject.DTOs
     {
         public int ClinicId { get; set; }
 
+        public ClinicTypeDTO ClinicType { get; set; }
+
+        [Required]
+        public byte ClinicTypeId { get; set; }
+
         [Required]
         [MaxLength(200)]
         public string ClinicName { get; set; }

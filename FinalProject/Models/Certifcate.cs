@@ -5,17 +5,15 @@ namespace FinalProject.Models
 {
     public class Certifcate
     {
-        public virtual User User { get; set; }
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int UserId { get; set; }
+        public User User { get; set; }
 
         [Key]
-        [Column(Order = 2)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int CertifcateID { get; set; }
+
+        public int UserId { get; set; }
+
         [Required]
-        [StringLength(255)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string CertifcateDescription { get; set; }
     }
 }

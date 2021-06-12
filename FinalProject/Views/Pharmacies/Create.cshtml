@@ -1,0 +1,102 @@
+﻿@model FinalProject.ViewModels.CreatePharamcyViewModel
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Empty.cshtml";
+}
+
+
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
+
+@using (Html.BeginForm("Create","Pharmacies",FormMethod.Post , new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row w-100 mx-auto px-2 top-padding mt-md-5">
+        <div class="col-md-6">
+            <div id='map'></div>
+        </div>
+        <div class="main-form px-3 pt-4 col-md-6 h-100">
+            <div class="row">
+                <h2 class="text-color-primary mx-auto">انشاء صيدلية</h2>
+            </div>
+
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6 px-0">
+                @Html.DropDownListFor(model => model.Pharmacy.CityId, new SelectList(Model.Cities, "CityId", "CityName"), "Select City", new { @class = "form-control round-this shadow" })
+                @Html.ValidationMessageFor(model => model.Pharmacy.CityId, "", new { @class = "text-danger mx-auto" })
+            </div>
+
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6 px-0">
+                @Html.TextBoxFor(model => model.Pharmacy.PharmacyName, new { @class = "form-control round-this shadow", placeholder = "اسم العيادة" })
+                @Html.ValidationMessageFor(model => model.Pharmacy.PharmacyName, "", new { @class = "text-danger mx-auto" })
+            </div>
+
+            <div class="form-group">
+                <div class="col-lg-5 col-md-6">
+                    <small>صورة عن الشهادة</small>
+                    <input id="Certificate" type="file" name="Certificate" accept=".png,.jpg" class="btn btn-default round-this" required />
+                    @*ToDo*@
+                    @*limit File Size*@
+                </div>
+            </div>
+
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+                <div>
+                    <input id="latlng" class="mx-auto border col round-this placeholder-center" type="text" name="latlng" placeholder="الاحداثيات" readonly required />
+                </div>
+            </div>
+
+            <div class="row">
+                <p class="mx-auto text-secondary">
+                    <small>يرجى اختيار موقع من على الخريطة</small>
+                </p>
+            </div>
+
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+                <p id="coords" class="mx-auto alert-info"></p>
+            </div>
+            @Html.HiddenFor(l => l.Pharmacy.Latitude, new { id = "lat", required = true })
+            @Html.HiddenFor(l => l.Pharmacy.Longtude, new { id = "lng", required = true })
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger mx-auto" })
+            <div class="row">
+                <input type="submit" value="انشاء" class="btn background-color-primary mx-auto col-lg-5 col-md-6 shadow mx-auto" />
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWFobTAwZG1haG0wMGQiLCJhIjoiY2ttNDFzNGR2MDBiejJ5a25keGIzbjY4ayJ9.lgZoHTS0M2JG-O33RWxcWA';
+        mapboxgl.setRTLTextPlugin(
+            'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
+            null,
+            true // Lazy load the plugin
+        );
+
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [//Damascus
+                36.295467,
+                33.499925,
+            ],
+            zoom: 11
+        });
+
+        var marker = new mapboxgl.Marker();
+        function add_marker(event) {
+            var coordinates = event.lngLat;
+            marker.setLngLat(coordinates).addTo(map);
+            document.getElementById("lat").value = coordinates.lat;
+            document.getElementById("lng").value = coordinates.lng;
+            var str = `latitude: ${coordinates.lat}<br>Longtude ${coordinates.lng}`;
+            document.getElementById("coords").innerHTML = str;
+            document.getElementById("latlng").value = "تم اختيار الموقع";
+        }
+        map.on('click', add_marker);
+    </script>
+}
+

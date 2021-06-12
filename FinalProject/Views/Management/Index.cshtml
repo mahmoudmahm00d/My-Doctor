@@ -1,0 +1,132 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Managment.cshtml";
+}
+
+<h4 class="text-color-primary">طلبات التسجيل</h4>
+
+<div class="col-md-12 mt-3 table-responsive">
+    <table id="signUpRequests" class="table table-hover col-12 bg-light border">
+        <thead>
+            <tr>
+                <th>اسم العيادة</th>
+                <th>نوعها</th>
+                <th>اسم الطبيب</th>
+                <th>الشهادة</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var table = $("#signUpRequests").DataTable({
+                ajax: {
+                    url: "/api/management/signuprequests",
+                    dataSrc: ""
+                },
+                columns: [
+                    { data: "clinicName" },
+                    { data: "clinicType" },
+                    { data: "doctorName" },
+                    {
+                        data: "certificate",
+                        render: function (data) {
+                            return `<a href='management/DownloadImage/${data}' class='btn btn-sm border'>الشهادة</a>`;
+                        }
+                    },
+                    {
+                        data: "clinicId",
+                        render: function (data) {
+                            return `<a href='Management/ClinicDetails/${data}' class='btn btn-sm border'>المزيد</a>`;
+                        }
+                    },
+                    {
+                        data: "clinicId",
+                        render: function (data) {
+                            return `<button class="btn btn-sm js-accept btn-outline-success" data-id='${data}'>قبول</button>`;
+                        }
+                    },
+                    {
+                        data: "clinicId",
+                        render: function (data) {
+                            return `<button class="btn btn-sm js-refuse btn-outline-danger" data-id='${data}'>رفض</button>`;
+                        }
+                    }
+                ], dom: '<"row w-100 pb-3" <"px-3" f> <"px-3 mr-auto" l>>' +
+                    '<"col-12"t>' +
+                    '<"col-12" <"row"p><"row" i>>'
+            });
+            //Delete Functionalatiy
+            table.on('click', '.js-refuse', (button) => {
+                var btn = button.target;
+                var b = $(this);
+                Swal.fire({
+                    customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton: 'btn btn-light border'
+                    },
+                    icon: 'warning',
+                    title: 'هل تريد حذف الطلب العيادة',
+                    showCancelButton: true,
+                    confirmButtonText: `Delete`,
+                    confirmButtonColor: `#dc3545`,
+                }).then((result) => {
+                    if (result.dismiss === Swal.isConfirmed) {
+                        $.ajax({
+                            url: `/api/Management/Clinics/Refuse/${btn.attributes[1].value}`,
+                            method: 'Delete',
+                            success: function () {
+                                Swal.fire({
+                                    title: 'Done',
+                                    icon: 'success',
+                                    text: 'تم حذف جميع سجلات العيادة',
+                                    timer: 2000
+                                });
+                                table.row(btn.parentElement.parentElement).remove().draw();
+                            }
+                        });
+                    }
+                });
+            });
+            table.on('click', '.js-accept', (button) => {
+                var btn = button.target;
+                Swal.fire({
+                    customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton: 'btn btn-light border'
+                    },
+                    icon: 'warning',
+                    title: 'هل تقبل طلب التسجيل؟',
+                    showCancelButton: true,
+                    confirmButtonText: `نعم`,
+                    confirmButtonColor: `#00a86f`,
+                }).then((result) => {
+                    if (result.dismiss === Swal.isConfirmed) {
+                        $.ajax({
+                            url: `/api/Management/Clinics/Accept/${btn.attributes[1].value}`,
+                            method: 'POST',
+                            success: function () {
+                                Swal.fire({
+                                    title: 'تمت',
+                                    icon: 'success',
+                                    text: 'تم قبول طلب التسجيل',
+                                    timer: 2000
+                                });
+                                table.row(btn.parentElement.parentElement).remove().draw();
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

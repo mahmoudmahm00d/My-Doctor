@@ -14,12 +14,9 @@ namespace FinalProject.DTOs
 
         public UserDTO ForUser { get; set; }
 
-        [Required]
-        [StringLength(255)]
-        public string PharmacyLocation { get; set; }
+        public double Longtude { get; set; }
+        public double Latitude { get; set; }
 
         public bool IsActivePharmacy { get; set; }
-
-        public IEnumerable<PharmacyMedicines> PharmacyMedicines { get; set; }
     }
 }

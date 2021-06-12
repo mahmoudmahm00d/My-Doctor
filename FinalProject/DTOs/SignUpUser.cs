@@ -28,7 +28,7 @@ namespace FinalProject.DTOs
         public DateTime Birth { get; set; }
 
         [Required]
-        [RegularExpression("^\\+9639[0-9]{8}",ErrorMessage ="Invalid phone number")]
+        [PhoneNumber]
         public string UserPhone { get; set; }
 
         [Required]

@@ -1,0 +1,146 @@
+﻿@model FinalProject.ViewModels.PharmacyManagementViewModel
+@{
+    ViewBag.Title = "Management";
+    Layout = "~/Views/Shared/_Pharmacy.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken();
+    <div class="col mt-md-5">
+        <div class="row main-header">
+            <h1 class="mx-auto text-color-primary">
+                معلومات الصيدلية
+            </h1>
+        </div>
+
+        <div class="main-form pt-4 text-center">
+
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6 px-0">
+                <label>اسم الصيديلة</label>
+                @Html.EditorFor(model => model.Pharmacy.PharmacyName, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center" } })
+                @Html.ValidationMessageFor(model => model.Pharmacy.PharmacyName, "", new { @class = "text-danger" })
+            </div>
+
+            <hr class="mx-auto w-50" />
+            <h4 class="mx-auto text-color-primary">معلومات الطبيب</h4>
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+                <label>الاسم</label>
+                <div>
+                    @Html.EditorFor(model => model.Doctor.FirstName, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center" } })
+                    @Html.ValidationMessageFor(model => model.Doctor.FirstName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+                <label>اسم الاب</label>
+                <div>
+                    @Html.EditorFor(model => model.Doctor.FatherName, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center" } })
+                    @Html.ValidationMessageFor(model => model.Doctor.FatherName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+                <label>الكنية</label>
+                <div>
+                    @Html.EditorFor(model => model.Doctor.LastName, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center" } })
+                    @Html.ValidationMessageFor(model => model.Doctor.LastName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group table-responsive mx-auto round-this col-lg-5 col-md-6  px-0">
+
+                <table class="table col table-hover bg-light border">
+                    <thead>
+                        <tr>
+                            <th colspan="2">الشهادات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Doctor.Certificates.Any())
+                        {
+                            foreach (var item in Model.Doctor.Certificates)
+                            {
+                                <tr>
+                                    <td class="col-md-9">@item.CertifcateDescription</td>
+                                    <td class="col-md-3">
+                                        @Html.ActionLink("تعديل", "EditCertificate", "Pharmacies", new { id = item.CertifcateID }, new { @class = "btn btn-sm btn-outline-secondary" })
+                                    </td>
+                                    <td class="col-md-3">
+                                        <button type="button" class="btn btn-sm js-delete btn-outline-danger" data-id='@item.CertifcateID'>حذف</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="2">لا يوجد شهادات لعرضها</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td colspan="3">
+                                @Html.ActionLink("اضافة", "AddCertificate", "Pharmacies", new { @class = "btn btn-sm btn-outline-secondary" })
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                <input type="submit" value="تحديث المعلومات" class="btn background-color-primary mx-auto col-lg-5 col-md-6 shadow mx-auto" />
+            </div>
+
+            <div class=" col-md-6 mx-auto">
+                <div class="col">
+                    @Html.ActionLink("تعديل الموقع", "EditLocation", "Pharmacy", new { @class = "btn btn-sm btn-outline-info shadow mt-2" })
+                </div>
+                <div class="col">
+                    @Html.ActionLink("تعديل كلمة المرور", "EditPassword", "Accounts")
+                </div>
+                <div class="col">
+                    @Html.ActionLink("تعديل البريد الالكتروني", "EditEmail", "Accounts")
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.ActionLink("تسجيل الخروج", "SignOut", "Accounts")
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $("table").on('click', '.js-delete', (button) => {
+            var btn = button.target;
+            Swal.fire({
+                customClass: {
+                    confirmButton: 'btn btn-danger',
+                    cancelButton: 'btn btn-light border'
+                },
+                icon: 'warning',
+                title: 'Are You Sure?',
+                showCancelButton: true,
+                confirmButtonText: `Delete`,
+                confirmButtonColor: `#dc3545`,
+            }).then((result) => {
+                if (result.dismiss === Swal.isConfirmed) {
+                    $.ajax({
+                        url: `/api/doctors/certificates/${btn.attributes[2].value}`,
+                        method: 'DELETE',
+                        success: function () {
+                            Swal.fire({
+                                title: 'Done',
+                                icon: 'success',
+                                text: 'Day Deleted Successfuly',
+                                timer: 2000
+                            });
+                            btn.parentElement.parentElement.remove();
+                            console.log('deleted');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

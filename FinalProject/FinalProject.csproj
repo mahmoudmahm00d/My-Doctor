@@ -188,12 +188,21 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
-    <Compile Include="Controllers\api\CitiesController.cs" />
+    <Compile Include="Controllers\api\AvailableAppointments.cs" />
+    <Compile Include="Controllers\api\ManagementController.cs" />
     <Compile Include="Controllers\api\ClinicsController.cs" />
     <Compile Include="Controllers\api\ClinicTypesController.cs" />
     <Compile Include="Controllers\api\MedicinesController.cs" />
     <Compile Include="Controllers\api\MedicineTypesController.cs" />
     <Compile Include="Controllers\api\PharmaciesController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="DTOs\CertificateDTO.cs" />
+    <Compile Include="DTOs\ClinicInfoDTO.cs" />
+    <Compile Include="DTOs\CreateMedicineDTO.cs" />
+    <Compile Include="DTOs\CreatePharmacyDTO.cs" />
+    <Compile Include="DTOs\EditEmailDTO.cs" />
+    <Compile Include="DTOs\EditPasswordDTO.cs" />
+    <Compile Include="DTOs\PickAppointment.cs" />
     <Compile Include="Controllers\api\SearchController.cs" />
     <Compile Include="Controllers\api\UsersController.cs" />
     <Compile Include="Controllers\api\UserTypesController.cs" />
@@ -208,10 +217,14 @@
     <Compile Include="DTOs\CityDTO.cs" />
     <Compile Include="DTOs\ClinicDTO.cs" />
     <Compile Include="DTOs\ClinicOnlyDTO.cs" />
+    <Compile Include="DTOs\ClinicTypeDTO.cs" />
+    <Compile Include="DTOs\CreateClinicDTO.cs" />
     <Compile Include="DTOs\MapObject.cs" />
     <Compile Include="DTOs\PharmacyDTO.cs" />
     <Compile Include="DTOs\PharmacyOnlyDTO.cs" />
+    <Compile Include="DTOs\FormPrescritpionDTO.cs" />
     <Compile Include="DTOs\UserTypeDTO.cs" />
+    <Compile Include="Filters\PhoneNumber.cs" />
     <Compile Include="Migrations\202105130915301_modifySomeFields.cs" />
     <Compile Include="Migrations\202105130915301_modifySomeFields.designer.cs">
       <DependentUpon>202105130915301_modifySomeFields.cs</DependentUpon>
@@ -243,8 +256,41 @@
     <Compile Include="Migrations\202105260556496_AddIdentityToMedicineTypesTable.designer.cs">
       <DependentUpon>202105260556496_AddIdentityToMedicineTypesTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202105290341399_AddIdentityToClinicTypeTable.cs" />
+    <Compile Include="Migrations\202105290341399_AddIdentityToClinicTypeTable.designer.cs">
+      <DependentUpon>202105290341399_AddIdentityToClinicTypeTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106010432214_ModifyTimeInScheduleTable.cs" />
+    <Compile Include="Migrations\202106010432214_ModifyTimeInScheduleTable.designer.cs">
+      <DependentUpon>202106010432214_ModifyTimeInScheduleTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106040056216_RenameColumnInLocationTable.cs" />
+    <Compile Include="Migrations\202106040056216_RenameColumnInLocationTable.designer.cs">
+      <DependentUpon>202106040056216_RenameColumnInLocationTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106052048576_ModifyAppoinmentTable.cs" />
+    <Compile Include="Migrations\202106052048576_ModifyAppoinmentTable.designer.cs">
+      <DependentUpon>202106052048576_ModifyAppoinmentTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106052211067_ModifyAppoinmentTable1.cs" />
+    <Compile Include="Migrations\202106052211067_ModifyAppoinmentTable1.designer.cs">
+      <DependentUpon>202106052211067_ModifyAppoinmentTable1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106080450467_AddPrimaryKeyToCertificateTable.cs" />
+    <Compile Include="Migrations\202106080450467_AddPrimaryKeyToCertificateTable.designer.cs">
+      <DependentUpon>202106080450467_AddPrimaryKeyToCertificateTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DTOs\MedicineTypeDTO.cs" />
+    <Compile Include="Migrations\202106111631150_RenameColumnsInPharmacyTable.cs" />
+    <Compile Include="Migrations\202106111631150_RenameColumnsInPharmacyTable.designer.cs">
+      <DependentUpon>202106111631150_RenameColumnsInPharmacyTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106120931093_ChangeStingLengthInManagerTable.cs" />
+    <Compile Include="Migrations\202106120931093_ChangeStingLengthInManagerTable.designer.cs">
+      <DependentUpon>202106120931093_ChangeStingLengthInManagerTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Time.cs" />
     <Compile Include="Services\Services.cs" />
-    <Compile Include="ViewModels\AddDayViewModel.cs" />
     <Compile Include="ViewModels\ClinicDTO.cs" />
     <Compile Include="DTOs\Doctor.cs" />
     <Compile Include="DTOs\LocationDTO.cs" />
@@ -279,6 +325,12 @@
     <Compile Include="Models\UserType.cs" />
     <Compile Include="Models\Vacation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\locationManagementViewModel.cs" />
+    <Compile Include="ViewModels\PharmacyManagementViewModel.cs" />
+    <Compile Include="ViewModels\ClinicManagementViewModel.cs" />
+    <Compile Include="ViewModels\CreateClinicViewModel.cs" />
+    <Compile Include="ViewModels\CreateMedicineViewModel.cs" />
+    <Compile Include="ViewModels\CreatePharamcyViewModel.cs" />
     <Compile Include="ViewModels\LocationViewModel.cs" />
     <Compile Include="ViewModels\SignUpDoctorViewModel.cs" />
     <Compile Include="ViewModels\UsersManageViewModel.cs" />
@@ -451,6 +503,7 @@
     <Content Include="Content\Logo W.svg" />
     <Content Include="Content\management.css" />
     <Content Include="Content\shared.css" />
+    <Content Include="Content\sweetalert2.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="ApplicationInsights.config">
@@ -639,11 +692,14 @@
     <Content Include="Scripts\src\utils\setAttributes.js" />
     <Content Include="Scripts\src\utils\setStyles.js" />
     <Content Include="Scripts\src\utils\setupEventListeners.js" />
+    <Content Include="Scripts\sweetalert2.min.js" />
     <Content Include="Scripts\umd\popper-utils.js" />
     <Content Include="Scripts\umd\popper-utils.min.js" />
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -679,15 +735,53 @@
     <Content Include="Views\Clinics\Schedule.cshtml" />
     <Content Include="Views\Clinics\Location.cshtml" />
     <Content Include="Views\Clinics\Appointments.cshtml" />
+    <Content Include="Views\Clinics\EditSchedule.cshtml" />
+    <Content Include="Views\Clinics\AppointmentDetails.cshtml" />
+    <Content Include="Views\Clinics\EditClinicProfile.cshtml" />
+    <Content Include="Views\Clinics\EditPassword.cshtml" />
+    <Content Include="Views\Clinics\Symptoms.cshtml" />
+    <Content Include="Views\Clinics\EditPrescription.cshtml" />
+    <Content Include="Views\Clinics\UpcommingAppointments.cshtml" />
+    <Content Include="Views\Clinics\Management.cshtml" />
+    <Content Include="Views\Clinics\PatientAppointmentsDetails.cshtml" />
+    <Content Include="Views\Clinics\AddCertificate.cshtml" />
+    <Content Include="Views\Accounts\EditPassword.cshtml" />
+    <Content Include="Views\Accounts\EditEmail.cshtml" />
+    <Content Include="Views\Clinics\Remarks.cshtml" />
+    <Content Include="Views\Clinics\AddPrescription.cshtml" />
+    <Content Include="Views\Clinics\EditCertificate.cshtml" />
+    <Content Include="Views\Pharmacies\Index.cshtml" />
+    <Content Include="Views\Pharmacies\AddMedicine.cshtml" />
+    <Content Include="Views\Pharmacies\Create.cshtml" />
+    <Content Include="Views\Pharmacies\Management.cshtml" />
+    <Content Include="Views\Shared\_Pharmacy.cshtml" />
+    <Content Include="Views\Pharmacies\Location.cshtml" />
+    <Content Include="Views\Error\NotFound404.cshtml" />
+    <Content Include="Views\Pharmacies\EditMedicine.cshtml" />
+    <Content Include="Views\Pharmacies\AddCertificate.cshtml" />
+    <Content Include="Views\Pharmacies\EditCertificate.cshtml" />
+    <Content Include="Views\Pharmacies\EditLocation.cshtml" />
+    <Content Include="Views\Management\SignIn.cshtml" />
+    <Content Include="Views\Management\Index.cshtml" />
+    <Content Include="Views\Management\Cities.cshtml" />
+    <Content Include="Views\Management\Pharmacies.cshtml" />
+    <Content Include="Views\Management\Clinics.cshtml" />
+    <Content Include="Views\Management\DoctorDetails.cshtml" />
+    <Content Include="Views\Management\ClinicLocation.cshtml" />
+    <Content Include="Views\Management\AddCity.cshtml" />
+    <Content Include="Views\Management\EditCity.cshtml" />
+    <Content Include="Views\Management\Medicines.cshtml" />
+    <Content Include="Views\Management\AddMedicine.cshtml" />
+    <Content Include="Views\Management\EditMedicine.cshtml" />
+    <Content Include="Views\Management\Users.cshtml" />
+    <Content Include="Views\Management\EditPassword.cshtml" />
+    <Content Include="Views\Management\EditEmail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Certificates\" />
-    <Folder Include="Views\Management\" />
     <Folder Include="Views\Medicines\" />
     <Folder Include="Views\MedicineTypes\" />
-    <Folder Include="Views\Pharmacies\" />
-    <Folder Include="Views\Search\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -716,6 +810,30 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202105260556496_AddIdentityToMedicineTypesTable.resx">
       <DependentUpon>202105260556496_AddIdentityToMedicineTypesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202105290341399_AddIdentityToClinicTypeTable.resx">
+      <DependentUpon>202105290341399_AddIdentityToClinicTypeTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106010432214_ModifyTimeInScheduleTable.resx">
+      <DependentUpon>202106010432214_ModifyTimeInScheduleTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106040056216_RenameColumnInLocationTable.resx">
+      <DependentUpon>202106040056216_RenameColumnInLocationTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106052048576_ModifyAppoinmentTable.resx">
+      <DependentUpon>202106052048576_ModifyAppoinmentTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106052211067_ModifyAppoinmentTable1.resx">
+      <DependentUpon>202106052211067_ModifyAppoinmentTable1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106080450467_AddPrimaryKeyToCertificateTable.resx">
+      <DependentUpon>202106080450467_AddPrimaryKeyToCertificateTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106111631150_RenameColumnsInPharmacyTable.resx">
+      <DependentUpon>202106111631150_RenameColumnsInPharmacyTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106120931093_ChangeStingLengthInManagerTable.resx">
+      <DependentUpon>202106120931093_ChangeStingLengthInManagerTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

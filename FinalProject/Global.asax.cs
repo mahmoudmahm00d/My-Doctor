@@ -42,9 +42,9 @@ namespace FinalProject
             count = db.Usertypes.Count();
             if (count == 0)
             {
-                var user = new UserType { UserTypeId = 10, UserTypeName = "PublicUser" };
-                var doctor = new UserType { UserTypeId = 20, UserTypeName = "Doctor" };
-                var pharmacist = new UserType { UserTypeId = 30, UserTypeName = "Pahrmacist" };
+                var user = new UserType { UserTypeId = 10, UserTypeName = "PublicUser" ,IsActiveUserType = true};
+                var doctor = new UserType { UserTypeId = 20, UserTypeName = "Doctor", IsActiveUserType = true };
+                var pharmacist = new UserType { UserTypeId = 30, UserTypeName = "Pahrmacist", IsActiveUserType = true };
                 db.Usertypes.Add(user);
                 db.Usertypes.Add(doctor);
                 db.Usertypes.Add(pharmacist);
@@ -54,10 +54,10 @@ namespace FinalProject
             if (count == 0)
             {
                 var medicineTypes = new List<MedicineType> {
-                    new MedicineType { MedicineTypeName = "capsule" },
-                    new MedicineType { MedicineTypeName = "pills" },
-                    new MedicineType { MedicineTypeName = "injection" },
-                    new MedicineType { MedicineTypeName = "Liquid" }
+                    new MedicineType { MedicineTypeName = "capsule",IsActiveMedicineType = true},
+                    new MedicineType { MedicineTypeName = "pills" ,IsActiveMedicineType = true},
+                    new MedicineType { MedicineTypeName = "injection" ,IsActiveMedicineType = true},
+                    new MedicineType { MedicineTypeName = "Liquid" ,IsActiveMedicineType = true}
                 };
                 db.MedicineTypes.AddRange(medicineTypes);
                 db.SaveChanges();
@@ -65,10 +65,18 @@ namespace FinalProject
             count = db.Cities.Count();
             if (count == 0)
             {
-                var city =  new City { CityName = "Damascus" };
+                var city =  new City { CityName = "Damascus",IsActiveCity = true };
                 db.Cities.Add(city);
                 db.SaveChanges();
             }
+            count = db.ClinicTypes.Count();
+            if (count == 0)
+            {
+                var clinicType = new ClinicType { ClinicTypeName = "Eyes" ,IsActiveClinicType = true};
+                db.ClinicTypes.Add(clinicType);
+                db.SaveChanges();
+            }
+
         }
     }
 }

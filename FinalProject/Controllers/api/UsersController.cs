@@ -22,15 +22,16 @@ namespace FinalProject.Controllers.api
     {
         private MyAppContext db = new MyAppContext();
 
+        #region Managemnt
         //api/get
         public IHttpActionResult Get()
         {
-            return Ok(db.Users.Include(u => u.UserType).Select(Mapper.Map<User,UsersManageViewModel>));
+            return Ok(db.Users.Include(u => u.UserType).Select(Mapper.Map<User, UsersManageViewModel>));
         }
         //api/get/id
         public IHttpActionResult Get(int id)
         {
-            var user = db.Users.Where(u => u.UserId == id).Select(Mapper.Map<User,UserDTO>);
+            var user = db.Users.Where(u => u.UserId == id).Select(Mapper.Map<User, UserDTO>);
             if (user == null)
             {
                 return NotFound();
@@ -42,7 +43,7 @@ namespace FinalProject.Controllers.api
         [System.Web.Http.Route("api/doctors")]
         public IHttpActionResult Doctors()
         {
-            return Ok(db.Users.Include(u => u.UserType).Where(u=> u.UserTypeId == 20).Select(Mapper.Map<User,UsersManageViewModel>));
+            return Ok(db.Users.Include(u => u.UserType).Where(u => u.UserTypeId == 20).Select(Mapper.Map<User, UsersManageViewModel>));
         }
 
         [System.Web.Http.HttpGet]
@@ -70,7 +71,8 @@ namespace FinalProject.Controllers.api
         public IHttpActionResult UsersCount(byte Id)
         {
             return Ok(db.Users.Where(u => u.UserTypeId == Id).Count());
-        }
+        } 
+        #endregion
 
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("api/users/signin")]
@@ -124,10 +126,9 @@ namespace FinalProject.Controllers.api
             return Ok();
         }
 
+
+
         // For security
-        
-
-
         [System.Web.Http.HttpPost]
         [UsersAuthentication]
         [System.Web.Http.Route("api/users/ForgetPassword/{email}")]
@@ -174,6 +175,8 @@ namespace FinalProject.Controllers.api
             if (userdb == null)
                 return NotFound();
 
+            // Request.Headers.Authorization.Scheme
+
             userdb.FirstName = user.FirstName;
             userdb.FatherName = user.FatherName;
             userdb.LastName = user.LastName;
@@ -182,5 +185,10 @@ namespace FinalProject.Controllers.api
             db.SaveChanges();
             return Ok("Profile Edited");
         }
+
+        //public int GetUserIdFromHeader(string header)
+        //{
+
+        //}
     }
 }

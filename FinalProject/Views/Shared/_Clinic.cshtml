@@ -10,7 +10,7 @@
 <body>
     <nav class="Navbar">
         <div class="Navbar-nav">
-            <div class="row w-100">
+            <div class="row px-3 w-100">
                 <button type="button" class="mr-auto" id="dropdown-menu-btn">
                     <svg id="menu" xmlns="http://www.w3.org/2000/svg" width="24" height="27.065"
                          viewBox="0 0 36 27.065">
@@ -25,22 +25,20 @@
                               transform="translate(-2 6.151)" fill="#fff" />
                     </svg>
                 </button>
-                <div class="Nav-link logo">
-                    MyDoctor
-                </div>
-                @*@Html.ActionLink("MyDoctor", "Index", "Clinics", new { @class = "Nav-link logo" })*@
+                <img src="~/content/Logo W.svg" alt="Logo" class="img-fluid" />
             </div>
             <div class="options-menu closed-menu">
-                @Html.ActionLink("المواعيد", "Index", "Clinics", new { @class = "Nav-link" })
-                @Html.ActionLink("المواعيد", "Appointments", "Clinics", new { @class = "Nav-link" })
+                @Html.ActionLink("سجلات المواعيد", "Index", "Clinics", new { @class = "Nav-link" })
+                @Html.ActionLink("طلبات المواعيد", "Appointments", "Clinics", new { @class = "Nav-link" })
+                @Html.ActionLink("المواعيد القادمة", "UpcommingAppointments", "Clinics", new { @class = "Nav-link" })
+                @*@Html.ActionLink("سجلات الزيارة", "Appointments", "Clinics", new { @class = "Nav-link" })*@
                 @Html.ActionLink("الإدارة", "Management", "Clinics", new { @class = "Nav-link" })
             </div>
         </div>
     </nav>
-    <div class="Main-body" dir="rtl">
+    <div class="Main-body pt-md-5" dir="rtl">
         @RenderBody()
     </div>
-
     <!-- Scripts -->
     @Scripts.Render("~/bundles/bootstrap")
     <script>

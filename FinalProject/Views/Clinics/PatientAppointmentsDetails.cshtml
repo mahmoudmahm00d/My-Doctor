@@ -1,0 +1,137 @@
+﻿
+@{
+    ViewBag.Title = "PatientAppointmentsDetails";
+    Layout = "~/Views/Shared/_Clinic.cshtml";
+}
+
+
+
+<h4 class="text-color-primary">@Model.GetType().GetProperties()[0].GetValue(Model)</h4>
+<hr class="w-25" />
+<h5 class="text-secondary"> التشخيصات</h5>
+
+<div class="col-md-12 table-responsive ">
+    <table id="reports" class="table table-hover col-12 bg-light border">
+        <thead>
+            <tr>
+                <th>تاريخ الزيارة</th>
+                <th>الأعراض</th>
+                <th>الملاحظات</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<hr class="w-25" />
+<h5 class="text-secondary"> الوصفات</h5>
+<div class="col-md-12 table-responsive">
+    <table id="prescriptions" class="table table-hover col-12 bg-light border">
+        <thead>
+            <tr>
+                <th>موعد الزيارة</th>
+                <th>الاسم العربي</th>
+                <th>الاسم الانكليزي</th>
+                <th>الكمية</th>
+                <th>من</th>
+                <th>كل</th>
+                <th>لمدة</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $("#reports").DataTable({
+                ajax: {
+                    url: "/api/clinics/reports/@Session["ClinicId"]",
+                    dataSrc: ""
+                },
+                columns: [
+                    { data: "date" },
+                    { data: "symptoms" },
+                    { data: "remarks" },
+                    {
+                        data: "appointmentId",
+                        render: function (data) {
+                            return `<a href='clinics/Appointment/Details/${data}'>تعديل</a>`;
+                        }
+                    }]
+                , dom: '<"row w-100 pb-3" <"px-3" f> <"px-3 mr-auto" l>>' +
+                    '<"col-12"t>' +
+                    '<"col-12" <"row"p><"row" i>>'
+            });
+
+            var table = $("#prescriptions").DataTable({
+                ajax: {
+                    url: "/api/clinics/Appointment/Prescriptions/@Session["ClinicId"]",
+                    dataSrc: ""
+            },
+            columns: [
+                { data: "visitDate" },
+                { data: "medicineNameAr" },
+                { data: "medicineNameEn" },
+                { data: "medicineType" },
+                { data: "dosage" },
+                { data: "every" },
+                { data: "for" },
+                { data: "timespan" },
+                {
+                    data: "compositId",
+                    render: function (data) {
+                        return `<a href='clinics/Appointment/prescription/${data}'>تعديل الوصفة</a>`;
+                    }
+                },
+                {
+                    data: "compositId",
+                    render: function (data) {
+                        return `<button class="btn btn-sm js-delete btn-outline-danger" data-id='${data}'>حذف</button>`;
+                    }
+                }
+                ], dom: '<"row w-100 pb-3" <"px-3" f> <"px-3 mr-auto" l>>' +
+                    '<"col-12"t>' +
+                    '<"col-12" <"row"p><"row" i>>'
+            });
+
+            table.on('click', '.js-delete', (button) => {
+                var btn = button.target;
+                var b = $(this);
+                Swal.fire({
+                    customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton: 'btn btn-light border'
+                    },
+                    icon: 'warning',
+                    title: 'Are You Sure?',
+                    showCancelButton: true,
+                    confirmButtonText: `Delete`,
+                    confirmButtonColor: `#dc3545`,
+                }).then((result) => {
+                    if (result.dismiss === Swal.isConfirmed) {
+                        $.ajax({
+                            url: `/api/clinics/Prescriptions/${btn.attributes[1].value}`,
+                            method: 'DELETE',
+                            success: function () {
+                                Swal.fire({
+                                    title: 'Done',
+                                    icon: 'success',
+                                    text: 'Day Deleted Successfuly',
+                                    timer: 2000
+                                });
+                                table.row(btn.parentElement.parentElement).remove().draw();
+                                console.log('deleted');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+    </script>

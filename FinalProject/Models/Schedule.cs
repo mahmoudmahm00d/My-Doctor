@@ -14,17 +14,21 @@ namespace FinalProject.Models
         [ForeignKey("Clinic")]
         public int ClinicId { get; set; }
 
-        public Days Day { get; set; }
+        public DayOfWeek Day { get; set; }
 
-        public DateTime FromTime { get; set; }
+        [Required]
+        [StringLength(8)]
+        public string FromTime { get; set; }
 
-        public DateTime ToTime { get; set; }
+        [Required]
+        [StringLength(8)]
+        public string ToTime { get; set; }
 
         public Clinic Clinic { get; set; }
     }
 
-    public enum Days
-    {
-        Saturday = 0, Sunday, Moday, Tuesday, Wednesday, Thursday, Friday
-    }
+    //public enum Days
+    //{
+    //    Saturday = 0, Sunday, Moday, Tuesday, Wednesday, Thursday, Friday
+    //}
 }

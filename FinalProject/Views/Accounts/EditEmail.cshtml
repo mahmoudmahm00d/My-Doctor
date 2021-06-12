@@ -1,0 +1,42 @@
+﻿@model FinalProject.DTOs.EditEmailDTO
+
+@{
+    ViewBag.Title = "EditEmail";
+    Layout = "~/Views/Shared/_Empty.cshtml";
+}
+
+@using (Html.BeginForm("EditPassword", "Accounts", FormMethod.Post, new { @class = "main-login-form" }))
+{
+    <div class="row">
+        <p class="mx-auto ">
+            البريد الالكتروني
+        </p>
+    </div>
+
+    <div class="main-form pt-4 text-center">
+
+        <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+            <div>
+                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", @placeholder = "كلمة المرور", @type = "password" } })
+                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger mx-atuo" })
+            </div>
+        </div>
+
+        <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+            <div>
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "البريد الالكتروني الجديد", @type = "password" } })
+                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger mx-auto" })
+            </div>
+        </div>
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            <input type="submit" value="حفظ التغيرات" class="btn background-color-primary mx-auto col-lg-5 col-md-6 shadow mx-auto" />
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

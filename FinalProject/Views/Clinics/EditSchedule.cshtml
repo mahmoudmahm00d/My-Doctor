@@ -1,0 +1,57 @@
+﻿@model FinalProject.DTOs.ScheduleDTO
+
+@{
+    ViewBag.Title = "EditSchedule";
+    Layout = "~/Views/Shared/_Empty.cshtml";
+}
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row main-header">
+        <h1 class="mx-auto text-color-primary">
+            تعديل يوم
+        </h1>
+    </div>
+
+    @Html.HiddenFor(model=>model.ScheduleId)
+    <div class="main-form pt-4 text-center">
+
+        <div class="form-group mx-auto round-this col-lg-5 col-md-6 px-0">
+            @Html.EnumDropDownListFor(model => model.Day, htmlAttributes: new { @class = "form-control round-this shadow" })
+            @Html.ValidationMessageFor(model => model.Day, "", new { @class = "text-danger" })
+        </div>
+
+
+        <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+            <label>من الساعة</label>
+            <div>
+                @*<input class="form-control round-this shadow placeholder-center text-box single-line" data-val="true" data-val-required="The ToTime field is required." id="ToTime" name="ToTime" type="time" value="@Model.From">*@
+                @Html.EditorFor(model => model.FromTime, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center" } })
+                @Html.ValidationMessageFor(model => model.FromTime, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+            <label>الى الساعة</label>
+            <div>
+                @Html.EditorFor(model => model.ToTime, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center", @value = Model.To } })
+                @*<input class="form-control round-this shadow placeholder-center text-box single-line" data-val="true" data-val-required="The ToTime field is required." id="ToTime" name="ToTime" type="time" value="@Model.To">*@
+                @Html.ValidationMessageFor(model => model.ToTime, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        @Html.HiddenFor(model => model.ScheduleId)
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            <input type="submit" value="حفظ البيانات" class="btn background-color-primary mx-auto col-lg-5 col-md-6 shadow mx-auto" />
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

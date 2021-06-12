@@ -20,7 +20,7 @@ namespace FinalProject.Models
         [StringLength(255)]
         public string Street { get; set; }
 
-        public double Langtude { get; set; }
+        public double Longtude { get; set; }
         public double Latitude { get; set; }
     }
 }

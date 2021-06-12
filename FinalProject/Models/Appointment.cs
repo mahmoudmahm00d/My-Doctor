@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,7 +8,7 @@ namespace FinalProject.Models
     public class Appointment
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int AppointmentId { get; set; }
 
         public Clinic Clinic { get; set; }
@@ -18,15 +19,13 @@ namespace FinalProject.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
 
         [Required]
-        [DataType(DataType.Time)]
         public string Time { get; set; }
 
         public bool Confirmed { get; set; }
 
-        [Required]
         [StringLength(255)]
         public string Symptoms { get; set; }
 

@@ -1,0 +1,48 @@
+﻿@model FinalProject.DTOs.AppointmentDTO
+
+@{
+    ViewBag.Title = "Remarks";
+    Layout = "~/Views/Shared/_Clinic.cshtml";
+}
+
+
+@using (Html.BeginForm("Remarks", "Clinics", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+<div class="row main-header">
+    @if (string.IsNullOrEmpty(Model.Symptoms))
+    {
+        <h1 class="mx-auto text-color-primary">
+            إضافة ملاحظات
+        </h1>
+    }
+    else
+    {
+        <h1 class="mx-auto text-color-primary">
+            تعديل ملاحظات
+        </h1>
+    }
+</div>
+
+<div class="main-form pt-4 text-center">
+
+    <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+        <div>
+            @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center", placholder = "معلومات الشهادة" } })
+            @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    @Html.HiddenFor(model => model.AppointmentId)
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        <input type="submit" value="حفظ البيانات" class="btn background-color-primary mx-auto col-lg-5 col-md-6 shadow mx-auto" />
+    </div>
+</div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

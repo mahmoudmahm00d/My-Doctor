@@ -14,7 +14,7 @@ namespace FinalProject.Models
         public string ManagerEmail { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(255)]
         public string ManagerPassword { get; set; }
 
         [StringLength(10)]

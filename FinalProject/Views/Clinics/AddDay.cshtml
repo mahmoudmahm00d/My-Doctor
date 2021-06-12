@@ -1,4 +1,4 @@
-﻿@model FinalProject.ViewModels.AddDayViewModel
+﻿@model FinalProject.DTOs.ScheduleDTO
 
 @{
     ViewBag.Title = "AddDay";
@@ -19,24 +19,24 @@
     <div class="main-form pt-4 text-center">
 
         <div class="form-group mx-auto round-this col-lg-5 col-md-6 px-0">
-            @Html.DropDownListFor(model => model.Day.Day, new SelectList(Model.SelectDays, "Value", "Name"), "اختار يوم", new { @class = "form-control round-this m-1 shadow" })
-            @Html.ValidationMessageFor(model => model.Day.ScheduleId, "", new { @class = "text-danger" })
+            @Html.EnumDropDownListFor(model => model.Day, htmlAttributes: new { @class = "form-control round-this shadow" })
+            @Html.ValidationMessageFor(model => model.Day, "", new { @class = "text-danger" })
         </div>
 
 
         <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
             <label>من الساعة</label>
             <div>
-                @Html.EditorFor(model => model.Day.FromTime, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center" } })
-                @Html.ValidationMessageFor(model => model.Day.FromTime, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.FromTime, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center" } })
+                @Html.ValidationMessageFor(model => model.FromTime, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
             <label>الى الساعة</label>
             <div>
-                @Html.EditorFor(model => model.Day.ToTime, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center" } })
-                @Html.ValidationMessageFor(model => model.Day.ToTime, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.ToTime, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center" } })
+                @Html.ValidationMessageFor(model => model.ToTime, "", new { @class = "text-danger" })
             </div>
         </div>
 

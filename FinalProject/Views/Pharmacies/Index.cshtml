@@ -1,0 +1,95 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Pharmacy.cshtml";
+}
+
+
+<h4 class="text-color-primary">سجلات المواعيد</h4>
+<div class="col">
+    @Html.ActionLink("إضافة دواء", "AddMedicine", "Pharmacies", new { @class = "btn background-color-primary" })
+</div>
+
+<div class="col-md-12 mt-3 table-responsive">
+    <table id="medicines" class="table table-hover col-12 bg-light border">
+        <thead>
+            <tr>
+                <th>الاسم بالعربي</th>
+                <th>الاسم بالانجليزي</th>
+                <th>نوع الدواء</th>
+                <th>متاح</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <script>
+         $(document).ready(function () {
+
+             var table = $("#medicines").DataTable({
+                ajax: {
+                    url: "/api/pharmacies/Medicines/@Session["PharmacyId"]",
+                    dataSrc: ""
+                },
+                columns: [
+                    { data: "nameAR" },
+                    { data: "nameEN" },
+                    { data: "medicineType" },
+                    { data: "available" },
+                    {
+                        data: "medicineId",
+                        render: function (data) {
+                            return `<a href='pharmacies/EditMedicine/${data}'>تعديل</a>`;
+                        }
+                    },
+                    {
+                        data: "medicineId",
+                        render: function (data) {
+                            return `<button class="btn btn-sm js-delete btn-outline-danger" data-id='${data}'>حذف</button>`;
+                        }
+                    }
+                ], dom: '<"row w-100 pb-3" <"px-3" f> <"px-3 mr-auto" l>>' +
+                    '<"col-12"t>' +
+                    '<"col-12" <"row"p><"row" i>>'
+            });
+            table.on('click', '.js-delete', (button) => {
+                var btn = button.target;
+                var b = $(this);
+                Swal.fire({
+                    customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton: 'btn btn-light border'
+                    },
+                    icon: 'warning',
+                    title: 'Are You Sure?',
+                    showCancelButton: true,
+                    confirmButtonText: `Delete`,
+                    confirmButtonColor: `#dc3545`,
+                }).then((result) => {
+                    if (result.dismiss === Swal.isConfirmed) {
+                        $.ajax({
+                            url: `/api/pharmacies/Medicines/@Session["PharmacyId"]/${btn.attributes[1].value}`,
+                            method: 'DELETE',
+                            success: function () {
+                                Swal.fire({
+                                    title: 'Done',
+                                    icon: 'success',
+                                    text: 'Day Deleted Successfuly',
+                                    timer: 2000
+                                });
+                                table.row(btn.parentElement.parentElement).remove().draw();
+                                console.log('deleted');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}
+

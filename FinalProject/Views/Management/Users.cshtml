@@ -1,0 +1,47 @@
+﻿
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Views/Shared/_Managment.cshtml";
+}
+
+
+<h4 class="text-color-primary">طلبات التسجيل</h4>
+
+<div class="col-md-12 mt-3 table-responsive">
+    <table id="users" class="table table-hover col-12 bg-light border">
+        <thead>
+            <tr>
+                <th>الاسم</th>
+                <th>اسم الاب</th>
+                <th> الكنية</th>
+                <th>نوع المستخدم</th>
+                <th>مقفل</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var table = $("#users").DataTable({
+                ajax: {
+                    url: "/api/management/Users",
+                    dataSrc: ""
+                },
+                columns: [
+                    { data: "firstName" },
+                    { data: "fatherName" },
+                    { data: "lastName" },
+                    { data: "userType" },
+                    { data: "locked" }
+                ], dom: '<"row w-100 pb-3" <"px-3" f> <"px-3 mr-auto" l>>' +
+                    '<"col-12"t>' +
+                    '<"col-12" <"row"p><"row" i>>'
+            });
+        });
+    </script>
+}

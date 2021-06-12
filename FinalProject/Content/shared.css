@@ -129,6 +129,20 @@ input {
     min-height: 50vh;
 }
 
+ul.pagination li {
+    padding: 0.3rem;
+    background-color: white;
+    border: 1px solid #d2d2d2;
+    border-radius: 0.3rem;
+    margin: 0.2rem;
+    font-size: 0.85rem;
+}
+
+    ul.pagination li a {
+        color: #00a86f;
+    }
+
+
 @media only screen and (min-width:768) {
     .top-padding {
         position: relative;

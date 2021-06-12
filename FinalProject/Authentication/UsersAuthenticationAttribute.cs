@@ -1,8 +1,6 @@
-﻿using FinalProject.Controllers.api;
-using FinalProject.Models;
+﻿using FinalProject.Models;
 using FinalProject.Services;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Principal;
@@ -39,7 +37,6 @@ namespace FinalProject.Authentication
                         .CreateResponse(System.Net.HttpStatusCode.Unauthorized);
                 }
             }
-            base.OnAuthorization(actionContext);
         }
 
         public static bool Login(string email, string password)

@@ -3,41 +3,19 @@
     ViewBag.Title = "Appointments";
     Layout = "~/Views/Shared/_Clinic.cshtml";
 }
-
-<div class="container">
-    <table id="tableid"  class="table table-hover table-responsive ">
+<h4 class="text-color-primary">طلبات المواعيد</h4>
+<div class="col-md-12 mt-3 table-responsive">
+    <table id="tableid" class="table table-hover col-12 bg-light border">
         <thead>
             <tr>
-                <td>helo</td>
-                <td>helo</td>
-                <td>helo</td>
-                <td>helo</td>
-                <td>helo</td>
+                <th>اسم المريض</th>
+                <th>تاريخ الزيارة</th>
+                <th>وقت بدء الزيارة</th>
+                <th></th>
+                <th></th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td>helo</td>
-                <td>helo</td>
-                <td>helo</td>
-                <td>helo</td>
-                <td>helo</td>
-            </tr>
-            <tr>
-                <td>malo</td>
-                <td>malo</td>
-                <td>malo</td>
-                <td>malo</td>
-                <td>malo</td>
-            </tr>
-            <tr>
-                <td>Khalo</td>
-                <td>Khalo</td>
-                <td>Khalo</td>
-                <td>Khalo</td>
-                <td>Khalo</td>
-            </tr>
-        </tbody>
+        <tbody></tbody>
     </table>
 </div>
 
@@ -45,7 +23,95 @@
 @section Scripts{
     <script>
         $(document).ready(function () {
-            $("#tableid").DataTable();
+            var table = $("#tableid").DataTable({
+                ajax: {
+                    url: "/api/clinics/UnconfirmedAppointments/1", @*@Session["ClinicId"],*@
+                    dataSrc: ""
+        },
+            columns: [
+                { data: "patientName" },
+                { data: "date" },
+                { data: "time" },
+                {
+                    data: "appointmentId",
+                    render: function (data) {
+                        return `<button class='btn btn-sm btn-outline-success js-confirm' data-id=${data}>تأكيد</button>`;
+                    }
+                },
+                {
+                    data: "appointmentId",
+                    render: function (data) {
+                        return `<button class='btn btn-sm btn-outline-danger js-refuse' data-id=${data}>رفض</button>`;
+                    }
+                }
+            ], dom: '<"row w-100 pb-3" <"px-3" f> <"px-3 mr-auto" l>>' +
+            '<"col-12"t>' +
+            '<"col-12" <"row"p><"row" i>>'
+            });
+
+            table.on('click', '.js-refuse', (button) => {
+                var btn = button.target;
+                Swal.fire({
+                    customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton: 'btn btn-light border'
+                    },
+                    icon: 'warning',
+                    title: 'رفض الموعد؟',
+                    showCancelButton: true,
+                    confirmButtonText: `رفض`,
+                    confirmButtonColor: `#dc3545`,
+                }).then((result) => {
+                    if (result.dismiss === Swal.isConfirmed) {
+                        $.ajax({
+                            url: `/api/clinics/Appointments/${btn.attributes[1].value}`,
+                            method: 'DELETE',
+                            success: function () {
+                                Swal.fire({
+                                    title: 'تمت',
+                                    icon: 'success',
+                                    text: 'تم رفض الموعد المحدد',
+                                    timer: 2000
+                                });
+                                table.row(btn.parentElement.parentElement).remove().draw();
+                                console.log('refused');
+                            }
+                        });
+                    }
+                });
+            });
+
+            table.on('click', '.js-confirm', (button) => {
+                var btn = button.target;
+                Swal.fire({
+                    customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton: 'btn btn-light border'
+                    },
+                    icon: 'warning',
+                    title: 'تأكيد الموعد؟',
+                    showCancelButton: true,
+                    confirmButtonText: `تأكيد`,
+                    confirmButtonColor: `#00a86f`,
+                }).then((result) => {
+                    if (result.dismiss === Swal.isConfirmed) {
+                        $.ajax({
+                            url: `/api/clinics/ConfirmAppointments/${btn.attributes[1].value}`,
+                            method: 'POST',
+                            success: function () {
+                                Swal.fire({
+                                    title: 'تمت',
+                                    icon: 'success',
+                                    text: 'تم تأكيد الموعد المحدد',
+                                    timer: 2000
+                                });
+                                table.row(btn.parentElement.parentElement).remove().draw();
+                                console.log('refused');
+                            }
+                        });
+                    }
+                });
+            });
         })
     </script>
 }

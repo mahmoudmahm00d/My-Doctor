@@ -3,10 +3,7 @@ using FinalProject.DTOs;
 using FinalProject.Models;
 using FinalProject.Services;
 using FinalProject.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace FinalProject.Controllers
@@ -14,6 +11,10 @@ namespace FinalProject.Controllers
     public class AccountsController : Controller
     {
         private MyAppContext db = new MyAppContext();
+
+        public int UserId => int.Parse(Session["UserId"].ToString());
+        public bool SessionIsNull => Session["UserId"] == null;
+
         // GET: Accounts
         public ActionResult SignUp()
         {
@@ -45,12 +46,13 @@ namespace FinalProject.Controllers
             doctor.UserEmail = doctor.UserEmail.ToLower();
             var userInDb = Mapper.Map<SignUpDoctor, User>(doctor);
             userInDb.VerCode = AppServices.GenerateRandomNumber();
+            userInDb.Locked = true;
 
             db.Users.Add(userInDb);
             db.SaveChanges();
             doctor.UserId = userInDb.UserId;
 
-            AppServices.SendConfirmEmail(userInDb.UserEmail,userInDb.VerCode,userInDb.UserId);
+            AppServices.SendConfirmEmail(userInDb.UserEmail, userInDb.VerCode, userInDb.UserId);
 
             return RedirectToAction("ConfirmUser", new { id = doctor.UserId });
         }
@@ -79,7 +81,7 @@ namespace FinalProject.Controllers
             if (user == null)
                 return HttpNotFound();
 
-            if (user.VerCode == code)
+            if (user.VerCode == code.Trim())
             {
                 user.Locked = false;
                 user.VerCode = string.Empty;
@@ -96,6 +98,9 @@ namespace FinalProject.Controllers
 
         public ActionResult SignIn()
         {
+            if (Session["UserId"] != null)
+                return HttpNotFound();
+
             return View();
         }
 
@@ -108,6 +113,8 @@ namespace FinalProject.Controllers
                 ModelState.AddModelError("", "Incorrect Email Or Password");
                 return View();
             }
+
+            user.Email = user.Email.Trim().ToLower();
 
             var userInDb = db.Users.Where(u => u.Locked == false)
                 .FirstOrDefault(u => u.UserEmail == user.Email
@@ -130,9 +137,86 @@ namespace FinalProject.Controllers
             Session["UserId"] = userInDb.UserId;
             Session["UserTypeId"] = userInDb.UserTypeId;
 
-            if(userInDb.UserTypeId == 20)
+            if (userInDb.UserTypeId == 20)
                 return RedirectToAction("Index", "Clinics");
             return RedirectToAction("Index", "Pharmacies");
+        }
+
+        //GET: Accounts/EditPassword
+        public ActionResult EditPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult EditPassword(EditPasswordDTO edit)
+        {
+            if (SessionIsNull)
+                return RedirectToAction("SignIn", "Management");
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Invaild Properties");
+                return View();
+            }
+
+            int userId = UserId;
+            var user = db.Users.Find(userId);
+            if (user == null)
+                return RedirectToAction("SignIn");
+
+            bool verfied = AppServices.VerifayPasswrod(edit.OldPassword, user.UserPassword);
+            if (!verfied)
+            {
+                ModelState.AddModelError("", "Incorrect password");
+                return View();
+            }
+
+            user.UserPassword = AppServices.HashPassword(edit.NewPassword);
+            db.SaveChanges();
+            return View();
+        }
+
+        //GET: Accounts/EditEmail
+        public ActionResult EditEmail()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public ActionResult EditEmail(EditEmailDTO edit)
+        {
+            if (SessionIsNull)
+                return RedirectToAction("SignIn", "Management");
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Invaild Properties");
+                return View();
+            }
+
+            int userId = UserId;
+            var user = db.Users.Find(userId);
+            if (user == null)
+                return RedirectToAction("SignIn");
+
+            bool verfied = AppServices.VerifayPasswrod(edit.Password, user.UserPassword);
+            if (!verfied)
+            {
+                ModelState.AddModelError("", "Incorrect password");
+                return View();
+            }
+
+            user.UserEmail = edit.Email.Trim().ToLower();
+            db.SaveChanges();
+            return View();
+        }
+
+        public ActionResult SignOut()
+        {
+            Session.Clear();
+            return RedirectToAction("SignIn");
         }
     }
 }

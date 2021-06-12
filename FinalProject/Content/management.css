@@ -33,7 +33,7 @@ body::-webkit-scrollbar-thumb {
     position: fixed;
     right: 0;
     background-color: var(--navbar-color);
-    z-index:1000;
+    z-index: 1000;
 }
 
     .Navbar .Navbar-nav {
@@ -45,6 +45,13 @@ body::-webkit-scrollbar-thumb {
         align-items: center;
         height: 100%;
     }
+
+    .Navbar .Navbar-nav :first-child{
+        height:5rem;
+    }
+        .Navbar .Navbar-nav :first-child img {
+            max-width: 12rem;
+        }
 
     .Navbar .Nav-link {
         display: block;
@@ -77,7 +84,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .Main-body {
-    padding-right: 12rem;
+    padding-right: 13rem;
 }
 
 .options-menu {
@@ -92,7 +99,6 @@ body::-webkit-scrollbar-thumb {
 }
 
 @media only screen and (min-width: 601px) {
-    
 }
 /* Mobile */
 @media only screen and (max-width: 768px) {
@@ -105,13 +111,16 @@ body::-webkit-scrollbar-thumb {
         .Navbar .Navbar-nav {
             flex-direction: column;
         }
-
-        .Navbar .Nav-link {
-            text-align: center;
-            text-indent: initial;
-            height: 3rem;
-            line-height: 3rem;
-        }
+            .Navbar .Navbar-nav :first-child {
+                height: 3rem;
+            }
+                
+                .Navbar .Nav-link {
+                    text-align: center;
+                    text-indent: initial;
+                    height: 3rem;
+                    line-height: 3rem;
+                }
 
     .closed-menu {
         display: none;
@@ -130,5 +139,7 @@ body::-webkit-scrollbar-thumb {
     .Main-body {
         padding-right: initial;
         padding-top: 4rem;
+        padding-left: 2rem;
+        padding-right: 2rem;
     }
 }

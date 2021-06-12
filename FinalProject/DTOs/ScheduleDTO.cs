@@ -13,6 +13,17 @@ namespace FinalProject.DTOs
 
         [DataType(DataType.Time)]
         public DateTime ToTime { get; set; }
-        public Days Day { get; set; }
+
+        [Range(0,6)]
+        public DayOfWeek Day { get; set; }
+
+        public string From
+        {
+            get => FromTime.ToTime();
+        }
+        public string To
+        {
+            get => ToTime.ToTime();
+        }
     }
 }

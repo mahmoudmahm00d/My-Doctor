@@ -1,0 +1,78 @@
+﻿@model FinalProject.ViewModels.locationManagementViewModel
+@{
+    ViewBag.Title = "ClinicLocation";
+    Layout = "~/Views/Shared/_Managment.cshtml";
+}
+
+@if (Model == null || Model.Location.Longtude == 0)
+{
+    <h4>لم يتم تحديد الموقع بعد</h4>
+}
+else
+{
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
+
+    <div class="row w-100 mx-auto px-2 top-padding">
+        <div class="col-md-6">
+            <div id='map'></div>
+        </div>
+        <div class="main-form px-3 pt-4 col-md-6 h-100">
+            <div class="row">
+                <h2 class="text-color-primary mx-auto">Location</h2>
+            </div>
+
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+                <div>
+                    <p class="bg-light border">@Model.CityName</p>
+                </div>
+            </div>
+
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+                <div>
+                    <p class="bg-light border">@Model.Location.Area</p>
+                </div>
+            </div>
+
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+                <div>
+                    <p class="bg-light border">@Model.Location.Street</p>
+                </div>
+            </div>
+
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+                <p id="coords" class="mx-auto alert-info"></p>
+            </div>
+
+        </div>
+    </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
+        <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWFobTAwZG1haG0wMGQiLCJhIjoiY2ttNDFzNGR2MDBiejJ5a25keGIzbjY4ayJ9.lgZoHTS0M2JG-O33RWxcWA';
+        mapboxgl.setRTLTextPlugin(
+            'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
+            null,
+            true // Lazy load the plugin
+        );
+
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [
+                @Model.Location.Longtude,
+                @Model.Location.Latitude
+            ],
+            zoom: 14
+        });
+        var marker1 = new mapboxgl.Marker()
+        .setLngLat([
+            @Model.Location.Longtude,
+            @Model.Location.Latitude
+        ]).addTo(map)
+        </script>
+    }
+}

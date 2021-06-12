@@ -1,7 +1,7 @@
 ﻿@model FinalProject.ViewModels.LocationViewModel
 
 @{
-    ViewBag.Title = "Location";
+    ViewBag.Title = "CreateLocation";
     Layout = "~/Views/Shared/_Clinic.cshtml";
 }
 <link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
@@ -10,6 +10,7 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Location.ClinicId);
     <div class="row w-100 mx-auto px-2 top-padding">
         <div class="col-md-6">
             <div id='map'></div>
@@ -20,8 +21,7 @@
             </div>
 
             <div class="form-group mx-auto round-this col-lg-5 col-md-6 px-0">
-                @Html.DropDownListFor(model => model.Location.CityId, new SelectList(Model.Cities, "CityId", "CityName"), "Select City", new { @class = "form-control round-this m-1 shadow" })
-
+                @Html.DropDownListFor(model => model.Location.CityId, new SelectList(Model.Cities, "CityId", "CityName"), "Select City", new { @class = "form-control round-this shadow" })
                 @Html.ValidationMessageFor(model => model.Location.CityId, "", new { @class = "text-danger" })
             </div>
 
@@ -41,13 +41,27 @@
             </div>
 
             <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
-                <input type="number" id="lat" name="Langtude" readonly class="form-control" required />
-                <input type="number" id="lng" name="langitude" readonly class="form-control" required />
+                <div>
+                    <input id="latlng" class="mx-auto border col round-this placeholder-center" type="text" name="latlng" placeholder="الاحداثيات" readonly required />
+                </div>
             </div>
+
+            <div class="row">
+                <p class="mx-auto text-secondary">
+                    <small>يرجى اختيار موقع من على الخريطة</small>
+                </p>
+            </div>
+
+            <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
+                <p id="coords" class="mx-auto alert-info"></p>
+            </div>
+            @Html.HiddenFor(l => l.Location.Latitude, new { id = "lat", required = true })
+            @Html.HiddenFor(l => l.Location.Longtude, new { id = "lng", required = true })
+            @Html.HiddenFor(l => l.Location.ClinicId, new { id = "clinicId", required = true })
 
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="row">
-                <input type="submit" value="إضافة يوم" class="btn background-color-primary mx-auto col-lg-5 col-md-6 shadow mx-auto" />
+                <input type="submit" value="حفظ البيانات" class="btn background-color-primary mx-auto col-lg-5 col-md-6 shadow mx-auto" />
             </div>
         </div>
     </div>
@@ -58,35 +72,50 @@
     <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoibWFobTAwZG1haG0wMGQiLCJhIjoiY2ttNDFzNGR2MDBiejJ5a25keGIzbjY4ayJ9.lgZoHTS0M2JG-O33RWxcWA';
+        mapboxgl.setRTLTextPlugin(
+            'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
+            null,
+            true // Lazy load the plugin
+        );
+
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/streets-v11',
             center: [//Damascus
-                36.295467,
-                33.499925
+                ( '@(Model.Location != null && Model.Location.Longtude != 0)' ==='True')? @Model.Location.Longtude :36.295467,
+                ( '@(Model.Location != null && Model.Location.Latitude != 0)' === 'True') ? @Model.Location.Latitude : 33.499925,
             ],
-            zoom: 12
+            zoom: 14
         });
 
-        //// Create a default Marker and add it to the map.
-        //var marker1 = new mapboxgl.Marker()
-        //    .setLngLat([
-        //        36.295467,
-        //        33.499925
-        //    ])
-        //    .addTo(map);
-
         var marker = new mapboxgl.Marker();
-
+        @*if ('@(Model.Location != null && Model.Location.Latitude != 0)' === 'True') {
+            marker.setLngLat(new mapboxgl.LngLat(@Model.Location.Latitude,@Model.Location.Longtude));
+            marker.addTo(map);
+            alert()
+        }*@
         function add_marker(event) {
+            marker1.remove();
             var coordinates = event.lngLat;
-            console.log('Lng:', coordinates.lng, 'Lat:', coordinates.lat);
             marker.setLngLat(coordinates).addTo(map);
             document.getElementById("lat").value = coordinates.lat;
             document.getElementById("lng").value = coordinates.lng;
-
+            var str = `latitude: ${coordinates.lat}<br>Longtude ${coordinates.lng}`;
+            document.getElementById("coords").innerHTML = str;
+            document.getElementById("latlng").value = "تم اختيار الموقع";
         }
-
         map.on('click', add_marker);
     </script>
+    @if (Model.Location != null && Model.Location.Longtude != 0)
+    {
+        <script>
+
+    // Create a default Marker and add it to the map.
+        var marker1 = new mapboxgl.Marker()
+        .setLngLat([
+            @Model.Location.Longtude,
+            @Model.Location.Latitude
+        ]).addTo(map)
+        </script>
+    }
 }
