@@ -1,5 +1,7 @@
 ﻿using FinalProject.Models;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace FinalProject.DTOs
 {
@@ -12,6 +14,9 @@ namespace FinalProject.DTOs
         public string FatherName { get; set; }
 
         public string LastName { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime Birth { get; set; }
 
         public string FullName
         {

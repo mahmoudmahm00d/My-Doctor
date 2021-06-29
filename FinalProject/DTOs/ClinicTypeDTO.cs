@@ -9,5 +9,7 @@ namespace FinalProject.DTOs
         [Required]
         [StringLength(255)]
         public string ClinicTypeName { get; set; }
+
+        public bool IsActiveClinicType { get; set; }
     }
 }

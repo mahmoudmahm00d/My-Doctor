@@ -18,18 +18,21 @@ namespace FinalProject.App_Start
             Mapper.CreateMap<City, CityDTO>();
             Mapper.CreateMap<Location, LocationDTO>();
             Mapper.CreateMap<Schedule, ScheduleDTO>();
+            Mapper.CreateMap<Prescription, FormPrescriptionDTO>();
+            Mapper.CreateMap<Prescription, PrescriptionDTO>();
+
 
             Mapper.CreateMap<Medicine, MedicineDTO>();
             Mapper.CreateMap<MedicineType, MedicineTypeDTO>();
             Mapper.CreateMap<Certifcate, CertificateDTO>();
             Mapper.CreateMap<ClinicType, ClinicTypeDTO>();
             Mapper.CreateMap<Clinic, ClinicDTO>();
+            Mapper.CreateMap<Vacation, VacationDTO>();
             Mapper.CreateMap<Clinic, ClinicOnlyDTO>();
             Mapper.CreateMap<Appointment, AppointmentDTO>();
             Mapper.CreateMap<Clinic, ClinicInfoDTO>()
                 .ForMember(c => c.Doctor, o => o.MapFrom(c => c.ForUser));
 
-            //ToDo
             Mapper.CreateMap<Clinic, MapObject>()
                 .ForMember(c => c.Longitude, s => s.MapFrom(c => c.Location.Longtude))
                 .ForMember(c => c.ObjectName, s => s.MapFrom(c => c.ClinicName))
@@ -39,7 +42,11 @@ namespace FinalProject.App_Start
             Mapper.CreateMap<Pharmacy, PharmacyDTO>();
             Mapper.CreateMap<Pharmacy, PharmacyOnlyDTO>();
             Mapper.CreateMap<Pharmacy, CreatePharmacyDTO>();
-            Mapper.CreateMap<Pharmacy, MapObject>();
+            Mapper.CreateMap<Pharmacy, MapObject>()
+                .ForMember(c => c.Longitude, s => s.MapFrom(c => c.Longtude))
+                .ForMember(c => c.ObjectName, s => s.MapFrom(c => c.PharmacyName))
+                .ForMember(c => c.ObjectId, s => s.MapFrom(c => c.PharmacyId))
+                .ForMember(c => c.Latitude, s => s.MapFrom(c => c.Latitude)); 
 
             //To Domain Classes
             Mapper.CreateMap<UserDTO, User>()
@@ -71,7 +78,7 @@ namespace FinalProject.App_Start
                 .ForMember(u => u.PharmacyId, op => op.Ignore())
                 .ForMember(c => c.ForUser, op => op.Ignore());
 
-            Mapper.CreateMap<FormPrescritpionDTO, Prescription>();
+            Mapper.CreateMap<FormPrescriptionDTO, Prescription>();
 
             Mapper.CreateMap<MedicineTypeDTO, MedicineType>()
                 .ForMember(m => m.MedicineTypeId, op => op.Ignore());
@@ -86,8 +93,8 @@ namespace FinalProject.App_Start
 
             Mapper.CreateMap<ScheduleDTO, Schedule>()
                 .ForMember(s => s.ClinicId, op => op.Ignore());
-            Mapper.CreateMap<LocationDTO, Location>()
-                .ForMember(s => s.ClinicId, op => op.Ignore());
+            Mapper.CreateMap<LocationDTO, Location>();
+            Mapper.CreateMap<VacationDTO, Vacation>();
         }
     }
 }

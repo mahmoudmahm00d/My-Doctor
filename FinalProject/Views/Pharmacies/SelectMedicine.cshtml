@@ -1,0 +1,88 @@
+﻿
+@{
+    ViewBag.Title = "SelectMedicine";
+    Layout = "~/Views/Shared/_Pharmacy.cshtml";
+}
+
+
+<h4 class="text-color-primary">
+    اختيار ادوية
+</h4>
+<br />
+<div class="col">
+    @Html.ActionLink("إضافة دواء جديد", "AddMedicine", "Pharmacies", new { @class = "btn background-color-primary" })
+</div>
+
+
+<div class="row main-header pt-2">
+
+    <div id="the-basics">
+        <input id="medicines" class="typeahead form-control" type="text" placeholder="الاسم بالعربي">
+    </div>
+</div>
+
+<div class="pt-4">
+    <div>
+        <p>قائمة الادوية</p>
+    </div>
+    <div class="row">
+        <table id="selected-medicine" class="table bg-light col-md-6 border text-center">
+            <th>الاسم بالعربي</th>
+            <th>الاسم بالانجليزي</th>
+            <th></th>
+        </table>
+    </div>
+
+    <div class="form-group mt-3">
+        <input type="button" id="submit" value="إضافة ادوية" class="btn background-color-primary col-lg-3 col-md-4 shadow" />
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+            var count = 0;
+            data = {
+                medicineIds:[]
+            };
+            var medicines = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('nameAR'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/api/medicine/name/%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+            $('#medicines').typeahead({
+                minLength: 3,
+                highlight: true
+            },
+            {
+                name: 'medicine',
+                display: 'nameAR',
+                source: medicines
+            }).on('typeahead:select', function (e, medicine) {
+                data.medicineIds.push( medicine.medicineId);
+                count++;
+                console.log(data);
+                $("#selected-medicine")
+                    .append(`<tr><td>${medicine.nameAR}</td><td>${medicine.nameEN}</td><td><button class="btn btn-sm js-delete btn-outline-danger" data-id='${count-1}'>حذف</button></td></tr>`)
+            });
+
+            $("#selected-medicine")
+                .on('click', '.js-delete', function (btn) {
+                    var id = btn.target.attributes[1].value;
+                    data.medicineIds[id] = null;
+                    btn.target.parentElement.parentElement.remove();
+                });
+
+            $("#submit")
+                .on('click', function () {
+                    $.post('/api/pharmacies/addMedicine/@Session["PharmacyId"]', data, function () { window.location.href = 'Index'; })
+                });
+        });
+    </script>
+}

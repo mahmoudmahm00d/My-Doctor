@@ -30,13 +30,13 @@
                 <div class="form-control round-this bg-light p-2 border shadow">@Model.Clinic.ClinicType.ClinicTypeName</div>
             </div>
             <div class="form-group mx-auto round-this col-lg-5 col-md-6 px-0">
-                <label>اسم العيادة</label>
+                <label>رقم الهاتف</label>
                 @Html.EditorFor(model => model.Clinic.ClinicPhone, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center", placeholder = "رقم التواصل" } })
                 @Html.ValidationMessageFor(model => model.Clinic.ClinicPhone, "", new { @class = "text-danger" })
             </div>
 
             <div class="form-group mx-auto round-this col-lg-5 col-md-6 px-0">
-                <label>اسم العيادة</label>
+                <label>بريد التواصل</label>
                 @Html.EditorFor(model => model.Clinic.ClinicEmail, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center", placeholder = "بريد التواصل" } })
                 @Html.ValidationMessageFor(model => model.Clinic.ClinicEmail, "", new { @class = "text-danger" })
             </div>
@@ -125,6 +125,9 @@
                 </table>
             </div>
             <div class="form-group">
+                @Html.ActionLink("العطل", "Vacations")
+            </div>
+            <div class="form-group">
                 @Html.ActionLink("تسجيل الخروج", "SignOut", "Accounts")
             </div>
         </div>
@@ -147,8 +150,15 @@
             }).then((result) => {
                 if (result.dismiss === Swal.isConfirmed) {
                     $.ajax({
-                        url: `/api/clinics/certificates/${btn.attributes[2].value}`,
+                        url: `/api/doctors/certificates/${btn.attributes[2].value}`,
                         method: 'DELETE',
+                        headers: {
+                            Authorization: 'Basic ' + sessionStorage.getItem('token')
+                        },
+                        complete: function (e) {
+                            if (e.status == '401')
+                                window.location.href = '/accounts/signout';
+                        },
                         success: function () {
                             Swal.fire({
                                 title: 'Done',

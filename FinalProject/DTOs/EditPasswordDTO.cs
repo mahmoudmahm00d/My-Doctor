@@ -15,4 +15,14 @@ namespace FinalProject.DTOs
         [Compare("NewPassword")]
         public string ConfirmPassword { get; set; }
     }
+
+    public class NewPasswordDTO
+    {
+        [Required]
+        [MaxLength(255)]
+        public string NewPassword { get; set; }
+
+        [Compare("NewPassword")]
+        public string ConfirmPassword { get; set; }
+    }
 }

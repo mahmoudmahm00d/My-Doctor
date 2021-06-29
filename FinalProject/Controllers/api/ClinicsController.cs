@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FinalProject.Authentication;
 using FinalProject.DTOs;
 using FinalProject.Models;
@@ -11,8 +11,6 @@ using System.Web.Http;
 
 namespace FinalProject.Controllers.api
 {
-    //todo
-    //add Authorization
     public class ClinicsController : ApiController
     {
         private MyAppContext db = new MyAppContext();
@@ -20,17 +18,18 @@ namespace FinalProject.Controllers.api
         #region Management
         [HttpGet]
         [Route("api/clinics")]
-        //[UsersAuthentication]
+        [ManagerAuthentication]
         public IHttpActionResult Get()
         {
-            return Ok(db.Clinics.Include(c => c.ClinicType).Include(c=> c.ForUser).ToList().Select(Mapper.Map<Clinic, ClinicInfoDTO>));
+            return Ok(db.Clinics.Include(c => c.ClinicType).Include(c => c.ForUser).ToList().Select(Mapper.Map<Clinic, ClinicInfoDTO>));
         }
 
         [HttpGet]
         [Route("api/clinics/{id}")]
+        [ManagerAuthentication]
         public IHttpActionResult Get(int id)
         {
-            var clinic = db.Clinics.Include(c=> c.ClinicType).FirstOrDefault(c => c.ClinicId == id);
+            var clinic = db.Clinics.Include(c => c.ClinicType).FirstOrDefault(c => c.ClinicId == id);
             if (clinic == null)
             {
                 return NotFound();
@@ -39,10 +38,15 @@ namespace FinalProject.Controllers.api
         }
         #endregion
 
+        #region For Clinics
         [HttpGet]
         [Route("api/clinics/patients/{id}")]
+        [ClinicAuthentication]
         public IHttpActionResult GetPatients(int id)
         {
+            if (!IsClinicIdBelongsToToken(id))
+                return BadRequest();
+
             var patient = db.Appointments.Include(a => a.User).Where(a => a.ClinicId == id).Select(a => a).ToList();
             if (patient.Count() == 0)
                 return Ok(patient);
@@ -58,16 +62,20 @@ namespace FinalProject.Controllers.api
         }
         [HttpGet]
         [Route("api/clinics/UpcommingAppointment/{id}")]
+        [ClinicAuthentication]
         public IHttpActionResult UpcommingAppointment(int id)
         {
+            if (!IsClinicIdBelongsToToken(id))
+                return BadRequest();
+
             var appointments = db.Appointments.Include(a => a.User)
                 .Where(a => a.ClinicId == id)
                 .Select(a => a).ToList();
-            
+
             if (appointments.Count() == 0)
                 return Ok(appointments);
 
-            var result = appointments.Where(a => a.Date.CompareTo(DateTime.Now) >= 0).Select(a => new
+            var result = appointments.Where(a => a.Date.Date.CompareTo(DateTime.Now.Date) >= 0).Select(a => new
             {
                 appointmentId = a.AppointmentId,
                 patientName = $"{a.User.FirstName} {a.User.LastName}",
@@ -80,22 +88,35 @@ namespace FinalProject.Controllers.api
 
         [HttpGet]
         [Route("api/clinics/UnconfirmedAppointments/{id}")]
+        [ClinicAuthentication]
         public IHttpActionResult GetUnconirmedAppointments(int id)
         {
+            if (!IsClinicIdBelongsToToken(id))
+                return BadRequest();
+
             var appointments = db.Appointments.Include(a => a.User).Where(a => a.ClinicId == id).Select(a => a).ToList();
 
             //Returns Empty List
             if (appointments.Count() == 0)
                 return Ok(appointments);
+
+            var appointmentsToDelete = new List<Appointment>();
+
             //Delete All Appointments Not Confirmed Before Today
             foreach (var item in appointments)
             {
-                if(item.Date < DateTime.Now)
+                if (item.Confirmed == false && item.Date.Date < DateTime.Now.Date)
                 {
-                    db.Appointments.Remove(item);
-                    appointments.Remove(item);
+                    appointmentsToDelete.Add(item);
                 }
             }
+
+            foreach (var appointment in appointmentsToDelete)
+            {
+                db.Appointments.Remove(appointment);
+                appointments.Remove(appointment);
+            }
+            db.SaveChanges();
             //Foramting Result
             var result = appointments.Where(a => a.Confirmed == false).Select(a => new
             {
@@ -109,8 +130,12 @@ namespace FinalProject.Controllers.api
 
         [HttpPost]
         [Route("api/clinics/ConfirmedAppointments/{id}")]
+        [ClinicAuthentication]
         public IHttpActionResult ConfirmAppointment(int id)
         {
+            if (!IsAppointmentBelongsToClinic(id))
+                return BadRequest();
+
             var appointment = db.Appointments.Where(a => a.Confirmed == false)
                 .FirstOrDefault(a => a.AppointmentId == id);
 
@@ -123,9 +148,13 @@ namespace FinalProject.Controllers.api
         }
 
         [HttpDelete]
-        [Route("api/clinics/Appointments/{id}")]
-        public IHttpActionResult DeleteAppointment(int id)
+        [Route("api/clinics/Appointments/{id}")]//Refuse appointment
+        [ClinicAuthentication]
+        public IHttpActionResult DeleteAppointment(int id)//Appointment id
         {
+            if (!IsAppointmentBelongsToClinic(id))
+                return BadRequest();
+
             var appointment = db.Appointments.Where(a => a.Confirmed == false)
                 .FirstOrDefault(a => a.AppointmentId == id);
 
@@ -140,9 +169,13 @@ namespace FinalProject.Controllers.api
 
         [HttpDelete]
         [Route("api/doctors/certificates/{id}")]
-        public IHttpActionResult DeleteCertificate( int id)
+        [ClinicAuthentication]
+        public IHttpActionResult DeleteCertificate(int id)//Certitfcete id
         {
-            var certificate = db.Certifcates.FirstOrDefault(c=>c.CertifcateID == id);
+            if (!IsCertificateBelongsToClinicDoctor(id))
+                return BadRequest();
+
+            var certificate = db.Certifcates.FirstOrDefault(c => c.CertifcateID == id);
 
             if (certificate == null)
                 return NotFound();
@@ -151,10 +184,15 @@ namespace FinalProject.Controllers.api
             db.SaveChanges();
             return Ok();
         }
+
         [HttpGet]
         [Route("api/clinics/Reports/{id}")]
+        [ClinicAuthentication]
         public IHttpActionResult GetReports(int id)
         {
+            if (!IsUserHaveAppointmentInClinic(id))
+                return BadRequest();
+
             var reports = db.Appointments.Include(a => a.User).Where(a => a.UserId == id).Select(a => a).ToList();
             if (reports.Count() == 0)
                 return Ok(reports);
@@ -172,11 +210,19 @@ namespace FinalProject.Controllers.api
 
         [HttpDelete]
         [Route("api/clinics/Appointment/Prescriptions/{id}")]
-        public IHttpActionResult GetAppointmentPrescriptions(string id)
+        [ClinicAuthentication]
+        public IHttpActionResult GetAppointmentPrescription(string id)
         {
+            if (id == null)
+                return BadRequest();
+
             string[] compositeKey = id.Split(',');
             int appointmentId = int.Parse(compositeKey[0]);
             int medicineId = int.Parse(compositeKey[1]);
+
+            if (!IsPrescriptionBelongsToClinic(appointmentId, medicineId))
+                return BadRequest();
+
             var prescription = db.Prescriptions.FirstOrDefault(p => p.AppointmentId == appointmentId && p.MedicineId == medicineId);
             if (prescription == null)
                 return NotFound();
@@ -189,32 +235,45 @@ namespace FinalProject.Controllers.api
 
         [HttpGet]
         [Route("api/clinics/Appointment/Prescriptions/{id}")]
-        public IHttpActionResult GetAppointmentPrescriptions(int id)
+        [ClinicAuthentication]
+        public IHttpActionResult GetAppointmentPrescriptions(int id)//appointemnt id
         {
-            var prescriptions = db.Prescriptions.Include(p => p.Appointment).Where(p => p.AppointmentId == id).Select(p => p).ToList();
+            if (!IsAppointmentBelongsToClinic(id))
+                return BadRequest();
+
+            var prescriptions = db.Prescriptions.Where(p => p.AppointmentId == id).Select(p => p);
             if (prescriptions.Count() == 0)
                 return Ok(prescriptions);
 
-            var result = prescriptions.Select(p => new
-            {
-                compositId = $"{p.AppointmentId},{p.MedicineId}",
-                visitDate = p.Appointment.Date,
-                medicineNameAr = p.Medicine.NameAR,
-                medicineNameEn = p.Medicine.NameEN,
-                medicineType = p.Medicine.MedicineType.MedicineTypeName,
-                dosage = p.Dosage,
-                every = p.Every,
-                @for = p.For,
-                timespan = p.TimeSpan
-            });
+
+            var result = from prescription in db.Prescriptions
+                             //join appointment in db.Appointments on prescription.AppointmentId equals appointment.AppointmentId
+                         join medicine in db.Medicines on prescription.MedicineId equals medicine.MedicineId
+                         join type in db.MedicineTypes on medicine.MedicineTypeId equals type.MedicineTypeId
+                         where prescription.AppointmentId == id
+                         select new PrescriptionDTO
+                         {
+                             CompositId = prescription.AppointmentId + "," + prescription.MedicineId,
+                             Dosage = prescription.Dosage,
+                             Every = prescription.Every,
+                             For = prescription.For,
+                             MedicineNameAr = medicine.NameAR,
+                             MedicineNameEn = medicine.NameEN,
+                             MedicineType = type.MedicineTypeName,
+                             Timespan = prescription.TimeSpan
+                         };
 
             return Ok(result);
         }
 
         [HttpGet]
         [Route("api/clinics/Prescriptions/{id}")]
-        public IHttpActionResult GetPrescriptions(int id)
+        [ClinicAuthentication]
+        public IHttpActionResult GetPrescriptions(int id)//user id
         {
+            if (!IsUserHaveAppointmentInClinic(id))
+                return BadRequest();
+
             var prescriptions = db.Prescriptions.Include(p => p.Appointment).Where(p => p.Appointment.UserId == id).Select(p => p).ToList();
             if (prescriptions.Count() == 0)
                 return Ok(prescriptions);
@@ -235,31 +294,21 @@ namespace FinalProject.Controllers.api
             return Ok(result);
         }
 
-        //[HttpPost]
-        //public IHttpActionResult AddDay(int clinicId, ScheduleDTO day)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest();
-
-        //    var clinic = db.Clinics.FirstOrDefault(c => c.ClinicId == clinicId);
-        //    clinic.Schedules.Add(Mapper.Map<ScheduleDTO, Schedule>(day));
-        //    db.SaveChanges();
-
-        //    return Ok(day);
-        //}
-
         [HttpGet]
         [Route("api/clinics/Schedule/{id}")]
-        public IHttpActionResult Schedule(int id)
+        [ClinicAuthentication]
+        public IHttpActionResult Schedule(int id)//Clinic id
         {
+            if (!IsClinicIdBelongsToToken(id))
+                return BadRequest();
+
             var schedule = from s in db.Schedules where s.ClinicId == id select s;
-            //var schedule = db.Schedules.Where(s=> s.ClinicId == id ).Select(s=>s).ToList();
 
             if (schedule.Count() == 0)
                 return Ok(schedule);
 
             var result = from s in db.Schedules
-                         where s.ClinicId == id 
+                         where s.ClinicId == id
                          select new
                          {
                              scheduleId = s.ScheduleId,
@@ -273,64 +322,70 @@ namespace FinalProject.Controllers.api
 
         [HttpDelete]
         [Route("api/clinics/Schedule/{id}")]
-        public IHttpActionResult DeleteSchedule(int id)
+        [ClinicAuthentication]
+        public IHttpActionResult DeleteSchedule(int id)//Schedule id
         {
+            if (!IsScheduleBelongsToClinic(id))
+                return BadRequest();
+
             var schedule = db.Schedules.Where(s => s.ScheduleId == id)
                 .FirstOrDefault();
 
             if (schedule == null)
                 return NotFound();
 
-
             db.Schedules.Remove(schedule);
             db.SaveChanges();
             return Ok();
         }
 
-        [HttpGet]
-        [Route("api/clinics/AvailableAppointment/{id}")]
-        [UsersAuthentication]
-        public IHttpActionResult AvailableAppointment(int? id)
+        [HttpDelete]
+        [Route("api/clinics/vacation/{id}")]
+        [ClinicAuthentication]
+        public IHttpActionResult DeleteVacation(int id)//vacation id
         {
-            if (!id.HasValue)
+            if (!IsVacationBelongsToClinic(id))
                 return BadRequest();
 
-            var clinic = db.Clinics.Where(c => c.IsActiveClinic == false).FirstOrDefault(c => c.ClinicId == id);
-            if (clinic == null)
+            var vacation = db.Vacations.Where(s => s.VacationId == id)
+                .FirstOrDefault();
+
+            if (vacation == null)
                 return NotFound();
 
-            var availableAppointments = GetAvailableAppointments(clinic.ClinicId, clinic.VisitDuration);
-            var appointmentInDb = db.Appointments.Where(c => c.ClinicId == clinic.ClinicId).Select(c => c);
+            if (vacation.ToDate < DateTime.Now)
+                return BadRequest();
 
-            availableAppointments = RemoveAppointmentInDbFromAvailableAppointments(availableAppointments, appointmentInDb);
-
-            return Ok(availableAppointments);
+            db.Vacations.Remove(vacation);
+            db.SaveChanges();
+            return Ok();
         }
 
-        private AvailableAppointments RemoveAppointmentInDbFromAvailableAppointments(AvailableAppointments availableAppointments, IQueryable<Appointment> appointmentInDb)
-        {
-            if (!appointmentInDb.Any())
-                return availableAppointments;
+        //ToDo For Future
+        //Check available Times at real Time
+        //private AvailableAppointments RemoveAppointmentInDbFromAvailableAppointments(AvailableAppointments availableAppointments, IQueryable<Appointment> appointmentInDb)
+        //{
+        //    if (!appointmentInDb.Any())
+        //        return availableAppointments;
 
-            List<Appointment> q = appointmentInDb.ToList();
-            for (int i = 0; i < availableAppointments.AvailableDays.Count; i++)
-            {
-                var appointment = availableAppointments.AvailableDays[i];
+        //    List<Appointment> q = appointmentInDb.ToList();
+        //    for (int i = 0; i < availableAppointments.AvailableDays.Count; i++)
+        //    {
+        //        var appointment = availableAppointments.AvailableDays[i];
 
-                for (int j = 0; j < q.Count(); j++)
-                {
-                    if (q[j].Date.DayOfWeek == appointment.Day)
-                    {
-                        if (appointment.Times.Contains(q[j].Time))
-                        {
-                            availableAppointments.AvailableDays[i].Times.Remove(q[j].Time);
-                        }
-                    }
-                }
-            }
-            return availableAppointments;
-        }
-
+        //        for (int j = 0; j < q.Count(); j++)
+        //        {
+        //            if (q[j].Date.DayOfWeek == appointment.Day)
+        //            {
+        //                if (appointment.Times.Contains(q[j].Time))
+        //                {
+        //                    availableAppointments.AvailableDays[i].Times.Remove(q[j].Time);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return availableAppointments;
+        //}
 
         private AvailableAppointments GetAvailableAppointments(int clinicId, byte visitDuration)
         {
@@ -341,7 +396,7 @@ namespace FinalProject.Controllers.api
                 AvailableDay day = new AvailableDay();
                 day.Day = item.Day;
 
-                var times = GetTime(item.FromTime, item.ToTime, visitDuration);
+                var times = GetTimes(item.FromTime, item.ToTime, visitDuration);
                 AvailableDay dayInAvailable = null;
                 if (appointments.AvailableDays.Any())
                     dayInAvailable = appointments.AvailableDays.Where(d => d.Day == item.Day).FirstOrDefault();//If there is any repeated day
@@ -361,7 +416,7 @@ namespace FinalProject.Controllers.api
             return appointments;
         }
 
-        private List<string> GetTime(string fromTime, string toTime, byte visitDuration)
+        private List<string> GetTimes(string fromTime, string toTime, byte visitDuration)
         {
             List<string> times = new List<string>();
             Time from = new Time(fromTime);
@@ -376,14 +431,265 @@ namespace FinalProject.Controllers.api
             return times;
         }
 
+        [HttpGet]
+        [Route("api/clinics/vacations/{id}")]
+        public IHttpActionResult GetVacations(int id)//Clinic id
+        {
+            if (!IsClinicIdBelongsToToken(id))
+                return BadRequest();
+
+            var vacations = db.Vacations.Where(v => v.ClinicId == id).ToList().Select(v => new
+            {
+                fromDate = v.FromDate.ToShortDateString(),
+                toDate = v.ToDate.ToShortDateString(),
+                status = v.Statue,
+                vacId = v.VacationId
+            });
+
+            return Ok(vacations);
+        }
+        #endregion
+
         #region For Users
+        [HttpGet]
+        [Route("api/clinics/AvailableAppointment/{id}")]
+        [UsersAuthentication]
+        public IHttpActionResult AvailableAppointment(int? id)
+        {
+            if (!id.HasValue)
+                return BadRequest();
+
+            var clinic = db.Clinics.Where(c => c.IsActiveClinic == true).FirstOrDefault(c => c.ClinicId == id);
+            if (clinic == null)
+                return NotFound();
+
+            var availableAppointments = GetAvailableAppointments(clinic.ClinicId, clinic.VisitDuration);
+            var appointmentInDb = db.Appointments.Where(c => c.ClinicId == clinic.ClinicId).Select(c => c);
+            //availableAppointments = RemoveAppointmentInDbFromAvailableAppointments(availableAppointments, appointmentInDb);
+            return Ok(availableAppointments);
+        }
+
+        //All Visits that made by specific user
+        [HttpGet]
+        [Route("api/clinics/Visits/{id}")]
+        [UsersAuthentication]
+        public IHttpActionResult GetAppointment(int? id)//userId
+        {
+            if (!id.HasValue)
+                return BadRequest();
+
+            var appointments = db.Appointments.Where(a => a.Confirmed && a.UserId == id)
+                .ToList().Where(a => !string.IsNullOrEmpty(a.Symptoms))
+                .Select(c => c);
+
+            if (appointments.Count() == 0)
+                return NotFound();
+
+            var result = from a in db.Appointments
+                         join c in db.Clinics on a.ClinicId equals c.ClinicId
+                         join u in db.Users on c.UserId equals u.UserId
+                         where a.UserId == id && a.Symptoms != null
+                         select new VisitListItemDTO
+                         {
+                             ClinicId = a.ClinicId,
+                             ClinicName = c.ClinicName,
+                             Doctor = u.FirstName + " " + u.FatherName + " " + u.LastName,
+                             Symptoms = a.Symptoms,
+                             Date = a.Date
+                         };
+
+            return Ok(result);
+        }
+
+        //An confirmed visit info
+        [HttpGet]
+        [Route("api/clinics/VisitInfo/{id}")]
+        [UsersAuthentication]
+        public IHttpActionResult GetAppointmentInfo(int? id)//Visit Id
+        {
+            if (!id.HasValue)
+                return BadRequest();
+
+            var appointment = db.Appointments
+                .Where(a => a.Confirmed && a.AppointmentId == id)
+                .ToList().Where(a => !string.IsNullOrEmpty(a.Symptoms))
+                .FirstOrDefault();
+
+            if (appointment == null)
+                return NotFound();
+
+            var prescritions = db.Prescriptions.Include(p => p.Medicine).Where(p => p.AppointmentId == id).Select(Mapper.Map<Prescription, PrescriptionDTO>);
+
+            var result = from prescription in db.Prescriptions
+                             //join appointment in db.Appointments on prescription.AppointmentId equals appointment.AppointmentId
+                         join medicine in db.Medicines on prescription.MedicineId equals medicine.MedicineId
+                         join type in db.MedicineTypes on medicine.MedicineTypeId equals type.MedicineTypeId
+                         where prescription.AppointmentId == id
+                         select new PrescriptionDTO
+                         {
+                             CompositId = prescription.AppointmentId + "," + prescription.MedicineId,
+                             Dosage = prescription.Dosage,
+                             Every = prescription.Every,
+                             For = prescription.For,
+                             MedicineNameAr = medicine.NameAR,
+                             MedicineNameEn = medicine.NameEN,
+                             MedicineType = type.MedicineTypeName,
+                             Timespan = prescription.TimeSpan
+                         };
+
+            var appointmentInfo = new AppointmentInfoDTO
+            {
+                Appointment = Mapper.Map<Appointment, AppointmentDTO>(appointment),
+                Prescriptions = result.ToList()
+            };
+
+            return Ok(appointmentInfo);
+        }
+
+        [HttpGet]
+        [Route("api/clinics/Serach/Id/{id}")]
+        [UsersAuthentication]
+        public IHttpActionResult SearchByName(int id)
+        {
+            var clinic = from c in db.Clinics
+                         join ct in db.ClinicTypes on c.ClinicTypeId equals ct.ClinicTypeId
+                         join u in db.Users on c.UserId equals u.UserId
+                         join l in db.Locations on c.ClinicId equals l.ClinicId
+                         join s in db.Schedules on c.ClinicId equals s.ClinicId
+                         where c.IsActiveClinic == true && c.ClinicId == id
+                         select new ClinicListItem
+                         {
+                             clinicId = c.ClinicId,
+                             clinicName = c.ClinicName,
+                             doctor = u.FirstName + " " + u.FatherName + " " + u.LastName,
+                             clinicType = ct.ClinicTypeName,
+                             location = l.Longtude + "," + l.Latitude
+                         };
+
+            if (clinic.Count() == 0)
+                return NotFound();
+
+            return Ok(clinic.FirstOrDefault());
+        }
+
+        [HttpGet]
+        [Route("api/clinics/Serach/{name}")]
+        [UsersAuthentication]
+        public IHttpActionResult SearchByName(string name)
+        {
+            var clinics = db.Clinics
+                .Where(c => c.IsActiveClinic == true);
+            if (clinics.Count() == 0)
+                return Ok(clinics.ToList());
+
+            var list = GetClinicsList();
+            var result = new List<ClinicListItem>();
+            foreach (var item in list)
+            {
+                if (item.clinicName.Contains(name))
+                    result.Add(item);
+            }
+            if (result.Count() == 0)
+                return NotFound();
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("api/clinics/Serach/type/{name}")]
+        [UsersAuthentication]
+        public IHttpActionResult SearchByTypeName(string name)
+        {
+            var clinics = db.Clinics
+                .Where(c => c.IsActiveClinic == true);
+            if (clinics.Count() == 0)
+                return Ok(clinics.ToList());
+
+            var list = GetClinicsList();
+            var result = new List<ClinicListItem>();
+            foreach (var item in list)
+            {
+                if (item.clinicType.Contains(name))
+                    result.Add(item);
+            }
+            if (result.Count() == 0)
+                return NotFound();
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("api/clinics/Serach/doctor/{name}")]
+        [UsersAuthentication]
+        public IHttpActionResult SearchByTypeDoctorName(string name)
+        {
+            var clinics = db.Clinics
+                .Where(c => c.IsActiveClinic == true);
+            if (clinics.Count() == 0)
+                return Ok(clinics.ToList());
+
+            var list = GetClinicsList();
+            var result = new List<ClinicListItem>();
+            foreach (var item in list)
+            {
+                if (item.doctor.Contains(name))
+                    result.Add(item);
+            }
+            if (result.Count() == 0)
+                return NotFound();
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("api/clinics/list")]
+        [UsersAuthentication]
+        public IHttpActionResult GetClinics()
+        {
+            var clinics = db.Clinics
+                .Where(c => c.IsActiveClinic == true);
+
+            if (clinics.Count() == 0)
+                return Ok(clinics.ToList());//Empty list
+
+            return Ok(GetClinicsList());
+        }
+
+        [HttpGet]
+        [Route("api/clinics/list/today")]
+        [UsersAuthentication]
+        public IHttpActionResult GetClinicsToday()
+        {
+            var clinics = db.Clinics
+                .Where(c => c.IsActiveClinic == true);
+
+            if (clinics.Count() == 0)
+                return Ok(clinics.ToList());//Empty list
+
+            DayOfWeek today = DateTime.Now.DayOfWeek;
+            //Get all clinics That have location and schedula at today
+            var result = from c in db.Clinics
+                         join ct in db.ClinicTypes on c.ClinicTypeId equals ct.ClinicTypeId
+                         join u in db.Users on c.UserId equals u.UserId
+                         join l in db.Locations on c.ClinicId equals l.ClinicId
+                         join s in db.Schedules on c.ClinicId equals s.ClinicId
+                         where c.IsActiveClinic == true && s.Day == today
+                         select new
+                         {
+                             clinicId = c.ClinicId,
+                             clinicName = c.ClinicName,
+                             doctor = u.FirstName + " " + u.FatherName + " " + u.LastName,
+                             clinicType = ct.ClinicTypeName,
+                             location = l.Longtude + "," + l.Latitude,
+                             activeHour = s.FromTime + " - " + s.ToTime
+                         };
+
+            return Ok(result.Distinct().ToList());
+        }
+
         [HttpPost]
         [Route("api/clinics/MakeAppointment")]
         [UsersAuthentication]
-        //public IHttpActionResult MakeAppointment([FromBody]int? userId, [FromBody]int? clinicId, [FromBody] DateTime date, [FromBody] string time)
         public IHttpActionResult MakeAppointment([FromBody]PickAppointment request)
         {
-            if (!request.userId.HasValue || !request.clinicId.HasValue || request.date == null || request.time == null)
+            if (!ModelState.IsValid)
                 return BadRequest();
 
             if (request.date.Date < DateTime.Now.Date)
@@ -392,20 +698,102 @@ namespace FinalProject.Controllers.api
             if (!AppServices.IsValidTime(request.time))
                 return BadRequest("Invalid time format");
 
-            bool timeExists = CheckTimeIfExists(request.clinicId.Value, request.date, request.time);
-            if (timeExists)
-                return BadRequest("Invalid Time");
+            if (!IsValidDate(request.clinicId, request.date))
+                return Ok("This Date Is Not Avaliable");
 
-            Appointment Appointment = new Appointment { UserId = request.userId.Value, ClinicId = request.clinicId.Value, Date = request.date.Date, Time = request.time, Symptoms = "" };
+            bool timeExists = CheckTimeIfExists(request.clinicId, request.date, request.time);
+            if (timeExists)
+                return Ok("Time Exsits");
+
+            Appointment Appointment = new Appointment
+            {
+                UserId = request.userId,
+                ClinicId = request.clinicId,
+                Date = request.date.Date,
+                Time = request.time
+            };
+
             db.Appointments.Add(Appointment);
             db.SaveChanges();
             return Ok();
         }
 
+        [HttpDelete]
+        [Route("api/clinics/Appointments/d/{id}")]//Delete appointment
+        [UsersAuthentication]
+        public IHttpActionResult UserDeleteAppointment(int id)//Appointment id
+        {
+            if (!IsAppointmentForUser(id))
+                return BadRequest();
+
+            var appointment = db.Appointments.Where(a => a.Confirmed == false)
+                .FirstOrDefault(a => a.AppointmentId == id);
+
+            if (appointment == null)
+                return NotFound();
+
+            db.Appointments.Remove(appointment);
+            db.SaveChanges();
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("api/clinics/Appointments/e/{id}")]//Delete appointment
+        [UsersAuthentication]
+        public IHttpActionResult UserEditAppointment(int id,AppointmentDTO appointmentDTO)//Appointment id
+        {
+            if (!IsAppointmentForUser(id))
+                return BadRequest();
+
+            if(AppServices.IsValidTime(appointmentDTO.Time))
+                return BadRequest();
+
+            var appointment = db.Appointments.Where(a => a.Confirmed == false)
+                .FirstOrDefault(a => a.AppointmentId == id);
+
+            if (appointment == null)
+                return NotFound();
+            try
+            {
+
+                appointment.Date = DateTime.Parse(appointmentDTO.Date);
+                appointment.Time = appointmentDTO.Time;
+                db.SaveChanges();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+            return Ok();
+        }
+
+        private List<ClinicListItem> GetClinicsList()
+        {
+            var result = from c in db.Clinics
+                         join ct in db.ClinicTypes on c.ClinicTypeId equals ct.ClinicTypeId
+                         join u in db.Users on c.UserId equals u.UserId
+                         join l in db.Locations on c.ClinicId equals l.ClinicId
+                         join s in db.Schedules on c.ClinicId equals s.ClinicId
+                         where c.IsActiveClinic == true
+                         select new ClinicListItem
+                         {
+                             clinicId = c.ClinicId,
+                             clinicName = c.ClinicName,
+                             doctor = u.FirstName + " " + u.FatherName + " " + u.LastName,
+                             clinicType = ct.ClinicTypeName,
+                             location = l.Longtude + "," + l.Latitude
+                         };
+
+            return result.Distinct().ToList();
+        }
+
         private bool CheckTimeIfExists(int clinicId, DateTime date, string time)
         {
-            IQueryable<Appointment> appointments = db.Appointments.Where(a => a.ClinicId == clinicId).Select(a => a);
-            appointments = from a in appointments where a.Date == date select a;
+            var appointments = db.Appointments
+                .Where(a => a.ClinicId == clinicId)
+                .ToList().Where(a => a.Date.Date == date.Date)
+                .Select(a => a);
+
             foreach (var item in appointments)
             {
                 if (item.Time == time)
@@ -414,101 +802,108 @@ namespace FinalProject.Controllers.api
             return false;
         }
 
+        //Check if the day of week for given date is in clinic schedule
+        private bool IsValidDate(int clinicId, DateTime date)
+        {
+            var schedule = db.Schedules.Where(a => a.ClinicId == clinicId).Select(a => a);
+            if (schedule.Count() == 0)
+                return false;
+
+            foreach (var day in schedule)
+            {
+                if (day.Day == date.DayOfWeek)
+                    return true;
+            }
+
+            return false;
+        }
+
         #endregion
 
-        //[HttpPut]
-        //public IHttpActionResult Edit(int id, ClinicDTO clinic)
-        //{
-        //    if (!ModelState.IsValid || clinic.ClinicId != id)
-        //        return BadRequest("Invalid Clinic Properties");
+        public bool IsClinicIdBelongsToToken(int? clinicId)
+        {
+            int? tokenClinicId = AppServices.GetClinicIdFromToken(GetToken);
 
-        //    var clinicInDb = db.Clinics.Find(id);
+            if (tokenClinicId != clinicId)
+                return false;
+            return true;
+        }
 
-        //    if (clinicInDb == null)
-        //        return NotFound();
+        public bool IsAppointmentBelongsToClinic(int? appointmentId)
+        {
+            int? tokenClinicId = AppServices.GetClinicIdFromToken(GetToken);
+            var appointment = db.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId);
+            if (appointment == null || tokenClinicId != appointment.ClinicId)
+                return false;
+            return true;
+        }
 
-        //    Mapper.Map(clinic, clinicInDb);
-        //    db.SaveChanges();
-        //    return Ok(clinic);
-        //}
+        public bool IsScheduleBelongsToClinic(int? scheduleId)
+        {
+            int? tokenClinicId = AppServices.GetClinicIdFromToken(GetToken);
+            var schedule = db.Schedules.FirstOrDefault(a => a.ScheduleId == scheduleId);
+            if (schedule == null || tokenClinicId != schedule.ClinicId)
+                return false;
+            return true;
+        }
 
-        //[HttpPut]
-        //public IHttpActionResult EditLocation(int id, LocationDTO location)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest();
+        public bool IsVacationBelongsToClinic(int? vacationId)
+        {
+            int? tokenClinicId = AppServices.GetClinicIdFromToken(GetToken);
+            var vacation = db.Vacations.FirstOrDefault(a => a.VacationId == vacationId);
+            if (vacation == null || tokenClinicId != vacation.ClinicId)
+                return false;
+            return true;
+        }
 
-        //    var clinicToUpdate = db.Clinics.Find(id);
+        public bool IsUserHaveAppointmentInClinic(int? userId)
+        {
+            int? tokenClinicId = AppServices.GetClinicIdFromToken(GetToken);
+            var appointment = db.Appointments.FirstOrDefault(a => a.UserId == userId);//Have at least one appointment
+            if (appointment == null || tokenClinicId != appointment.ClinicId)
+                return false;
+            return true;
+        }
 
-        //    if (clinicToUpdate == null)
-        //        return NotFound();
+        public bool IsAppointmentForUser(int? appointmentId)
+        {
+            int? tokenUserId = AppServices.GetUserIdFromToken(GetToken);
+            var appointment = db.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId 
+                && a.UserId == tokenUserId);//Have at least one appointment
 
-        //    clinicToUpdate.Location = Mapper.Map<LocationDTO, Location>(location);
+            if (appointment == null)
+                return false;
+            return true;
+        }
 
-        //    db.SaveChanges();
-        //    return Ok(location);
-        //}
 
-        //[HttpPut]
-        //public IHttpActionResult EditSchedule(int clinicId, int scheduleId, ScheduleDTO schedule)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest();
+        public bool IsPrescriptionBelongsToClinic(int appointmentId, int medicineId)
+        {
+            int? tokenClinicId = AppServices.GetClinicIdFromToken(GetToken);
+            var prescrption = db.Prescriptions.Include(a => a.Appointment)
+                .FirstOrDefault(a => a.AppointmentId == appointmentId
+                && a.MedicineId == medicineId);
 
-        //    var clinicToUpdate = db.Clinics.Find(clinicId);
+            if (prescrption == null || tokenClinicId != prescrption.Appointment.ClinicId)
+                return false;
+            return true;
+        }
 
-        //    if (clinicToUpdate == null)
-        //        return NotFound();
+        public bool IsCertificateBelongsToClinicDoctor(int certificateId)
+        {
+            int? tokenClinicId = AppServices.GetClinicIdFromToken(GetToken);
+            var certificate = db.Certifcates.FirstOrDefault(a => a.CertifcateID == certificateId);//Find certificate
 
-        //    var scheduleInDb = clinicToUpdate.Schedules.FirstOrDefault(s => s.ScheduleId == scheduleId);
+            if (certificate == null)
+                return false;
 
-        //    if (scheduleInDb == null)
-        //        return NotFound();
+            var clinic = db.Clinics.FirstOrDefault(a => a.UserId == certificate.UserId);//Find certificate owner 
+            if (clinic == null || clinic.ClinicId != tokenClinicId)//Check if user have clinic and it have the same id
+                return false;
 
-        //    Mapper.Map(schedule, scheduleInDb);
+            return true;
+        }
 
-        //    db.SaveChanges();
-        //    return Ok(schedule);
-        //}
-
-        //[HttpDelete]
-        //public IHttpActionResult DeleteSchedule(int clinicId, int scheduleId, ScheduleDTO schedule)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest();
-
-        //    var clinicToUpdate = db.Clinics.Find(clinicId);
-
-        //    if (clinicToUpdate == null)
-        //        return NotFound();
-
-        //    var scheduleInDb = clinicToUpdate.Schedules.FirstOrDefault(s => s.ScheduleId == scheduleId);
-
-        //    if (scheduleInDb == null)
-        //        return NotFound();
-
-        //    clinicToUpdate.Schedules.Remove(Mapper.Map(schedule, scheduleInDb));
-
-        //    db.SaveChanges();
-        //    return Ok(schedule);
-        //}
-
-        //[HttpDelete]
-        //public IHttpActionResult Delete(int id)
-        //{
-        //    var clinicInDb = db.Clinics.Find(id);
-
-        //    if (clinicInDb == null)
-        //        return NotFound();
-
-        //    if (clinicInDb.Appointments == null)
-        //    {
-        //        db.Clinics.Remove(clinicInDb);
-        //        db.SaveChanges();
-        //        return Ok();
-        //    }
-
-        //    return BadRequest();
-        //}
+        public string GetToken => Request.Headers.Authorization.Parameter;
     }
 }

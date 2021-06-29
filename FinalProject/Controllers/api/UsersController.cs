@@ -1,81 +1,42 @@
 ﻿using AutoMapper;
-using FinalProject.DTOs;
-using FinalProject.Services;
-using FinalProject.Models;
-using System;
-using System.Data.Entity;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using System.Web;
-using System.Web.Mvc;
-using FinalProject.ViewModels;
 using FinalProject.Authentication;
+using FinalProject.DTOs;
+using FinalProject.Models;
+using FinalProject.Services;
+using System;
+using System.Linq;
+using System.Web.Http;
 
 namespace FinalProject.Controllers.api
 {
 
-    [System.Web.Mvc.Route("api/users")]
+    //[System.Web.Mvc.Route("api/users")]
     public class UsersController : ApiController
     {
         private MyAppContext db = new MyAppContext();
 
-        #region Managemnt
-        //api/get
-        public IHttpActionResult Get()
-        {
-            return Ok(db.Users.Include(u => u.UserType).Select(Mapper.Map<User, UsersManageViewModel>));
-        }
+        #region Users
         //api/get/id
+        [UsersAuthentication]
+        [Route("api/users/{id}")]
         public IHttpActionResult Get(int id)
         {
-            var user = db.Users.Where(u => u.UserId == id).Select(Mapper.Map<User, UserDTO>);
+            var user = db.Users
+                .Where(u => u.UserTypeId == 10 && u.UserId == id)
+                .Select(Mapper.Map<User, UserDTO>)
+                .FirstOrDefault();
+
             if (user == null)
             {
                 return NotFound();
             }
+            
             return Ok(user);
         }
-
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("api/doctors")]
-        public IHttpActionResult Doctors()
-        {
-            return Ok(db.Users.Include(u => u.UserType).Where(u => u.UserTypeId == 20).Select(Mapper.Map<User, UsersManageViewModel>));
-        }
-
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("api/doctors/{id}")]
-        public IHttpActionResult Doctors(int id)
-        {
-            var user = db.Users.Where(u => u.UserId == id && u.UserTypeId == 20).Select(Mapper.Map<User, UsersManageViewModel>);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return Ok(user);
-        }
-
-        //api/userscount/
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("api/users/count")]
-        public IHttpActionResult UsersCount()
-        {
-            return Ok(db.Users.Count());
-        }
-        //api/userscount/usertypeid
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("api/users/count/{id}")]
-        public IHttpActionResult UsersCount(byte Id)
-        {
-            return Ok(db.Users.Where(u => u.UserTypeId == Id).Count());
-        } 
         #endregion
 
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.Route("api/users/signin")]
+        [HttpPost]
+        [Route("api/users/signin")]
         public IHttpActionResult SignIn([FromBody]SignInUser user)
         {
             if (!ModelState.IsValid)
@@ -88,21 +49,33 @@ namespace FinalProject.Controllers.api
                 return NotFound();
 
             bool passwordVerified = AppServices.VerifayPasswrod(user.Password, userInDb.UserPassword);
-            //ToDo
-            //Send Token
             if (passwordVerified)
             {
+                var token = db.Tokens.FirstOrDefault(t => t.UserId == userInDb.UserId);
                 string userToken = AppServices.TokenEncoding(user.Email, user.Password);
+                TokenProperties tokenProperties = new TokenProperties
+                {
+                    UserId = userInDb.UserId,
+                    Token = userToken,
+                    ExpireDate = DateTime.Now.AddDays(15),
+                    ObjectType ="Public User"
+                };
+                if (token == null)
+                    db.Tokens.Add(tokenProperties);
+                else
+                    token.ExpireDate = tokenProperties.ExpireDate;
+
+                db.SaveChanges();
                 return Ok(new { userId = userInDb.UserId, token = userToken });
             }
             return NotFound();
         }
 
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.Route("api/users/signup")]
+        [HttpPost]
+        [Route("api/users/signup")]
         public IHttpActionResult SignUp([FromBody]SignUpUser user)
         {
-            if (!ModelState.IsValid || user.UserTypeId != 10)
+            if (!ModelState.IsValid)
                 return BadRequest("Invalid properties");
 
             if (AppServices.CheckEmailIfExist(user.UserEmail))
@@ -119,37 +92,13 @@ namespace FinalProject.Controllers.api
 
             db.Users.Add(userInDb);
             db.SaveChanges();
-
-            //ToDo
-            //Send Email Code
-            AppServices.SendConfirmEmail(userInDb.UserEmail,userInDb.VerCode,userInDb.UserId);
+            AppServices.SendConfirmEmail(userInDb.UserEmail, userInDb.VerCode, userInDb.UserId);
             return Ok();
         }
 
-
-
-        // For security
-        [System.Web.Http.HttpPost]
+        [HttpPost]
         [UsersAuthentication]
-        [System.Web.Http.Route("api/users/ForgetPassword/{email}")]
-        public IHttpActionResult ForgetPassword(string email)
-        {
-            var user = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserEmail == email);
-            if (user == null)
-                return NotFound();
-
-            user.VerCode = AppServices.GenerateRandomNumber();
-            db.SaveChanges();
-
-            //ToDo
-            //Add Email Service
-
-            return Ok("Email Sent");
-        }
-
-        [System.Web.Http.HttpPost]
-        [UsersAuthentication]
-        [System.Web.Http.Route("api/users/ResetPassword")]
+        [Route("api/users/EditPassword")]
         public IHttpActionResult ChangePassword([FromBody] ChangePasswordDTO data)
         {
             if (!ModelState.IsValid)
@@ -157,7 +106,7 @@ namespace FinalProject.Controllers.api
 
             var user = db.Users.Where(u => u.Locked == false && u.UserId == data.UserId).FirstOrDefault();
 
-            if (!AppServices.VerifayPasswrod(data.UserPassword,user.UserPassword))
+            if (!AppServices.VerifayPasswrod(data.OldPassword, user.UserPassword))
                 return BadRequest();
 
             user.UserPassword = AppServices.HashPassword(data.UserPassword);
@@ -166,29 +115,54 @@ namespace FinalProject.Controllers.api
             return Ok("Password Reset");
         }
 
-        [System.Web.Http.HttpPost]
+        [HttpPost]
         [UsersAuthentication]
-        [System.Web.Http.Route("api/users/EditProfile")]
-        public IHttpActionResult EditProfile([FromBody, Bind(Exclude = "Gender,UserId,UserTypeId")]UserDTO user)
+        [Route("api/users/EditEmail")]
+        public IHttpActionResult EditEmail([FromBody] ChangeEmailDTO data)
         {
-            var userdb = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserId == user.UserId);
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = db.Users.Where(u => u.Locked == false && u.UserId == data.UserId).FirstOrDefault();
+
+            if (!AppServices.VerifayPasswrod(data.UserPassword, user.UserPassword))
+                return BadRequest();
+
+            user.UserEmail = data.Email.Trim().ToLower();
+            db.SaveChanges();
+            
+            return Ok("Email Reset");
+        }
+
+        [HttpPost]
+        [UsersAuthentication]
+        [Route("api/users/EditProfile/{id}")]
+        public IHttpActionResult EditProfile(int id, UserDTO user)
+        {
+            if (!IsSameUserId(id))//userId
+                return BadRequest();
+
+            var userdb = db.Users.Where(u => u.Locked == false).FirstOrDefault(u => u.UserId == id);
             if (userdb == null)
                 return NotFound();
-
-            // Request.Headers.Authorization.Scheme
-
             userdb.FirstName = user.FirstName;
             userdb.FatherName = user.FatherName;
             userdb.LastName = user.LastName;
             userdb.Jop = user.Jop;
-
             db.SaveChanges();
+            
             return Ok("Profile Edited");
         }
 
-        //public int GetUserIdFromHeader(string header)
-        //{
+        public bool IsSameUserId(int? userId)
+        {
+            int? tokenUserId = AppServices.GetUserIdFromToken(GetToken);
+            var user = db.Users.FirstOrDefault(a => a.UserId == userId);
+            if (user == null || tokenUserId != user.UserId)
+                return false;
+            return true;
+        }
 
-        //}
+        public string GetToken => Request.Headers.Authorization.Parameter;
     }
 }

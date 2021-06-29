@@ -1,12 +1,8 @@
 ﻿
 @{
-    ViewBag.Title = "Cities";
+    ViewBag.Title = "المدن";
     Layout = "~/Views/Shared/_Managment.cshtml";
 }
-
-
-
-
 
 <h4 class="text-color-primary">المدن</h4>
 
@@ -20,6 +16,7 @@
             <tr>
                 <th>اسم المدينة</th>
                 <th>فعالة</th>
+                <th></th>
                 <th></th>
             </tr>
         </thead>
@@ -35,6 +32,13 @@
             var table = $("#clinics").DataTable({
                 ajax: {
                     url: "/api/Management/Cities",
+                    headers: {
+                        Authorization: 'Basic ' + sessionStorage.getItem('token')
+                    },
+                    complete: function (e) {
+                        if (e.status == '401')
+                            window.location.href = '/management/signout';
+                    },
                     dataSrc: ""
                 },
                 columns: [
@@ -46,9 +50,61 @@
                             return `<a href='EditCity/${data}' class='btn btn-sm border'>تعديل</a>`;
                         }
                     },
+                    {
+                        data: "cityId",
+                        render: function (data) {
+                            return `<button class="btn btn-sm js-delete btn-outline-danger" data-id='${data}'>حذف</button>`;
+                        }
+                    },
                 ], dom: '<"row w-100 pb-3" <"px-3" f> <"px-3 mr-auto" l>>' +
                     '<"col-12"t>' +
                     '<"col-12" <"row"p><"row" i>>'
+            });
+            table.on('click', '.js-delete', (button) => {
+                var btn = button.target;
+                var b = $(this);
+                Swal.fire({
+                    customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton: 'btn btn-light border'
+                    },
+                    icon: 'warning',
+                    title: 'هل تريد حذف المدينة',
+                    showCancelButton: true,
+                    confirmButtonText: `Delete`,
+                    confirmButtonColor: `#dc3545`,
+                }).then((result) => {
+                    if (result.dismiss === Swal.isConfirmed) {
+                        $.ajax({
+                            url: `/api/Management/cities/${btn.attributes[1].value}`,
+                            headers: {
+                                Authorization: 'Basic ' + sessionStorage.getItem('token')
+                            },
+                            complete: function (e) {
+                                if (e.status == '401')
+                                    window.location.href = '/management/signout';
+                            },
+                            method: 'Delete',
+                            error: function () {
+                                Swal.fire({
+                                    title: 'Warning',
+                                    icon: 'warning',
+                                    text: 'لم يتم الحذف المدينة لديها سجلات فرعية',
+                                    timer: 2000
+                                })
+                            },
+                            success: function () {
+                                Swal.fire({
+                                    title: 'Done',
+                                    icon: 'success',
+                                    text: 'تم حذف المدينة',
+                                    timer: 2000
+                                });
+                                table.row(btn.parentElement.parentElement).remove().draw();
+                            }
+                        });
+                    }
+                });
             });
         });
     </script>

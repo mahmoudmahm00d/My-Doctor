@@ -12,4 +12,12 @@ namespace FinalProject.DTOs
         [MaxLength(255)]
         public string Email { get; set; }
     }
+
+    public class EmailDTO
+    {
+        [Required]
+        [EmailAddress]
+        [MaxLength(255)]
+        public string Email { get; set; }
+    }
 }

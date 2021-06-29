@@ -19,20 +19,15 @@
         </div>
     </div>
 }
-<div class="col">
-    @Html.ActionLink("إضافة يوم", "AddMedicine", "Pharmacies", new { @class = "btn background-color-primary" })
-</div>
-<h4 class="text-color-primary">الأدوية</h4>
+<h4 class="text-color-primary">سجلات المواعيد</h4>
 
 <div class="col-md-12 mt-3 table-responsive">
     <table id="appointments" class="table table-hover col-12 bg-light border">
         <thead>
             <tr>
-                <th>الاسم بالعربي</th>
-                <th>الاسم بالانجليوي</th>
-                <th>متاح</th>
-                <th></th>
-                <th></th>
+                <th>اسم المريض</th>
+                <th>تاريخ الزيارة</th>
+                <th>مضمون الزيارة</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -47,6 +42,13 @@
             $("#appointments").DataTable({
                 ajax: {
                     url: "/api/clinics/patients/@Session["ClinicId"]",
+                    headers: {
+                        Authorization: 'Basic ' + sessionStorage.getItem('token')
+                    },
+                    complete: function (e) {
+                        if (e.status == '401')
+                            window.location.href = '/accounts/signout';
+                    },
                     dataSrc: ""
                 },
                 columns: [

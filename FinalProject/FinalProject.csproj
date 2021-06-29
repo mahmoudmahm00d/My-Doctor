@@ -187,30 +187,30 @@
     <Compile Include="App_Start\MapperProfile.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Authentication\ManagerAuthenticationAttribute.cs" />
+    <Compile Include="Authentication\PharmacyAuthenticationAttribute.cs" />
+    <Compile Include="Authentication\ClinicAuthenticationAttribute.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\api\AvailableAppointments.cs" />
-    <Compile Include="Controllers\api\ManagementController.cs" />
     <Compile Include="Controllers\api\ClinicsController.cs" />
-    <Compile Include="Controllers\api\ClinicTypesController.cs" />
+    <Compile Include="Controllers\api\ManagementController.cs" />
     <Compile Include="Controllers\api\MedicinesController.cs" />
-    <Compile Include="Controllers\api\MedicineTypesController.cs" />
     <Compile Include="Controllers\api\PharmaciesController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="DTOs\AppointmentInfoDTO.cs" />
     <Compile Include="DTOs\CertificateDTO.cs" />
     <Compile Include="DTOs\ClinicInfoDTO.cs" />
-    <Compile Include="DTOs\CreateMedicineDTO.cs" />
+    <Compile Include="DTOs\ClinicListItem.cs" />
     <Compile Include="DTOs\CreatePharmacyDTO.cs" />
     <Compile Include="DTOs\EditEmailDTO.cs" />
     <Compile Include="DTOs\EditPasswordDTO.cs" />
+    <Compile Include="DTOs\MedicineDTO.cs" />
+    <Compile Include="DTOs\MedicineToAppDTO.cs" />
     <Compile Include="DTOs\PickAppointment.cs" />
     <Compile Include="Controllers\api\SearchController.cs" />
     <Compile Include="Controllers\api\UsersController.cs" />
-    <Compile Include="Controllers\api\UserTypesController.cs" />
     <Compile Include="Controllers\ClinicsController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManagementController.cs" />
-    <Compile Include="Controllers\MedicinesController.cs" />
-    <Compile Include="Controllers\MedicineTypesController.cs" />
     <Compile Include="Controllers\PharmaciesController.cs" />
     <Compile Include="DTOs\AppointmentDTO.cs" />
     <Compile Include="DTOs\ChangePasswordDTO.cs" />
@@ -223,7 +223,13 @@
     <Compile Include="DTOs\PharmacyDTO.cs" />
     <Compile Include="DTOs\PharmacyOnlyDTO.cs" />
     <Compile Include="DTOs\FormPrescritpionDTO.cs" />
+    <Compile Include="DTOs\PrescriptionDTO.cs" />
+    <Compile Include="DTOs\SignUpRequestDTO.cs" />
+    <Compile Include="DTOs\TokenAndType.cs" />
+    <Compile Include="DTOs\TokenDTO.cs" />
     <Compile Include="DTOs\UserTypeDTO.cs" />
+    <Compile Include="DTOs\VacationDTO.cs" />
+    <Compile Include="DTOs\VisitListItemDTO.cs" />
     <Compile Include="Filters\PhoneNumber.cs" />
     <Compile Include="Migrations\202105130915301_modifySomeFields.cs" />
     <Compile Include="Migrations\202105130915301_modifySomeFields.designer.cs">
@@ -289,7 +295,20 @@
     <Compile Include="Migrations\202106120931093_ChangeStingLengthInManagerTable.designer.cs">
       <DependentUpon>202106120931093_ChangeStingLengthInManagerTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202106131511487_AddIdToVacationTable.cs" />
+    <Compile Include="Migrations\202106131511487_AddIdToVacationTable.designer.cs">
+      <DependentUpon>202106131511487_AddIdToVacationTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106152214463_overrideStringLength.cs" />
+    <Compile Include="Migrations\202106152214463_overrideStringLength.designer.cs">
+      <DependentUpon>202106152214463_overrideStringLength.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202106290719003_AddTokenTable.cs" />
+    <Compile Include="Migrations\202106290719003_AddTokenTable.designer.cs">
+      <DependentUpon>202106290719003_AddTokenTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Time.cs" />
+    <Compile Include="Models\TokenProperties.cs" />
     <Compile Include="Services\Services.cs" />
     <Compile Include="ViewModels\ClinicDTO.cs" />
     <Compile Include="DTOs\Doctor.cs" />
@@ -336,6 +355,7 @@
     <Compile Include="ViewModels\UsersManageViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="404.html" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-reboot.css" />
@@ -504,11 +524,14 @@
     <Content Include="Content\management.css" />
     <Content Include="Content\shared.css" />
     <Content Include="Content\sweetalert2.min.css" />
+    <Content Include="Content\typeahead.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\bloodhound.js" />
+    <Content Include="Scripts\bloodhound.min.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -612,6 +635,7 @@
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Scripts\jquery-3.6.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.6.0.js" />
     <Content Include="Scripts\jquery-3.6.0.min.js" />
@@ -693,6 +717,10 @@
     <Content Include="Scripts\src\utils\setStyles.js" />
     <Content Include="Scripts\src\utils\setupEventListeners.js" />
     <Content Include="Scripts\sweetalert2.min.js" />
+    <Content Include="Scripts\typeahead.bundle.js" />
+    <Content Include="Scripts\typeahead.bundle.min.js" />
+    <Content Include="Scripts\typeahead.jquery.js" />
+    <Content Include="Scripts\typeahead.jquery.min.js" />
     <Content Include="Scripts\umd\popper-utils.js" />
     <Content Include="Scripts\umd\popper-utils.min.js" />
     <Content Include="Scripts\umd\popper.js" />
@@ -709,10 +737,6 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\_Managment.cshtml" />
     <Content Include="Scripts\umd\popper.min.js.map" />
     <Content Include="Scripts\umd\popper.js.map" />
@@ -774,14 +798,37 @@
     <Content Include="Views\Management\AddMedicine.cshtml" />
     <Content Include="Views\Management\EditMedicine.cshtml" />
     <Content Include="Views\Management\Users.cshtml" />
-    <Content Include="Views\Management\EditPassword.cshtml" />
     <Content Include="Views\Management\EditEmail.cshtml" />
+    <Content Include="Views\Management\Management.cshtml" />
+    <Content Include="Views\Accounts\ForgetPassword.cshtml" />
+    <Content Include="Views\Accounts\Confirm.cshtml" />
+    <Content Include="Views\Accounts\NewPassword.cshtml" />
+    <Content Include="Views\Management\ForgetPassword.cshtml" />
+    <Content Include="Views\Management\Confirm.cshtml" />
+    <Content Include="Views\Management\NewPassword.cshtml" />
+    <Content Include="Views\Pharmacies\SelectMedicine.cshtml" />
+    <Content Include="Views\Clinics\Vacations.cshtml" />
+    <Content Include="Views\Clinics\AddVacations.cshtml" />
+    <Content Include="Views\Clinics\EditVacations.cshtml" />
+    <Content Include="Views\Management\PharmaciesLocation.cshtml" />
+    <Content Include="Views\Management\PhramaciesRequests.cshtml" />
+    <Content Include="Views\Management\ClinicTypes.cshtml" />
+    <Content Include="Views\Management\AddClinicType.cshtml" />
+    <Content Include="Views\Management\EditClinicType.cshtml" />
+    <Content Include="Views\Management\MiddleStage.cshtml" />
+    <Content Include="Views\Accounts\Middle.cshtml" />
+    <Content Include="Views\Accounts\SignOut.cshtml" />
+    <Content Include="Views\Management\SignOut.cshtml" />
+    <Content Include="Views\Management\Middle.cshtml" />
+    <Content Include="Services\Email.config" />
+    <Content Include="Views\Management\EditPassword.cshtml" />
+    <Content Include="Views\Management\MedicineTypes.cshtml" />
+    <Content Include="Views\Management\AddMedicineType.cshtml" />
+    <Content Include="Views\Management\EditMedicineType.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Certificates\" />
-    <Folder Include="Views\Medicines\" />
-    <Folder Include="Views\MedicineTypes\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -835,6 +882,15 @@
     <EmbeddedResource Include="Migrations\202106120931093_ChangeStingLengthInManagerTable.resx">
       <DependentUpon>202106120931093_ChangeStingLengthInManagerTable.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106131511487_AddIdToVacationTable.resx">
+      <DependentUpon>202106131511487_AddIdToVacationTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106152214463_overrideStringLength.resx">
+      <DependentUpon>202106152214463_overrideStringLength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202106290719003_AddTokenTable.resx">
+      <DependentUpon>202106290719003_AddTokenTable.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />
@@ -845,6 +901,16 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Testing|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />

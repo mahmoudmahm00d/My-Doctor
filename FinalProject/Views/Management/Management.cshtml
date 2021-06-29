@@ -1,0 +1,71 @@
+﻿@model  string[]
+@{
+    ViewBag.Title = "الادارة";
+    Layout = "~/Views/Shared/_Managment.cshtml";
+}
+
+<div class="col">
+    <div class="row main-header">
+        <h1 class="mx-auto text-color-primary">
+            الادارة
+        </h1>
+    </div>
+
+    <div class="row main-header pt-5">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-2 ">
+            <small class="col card p-2 mx-auto text-center">
+                المستخدمين
+            </small>
+            <small class="col card p-2 mx-auto text-center">
+                @Model[0]
+            </small>
+        </div>
+        <div class="col-lg-2">
+            <small class="col card p-2 mx-auto text-center">
+                العيادات
+            </small>
+            <small class="col card p-2 mx-auto text-center">
+                @Model[1]
+            </small>
+        </div>
+        <div class="col-lg-2">
+            <small class="col card p-2 mx-auto text-center">
+                الصيدليات
+            </small>
+            <small class="col card p-2 mx-auto text-center">
+                @Model[2]
+            </small>
+        </div>
+        <div class="col-lg-2">
+            <small class="col card p-2 mx-auto text-center">
+                المدن
+            </small>
+            <small class="col card p-2 mx-auto text-center">
+                @Model[3]
+            </small>
+        </div>
+        <div class="col-lg-2">
+            <small class="col card p-2 mx-auto text-center">
+                الادوية
+            </small>
+            <small class="col card p-2 mx-auto text-center">
+                @Model[4]
+            </small>
+        </div>
+        <div class="col-lg-1"></div>
+    </div>
+    <hr class="w-50  mx-auto" />
+    <div class="row">
+        <div class="col-md-6 mx-auto text-center">
+            @Html.ActionLink("تعديل كلمة المرور", "EditPassword")
+        </div>
+        <div class="col-md-6  mx-auto text-center">
+            @Html.ActionLink("تعديل البريد الالكتروني", "EditEmail")
+        </div>
+    </div>
+    <hr class="w-50  mx-auto" />
+    <div class="row">
+        <div class="text-center col-md-6 mx-auto">@Html.ActionLink("تسجيل الخروج", "SignOut")</div>
+    </div>
+</div>

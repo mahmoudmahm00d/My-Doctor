@@ -8,10 +8,10 @@
     @Styles.Render("~/Content/css")
 </head>
 
-<body dir="rtl">
+<body>
     <nav class="Navbar">
         <div class="Navbar-nav">
-            <div class="row w-100">
+            <div class="row px-3 w-100">
                 <button type="button" class="mr-auto" id="dropdown-menu-btn">
                     <svg id="menu" xmlns="http://www.w3.org/2000/svg" width="24" height="27.065"
                          viewBox="0 0 36 27.065">
@@ -26,19 +26,22 @@
                               transform="translate(-2 6.151)" fill="#fff" />
                     </svg>
                 </button>
-                @Html.ActionLink("MyDoctor", "Index", "Management", new { @class = "Nav-link logo" })
+                <img src="~/content/Logo W.svg" alt="Logo" class="img-fluid" />
             </div>
             <div class="options-menu closed-menu">
                 @Html.ActionLink("طلبات التسجيل", "Index", "Management", new { @class = "Nav-link" })
                 @Html.ActionLink("العيادات", "Clinics", "Management", new { @class = "Nav-link" })
-                @Html.ActionLink("المستخدمين", "Users", "Management", new { @class = "Nav-link" })
+                @Html.ActionLink("أنواع العيادات", "ClinicTypes", "Management", new { @class = "Nav-link" })
+                @Html.ActionLink("الصيدليات", "Pharmacies", "Management", new { @class = "Nav-link" })
                 @Html.ActionLink("الأدوية", "Medicines", "Management", new { @class = "Nav-link" })
+                @Html.ActionLink("أنواع الادوية", "MedicineTypes", "Management", new { @class = "Nav-link" })
+                @Html.ActionLink("المستخدمين", "Users", "Management", new { @class = "Nav-link" })
                 @Html.ActionLink("المدن", "Cities", "Management", new { @class = "Nav-link" })
                 @Html.ActionLink("الإدارة", "Management", "Management", new { @class = "Nav-link" })
             </div>
         </div>
     </nav>
-    <div class="Main-body pt-md-5">
+    <div class="Main-body pt-md-5" dir="rtl">
         @RenderBody()
     </div>
 

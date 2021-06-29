@@ -25,7 +25,14 @@
         $(document).ready(function () {
             var table = $("#tableid").DataTable({
                 ajax: {
-                    url: "/api/clinics/UnconfirmedAppointments/1", @*@Session["ClinicId"],*@
+                    url: "/api/clinics/UnconfirmedAppointments/@Session["ClinicId"]",
+                    headers: {
+                        Authorization: 'Basic ' + sessionStorage.getItem('token')
+                    },
+                    complete: function (e) {
+                        if (e.status == '401')
+                            window.location.href = '/accounts/signout';
+                    },
                     dataSrc: ""
         },
             columns: [
@@ -66,6 +73,13 @@
                         $.ajax({
                             url: `/api/clinics/Appointments/${btn.attributes[1].value}`,
                             method: 'DELETE',
+                            headers: {
+                                Authorization: 'Basic ' + sessionStorage.getItem('token')
+                            },
+                            complete: function (e) {
+                                if (e.status == '401')
+                                    window.location.href = '/accounts/signout';
+                            },
                             success: function () {
                                 Swal.fire({
                                     title: 'تمت',
@@ -96,7 +110,7 @@
                 }).then((result) => {
                     if (result.dismiss === Swal.isConfirmed) {
                         $.ajax({
-                            url: `/api/clinics/ConfirmAppointments/${btn.attributes[1].value}`,
+                            url: `/api/clinics/ConfirmedAppointments/${btn.attributes[1].value}`,
                             method: 'POST',
                             success: function () {
                                 Swal.fire({

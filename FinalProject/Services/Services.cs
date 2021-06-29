@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace FinalProject.Services
 {
@@ -60,7 +61,7 @@ namespace FinalProject.Services
 
         public static void SendConfirmEmail(string email, string code, int id)
         {
-            string url = "http://mydoctorapp-001-site1.ctempurl.com/accounts/confirmuser/"+id;
+            string url = "http://localhost:49726/accounts/confirmuser/" + id;
 
             try
             {
@@ -71,15 +72,85 @@ namespace FinalProject.Services
                 mail.To.Add(email);
                 mail.Subject = "Confirm Your Account";
                 mail.Body = $"<h1> Your Verfication Code </h1><br>{code}<br>click on link below to confirm your account<br><a href={url}>Validate Here</a> ";
-
                 SmtpServer.Port = 587;
                 SmtpServer.Credentials = new System.Net.NetworkCredential("mydoctorappteam@gmail.com", "MYDOC2021tor");
                 SmtpServer.EnableSsl = true;
-
                 SmtpServer.Send(mail);
             }
-            catch
+            catch { }
+        }
+
+        public static void SendForgetEmail(string email, string code, int id)
+        {
+            string url = "http://localhost:49726/accounts/Confirm/" + id;
+
+            try
             {
+                MailMessage mail = new MailMessage();
+                SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+                mail.From = new MailAddress("mydoctorappteam@gmail.com");
+                mail.To.Add(email);
+                mail.Subject = "Confirm Your Account";
+                mail.Body = $"<h1> Your Verfication Code </h1><br>{code}<br>click on link below to <b>Reset</b> your account's password<br><a href={url}>Validate Here</a> ";
+                SmtpServer.Port = 587;
+                SmtpServer.Credentials = new System.Net.NetworkCredential("mydoctorappteam@gmail.com", "MYDOC2021tor");
+                SmtpServer.EnableSsl = true;
+                SmtpServer.Send(mail);
+            }
+            catch { }
+        }
+
+        public static int? GetClinicIdFromToken(string token)
+        {
+            using(MyAppContext db =  new MyAppContext())
+            {
+                var tokenInDb = db.Tokens.FirstOrDefault(t => t.Token == token && t.ObjectType == "Clinic");
+                return (tokenInDb == null) ? null : tokenInDb.ObjectId;
+            }
+        }
+
+        public static int GetUserIdFromToken(string token)
+        {
+            using (MyAppContext db = new MyAppContext())
+            {
+                var tokenInDb = db.Tokens.FirstOrDefault(t => t.Token == token && t.ObjectType == "Public User");
+                return (tokenInDb == null) ? -1 : tokenInDb.UserId;
+            }
+        }
+
+        public static int? GetPharmacyIdFromToken(string token)
+        {
+            using (MyAppContext db = new MyAppContext())
+            {
+                var tokenInDb = db.Tokens.FirstOrDefault(t => t.Token == token && t.ObjectType == "Pharmacy");
+                return (tokenInDb == null) ? null : tokenInDb.ObjectId;
+            }
+        }
+
+        
+        public static void UpdateWebsiteTokenExpireDate(string token)
+        {
+            using (MyAppContext db = new MyAppContext())
+            {
+                var tokenInDb = db.Tokens.FirstOrDefault(t => t.Token == token);
+                if(tokenInDb != null)
+                {
+                    tokenInDb.ExpireDate = DateTime.Now.AddHours(18);
+                    db.SaveChanges();
+                }
+            }
+        }
+
+        public static void UpdateApplicationTokenExpireDate(string token)
+        {
+            using (MyAppContext db = new MyAppContext())
+            {
+                var tokenInDb = db.Tokens.FirstOrDefault(t => t.Token == token);
+                if (tokenInDb != null)
+                {
+                    tokenInDb.ExpireDate = DateTime.Now.AddDays(15);
+                    db.SaveChanges();
+                }
             }
         }
 

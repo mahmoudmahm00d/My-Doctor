@@ -7,7 +7,7 @@
 
 <h4 class="text-color-primary">سجلات المواعيد</h4>
 <div class="col">
-    @Html.ActionLink("إضافة دواء", "AddMedicine", "Pharmacies", new { @class = "btn background-color-primary" })
+    @Html.ActionLink("إضافة ادوية", "SelectMedicine", "Pharmacies", new { @class = "btn background-color-primary" })
 </div>
 
 <div class="col-md-12 mt-3 table-responsive">
@@ -34,6 +34,13 @@
              var table = $("#medicines").DataTable({
                 ajax: {
                     url: "/api/pharmacies/Medicines/@Session["PharmacyId"]",
+                    headers: {
+                        Authorization: 'Basic ' + sessionStorage.getItem('token')
+                    },
+                    complete: function (e) {
+                        if (e.status == '401')
+                            window.location.href = '/accounts/signout';
+                    },
                     dataSrc: ""
                 },
                 columns: [
@@ -75,6 +82,13 @@
                         $.ajax({
                             url: `/api/pharmacies/Medicines/@Session["PharmacyId"]/${btn.attributes[1].value}`,
                             method: 'DELETE',
+                            headers: {
+                                Authorization: 'Basic ' + sessionStorage.getItem('token')
+                            },
+                            complete: function (e) {
+                                if (e.status == '401')
+                                    window.location.href = '/accounts/signout';
+                            },
                             success: function () {
                                 Swal.fire({
                                     title: 'Done',

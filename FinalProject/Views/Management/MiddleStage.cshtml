@@ -1,0 +1,25 @@
+﻿@model FinalProject.DTOs.TokenDTO
+@{
+    ViewBag.Title = "MiddleStage";
+    Layout = "~/Views/Shared/_Empty.cshtml";
+}
+
+<div class="mx-auto">
+    <h3 class="text-color-primary">
+        Redirectering ..
+    </h3>
+</div>
+
+@section Scripts{
+    <script>
+        function disableBack() {
+            window.history.forward();
+        }
+        setTimeout('disableBack()', 0);
+        window.onunload = function () { null };
+        $(document).ready(function () {
+            window.localStorage.setItem('admin_token', @Model.Token);
+            window.location.href = 'management';
+        });
+    </script>
+}

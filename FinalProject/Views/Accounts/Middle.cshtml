@@ -1,0 +1,20 @@
+﻿@model FinalProject.DTOs.TokenAndType
+@{
+    ViewBag.Title = "Middle";
+    Layout = "~/Views/Shared/_Empty.cshtml";
+}
+
+<div class="col text-center">
+    <p class="display-1 mx-auto text-color-primary">Please Wait ...</p>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            sessionStorage.setItem("token",'@Model.Token');
+            if ('@Model.IsClinic' == 'Clinic') {
+                window.location.href = '/clinics';
+            }
+            window.location.href = '/pharmacies';
+        });
+    </script>
+}

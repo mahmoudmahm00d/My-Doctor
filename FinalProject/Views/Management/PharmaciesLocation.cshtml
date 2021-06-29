@@ -1,0 +1,40 @@
+﻿@model FinalProject.DTOs.PharmacyDTO
+@{
+    ViewBag.Title = "PharmaciesLocation";
+    Layout = "~/Views/Shared/_Managment.cshtml";
+}
+
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
+<div class="row w-100 mx-auto px-2 top-padding mt-md-5">
+    <div class="col-md-6">
+        <div id='map'></div>
+    </div>
+</div>
+@section Scripts {
+    <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWFobTAwZG1haG0wMGQiLCJhIjoiY2ttNDFzNGR2MDBiejJ5a25keGIzbjY4ayJ9.lgZoHTS0M2JG-O33RWxcWA';
+        mapboxgl.setRTLTextPlugin(
+            'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
+            null,
+            true // Lazy load the plugin
+        );
+
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [//Damascus
+                @Model.Longtude,
+                @Model.Latitude,
+            ],
+            zoom: 11
+        });
+
+        var marker1 = new mapboxgl.Marker()
+        .setLngLat([
+            @Model.Longtude,
+            @Model.Latitude
+        ]).addTo(map)
+    </script>
+}

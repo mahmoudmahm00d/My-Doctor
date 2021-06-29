@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "Clinics";
+    ViewBag.Title = "العيادات";
     Layout = "~/Views/Shared/_Managment.cshtml";
 }
 
@@ -33,6 +33,13 @@
             var table = $("#clinics").DataTable({
                 ajax: {
                     url: "/api/Management/Clinics",
+                    headers: {
+                        Authorization: 'Basic ' + sessionStorage.getItem('token')
+                    },
+                    complete: function (e) {
+                        if (e.status == '401')
+                            window.location.href = '/management/signout';
+                    },
                     dataSrc: ""
                 },
                 columns: [

@@ -95,7 +95,6 @@
             alert()
         }*@
         function add_marker(event) {
-            marker1.remove();
             var coordinates = event.lngLat;
             marker.setLngLat(coordinates).addTo(map);
             document.getElementById("lat").value = coordinates.lat;
@@ -103,6 +102,7 @@
             var str = `latitude: ${coordinates.lat}<br>Longtude ${coordinates.lng}`;
             document.getElementById("coords").innerHTML = str;
             document.getElementById("latlng").value = "تم اختيار الموقع";
+            marker1.remove();
         }
         map.on('click', add_marker);
     </script>

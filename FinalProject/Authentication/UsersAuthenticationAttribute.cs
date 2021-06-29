@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Principal;
-using System.Text;
 using System.Threading;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
@@ -23,13 +22,9 @@ namespace FinalProject.Authentication
             else
             {
                 string authenticationToken = actionContext.Request.Headers.Authorization.Scheme;
-                string decodedAuthentication = Encoding.UTF8.GetString(Convert.FromBase64String(authenticationToken));
-                string[] emailPassword = decodedAuthentication.Split(':');
-                string email = emailPassword[0];
-                string password = emailPassword[1];
-                if (Login(email, password))
+                if (CheckToken(authenticationToken))
                 {
-                    Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(email), null);
+                    Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(authenticationToken), null);
                 }
                 else
                 {
@@ -39,15 +34,16 @@ namespace FinalProject.Authentication
             }
         }
 
-        public static bool Login(string email, string password)
+        public static bool CheckToken(string token)
         {
             using (MyAppContext db = new MyAppContext())
             {
-                var user = db.Users.Where(u => u.Locked == false)
-                    .FirstOrDefault(u => u.UserEmail == email && u.UserTypeId == 10);
-                if (user == null)
+                var userToken = db.Tokens.FirstOrDefault(t => t.Token == token && t.ObjectType == "Public User" && DateTime.Now < t.ExpireDate);
+                if (userToken == null)
                     return false;
-                return AppServices.VerifayPasswrod(password, user.UserPassword);
+
+                AppServices.UpdateApplicationTokenExpireDate(token);
+                return true;
             }
         }
     }

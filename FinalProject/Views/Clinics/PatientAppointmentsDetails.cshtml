@@ -52,6 +52,13 @@
             $("#reports").DataTable({
                 ajax: {
                     url: "/api/clinics/reports/@Session["ClinicId"]",
+                    headers: {
+                        Authorization: 'Basic ' + sessionStorage.getItem('token')
+                    },
+                    complete: function (e) {
+                        if (e.status == '401')
+                            window.location.href = '/accounts/signout';
+                    },
                     dataSrc: ""
                 },
                 columns: [
@@ -118,6 +125,13 @@
                         $.ajax({
                             url: `/api/clinics/Prescriptions/${btn.attributes[1].value}`,
                             method: 'DELETE',
+                            headers: {
+                                Authorization: 'Basic ' + sessionStorage.getItem('token')
+                            },
+                            complete: function (e) {
+                                if (e.status == '401')
+                                    window.location.href = '/accounts/signout';
+                            },
                             success: function () {
                                 Swal.fire({
                                     title: 'Done',

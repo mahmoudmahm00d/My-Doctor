@@ -7,10 +7,10 @@
 
 @using (Html.BeginForm("EditPassword", "Accounts", FormMethod.Post, new { @class = "main-login-form" }))
 {
-    <div class="row">
-        <p class="mx-auto ">
+    <div class="row pt-5">
+        <h3 class="mx-auto text-color-primary">
             البريد الالكتروني
-        </p>
+        </h3>
     </div>
 
     <div class="main-form pt-4 text-center">
@@ -25,7 +25,7 @@
         <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
             <div>
                 @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "البريد الالكتروني الجديد", @type = "password" } })
-                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger mx-auto" })
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger mx-auto" })
             </div>
         </div>
 

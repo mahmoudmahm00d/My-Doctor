@@ -1,10 +1,12 @@
 ﻿
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "طلبات التسجيل";
     Layout = "~/Views/Shared/_Managment.cshtml";
 }
-
-<h4 class="text-color-primary">طلبات التسجيل</h4>
+<div class="row px-5">
+    <h4 class="text-color-primary">طلبات تسجيل العيادات</h4>
+    <a class="mr-auto btn background-color-primary" href="Management/PhramaciesRequests">طلبات تسجيل الصيدليات</a>
+</div>
 
 <div class="col-md-12 mt-3 table-responsive">
     <table id="signUpRequests" class="table table-hover col-12 bg-light border">
@@ -16,13 +18,11 @@
                 <th>الشهادة</th>
                 <th></th>
                 <th></th>
-                <th></th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
 </div>
-
 
 @section Scripts {
     <script>
@@ -30,12 +30,19 @@
 
             var table = $("#signUpRequests").DataTable({
                 ajax: {
-                    url: "/api/management/signuprequests",
+                    url: "/api/management/clinicssignuprequests",
+                    headers: {
+                        Authorization:'Basic '+sessionStorage.getItem('token')
+                    },
+                    complete: function (e) {
+                        if (e.status == '401')
+                            window.location.href = '/management/signout';
+                    },
                     dataSrc: ""
                 },
                 columns: [
-                    { data: "clinicName" },
-                    { data: "clinicType" },
+                    { data: "name" },
+                    { data: "type" },
                     { data: "doctorName" },
                     {
                         data: "certificate",
@@ -44,19 +51,13 @@
                         }
                     },
                     {
-                        data: "clinicId",
-                        render: function (data) {
-                            return `<a href='Management/ClinicDetails/${data}' class='btn btn-sm border'>المزيد</a>`;
-                        }
-                    },
-                    {
-                        data: "clinicId",
+                        data: "id",
                         render: function (data) {
                             return `<button class="btn btn-sm js-accept btn-outline-success" data-id='${data}'>قبول</button>`;
                         }
                     },
                     {
-                        data: "clinicId",
+                        data: "id",
                         render: function (data) {
                             return `<button class="btn btn-sm js-refuse btn-outline-danger" data-id='${data}'>رفض</button>`;
                         }
@@ -82,8 +83,15 @@
                 }).then((result) => {
                     if (result.dismiss === Swal.isConfirmed) {
                         $.ajax({
-                            url: `/api/Management/Clinics/Refuse/${btn.attributes[1].value}`,
+                            url: `/api/Management/Clinics/RefuseClinic/${btn.attributes[1].value}`,
                             method: 'Delete',
+                            headers: {
+                                Authorization: 'Basic ' + sessionStorage.getItem('token')
+                            },
+                            complete: function (e) {
+                                if (e.status == '401')
+                                    window.location.href = '/management/signout';
+                            },
                             success: function () {
                                 Swal.fire({
                                     title: 'Done',
@@ -112,8 +120,15 @@
                 }).then((result) => {
                     if (result.dismiss === Swal.isConfirmed) {
                         $.ajax({
-                            url: `/api/Management/Clinics/Accept/${btn.attributes[1].value}`,
+                            url: `/api/Management/Clinics/AcceptClinic/${btn.attributes[1].value}`,
                             method: 'POST',
+                            headers: {
+                                Authorization: 'Basic ' + sessionStorage.getItem('token')
+                            },
+                            complete: function (e) {
+                                if (e.status == '401')
+                                    window.location.href = '/management/signout';
+                            },
                             success: function () {
                                 Swal.fire({
                                     title: 'تمت',

@@ -3,6 +3,7 @@ using FinalProject.DTOs;
 using FinalProject.Models;
 using FinalProject.Services;
 using FinalProject.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
@@ -22,6 +23,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             int userId = GetUserId();
             var clinic = db.Clinics.FirstOrDefault(c => c.UserId == userId);
             if (clinic == null)
@@ -36,6 +40,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             int userId = GetUserId();
             var Clinic = db.Clinics.Select(c => c.UserId == userId);
@@ -54,6 +61,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             if (!ModelState.IsValid || certificate == null || (certificate.ContentLength == 0 && certificate.ContentLength > 204800))//200KB
             {
                 return RedirectToAction("Create");
@@ -65,15 +75,24 @@ namespace FinalProject.Controllers
                 return RedirectToAction("Create");
             }
 
+            int userId = GetUserId();
             var clinicInDB = Mapper.Map<CreateClinicDTO, Clinic>(clinic);
-            string path = Path.Combine(Server.MapPath("~/Certificates"), certificate.FileName);
-            clinicInDB.UserId = GetUserId();
-            certificate.SaveAs(path);
-            clinicInDB.Certificate = "clinic"+clinicInDB.UserId;
-            clinicInDB.VisitDuration = 15;
             clinicInDB.IsActiveClinic = false;
+            clinicInDB.UserId = userId;
+            clinicInDB.VisitDuration = 15;
 
             db.Clinics.Add(clinicInDB);
+            db.SaveChanges();
+
+            var token = db.Tokens.FirstOrDefault(t=> t.UserId == userId);
+            token.ObjectId = clinicInDB.ClinicId;
+            token.ObjectType = "Clinic";
+
+            string certificateName = "clinic" + clinicInDB.ClinicId;
+            string path = Path.Combine(Server.MapPath("~/Certificates"), certificateName + ".png");
+
+            certificate.SaveAs(path);
+            clinicInDB.Certificate = certificateName;
             db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -83,6 +102,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
@@ -96,6 +118,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             if (!ModelState.IsValid)
             {
@@ -152,6 +177,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             return View();
         }
 
@@ -160,6 +188,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
@@ -175,6 +206,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
@@ -198,6 +232,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             if (!id.HasValue)
                 return RedirectToAction("index");
 
@@ -214,6 +251,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             if (!id.HasValue && id == schedules.ScheduleId)
                 return RedirectToAction("Schedule");
@@ -269,6 +309,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             return View();
         }
 
@@ -277,6 +320,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             if (!id.HasValue)
                 return RedirectToAction("Appointments");
@@ -302,6 +348,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             if (!id.HasValue)
                 return RedirectToAction("Appointments");
 
@@ -317,7 +366,6 @@ namespace FinalProject.Controllers
 
             if (appointment == null)
                 return HttpNotFound();
-
 
             return View(appointment);
         }
@@ -350,6 +398,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
                 return RedirectToAction("Create");
@@ -362,38 +413,90 @@ namespace FinalProject.Controllers
 
             var locationInDb = db.Locations.FirstOrDefault(l => l.ClinicId == clinicId);
             location = AppServices.TrimStringProperties(location);
-            //locationInDb = Mapper.Map<LocationDTO, Location>(location);
 
-            locationInDb.Latitude = location.Latitude;
-            locationInDb.Longtude = location.Longtude;
-            locationInDb.Street = location.Street;
-            locationInDb.Area = location.Area;
-            locationInDb.ClinicId = clinicId.Value;
             if (locationInDb == null)
             {
+                locationInDb = Mapper.Map<LocationDTO, Location>(location);
                 db.Locations.Add(locationInDb);
+                db.SaveChanges();
             }
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            else
+            {
+                locationInDb.CityId = location.CityId;
+                locationInDb.Area = location.Area;
+                locationInDb.Street = location.Street;
+                locationInDb.Latitude = location.Latitude;
+                locationInDb.Longtude = location.Longtude;
+                db.SaveChanges();
+            }
+            return RedirectToAction("Management");
         }
 
         //GET: Clinics/EditPrescription
-        public ActionResult EditPrescription(string compositeId)
+        public ActionResult EditPrescription(string id)
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
-            if (string.IsNullOrWhiteSpace(compositeId))
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
+            if (string.IsNullOrWhiteSpace(id))
                 return RedirectToAction("AppointmentDetails");
 
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
-            string[] compositeKey = compositeId.Split(',');
-            var prescrition = db.Prescriptions.FirstOrDefault(p => p.AppointmentId == int.Parse(compositeKey[0])
-                && p.MedicineId == int.Parse(compositeKey[1]));
+            string[] compositeKey = id.Split(',');
+            int appointmentId = int.Parse(compositeKey[0]);
+            int prescriptionId = int.Parse(compositeKey[1]);
 
-            return View(prescrition);
+            var prescrition = db.Prescriptions
+                .FirstOrDefault(p => p.AppointmentId == appointmentId
+                                    && p.MedicineId == prescriptionId);
+
+            return View(Mapper.Map<Prescription,FormPrescriptionDTO>(prescrition));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditPrescription(string id, FormPrescriptionDTO prescritpion)
+        {
+            if (SessionIsNull())
+                return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
+            if (string.IsNullOrWhiteSpace(id))
+                return RedirectToAction("AppointmentDetails");
+
+            if (SessionIsNull())
+                return RedirectToAction("SignIn", "Accounts");
+
+            string[] compositeKey = id.Split(',');
+            int appointmentId = int.Parse(compositeKey[0]);
+            int prescriptionId = int.Parse(compositeKey[1]);
+
+            var prescritionInDb = db.Prescriptions
+                .FirstOrDefault(p => p.AppointmentId == appointmentId
+                                    && p.MedicineId == prescriptionId);
+
+            prescritionInDb.Dosage = prescritpion.Dosage;
+            prescritionInDb.Every = prescritpion.Every;
+            prescritionInDb.For = prescritpion.For;
+            prescritionInDb.TimeSpan = prescritpion.TimeSpan;
+            prescritionInDb.MedicineId = prescritpion.MedicineId == 0 ? prescritionInDb.MedicineId: prescritpion.MedicineId;
+            try
+            {
+                db.SaveChanges();//If Key Is Inavlaid Or Medicine Already There
+            }
+            catch
+            {
+                RedirectToAction("EditPrescription");
+            }
+
+            return RedirectToAction("AppointmentDetails", new { id = prescritpion.AppointmentId });
         }
 
         //GET: Clinics/Management
@@ -401,6 +504,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
@@ -432,6 +538,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
@@ -469,6 +578,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             if (!id.HasValue)
                 return RedirectToAction("AppointmentDetails");
 
@@ -495,6 +607,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             if (!id.HasValue)
                 return RedirectToAction("AppointmentDetails");
@@ -527,6 +642,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             if (!id.HasValue)
                 return RedirectToAction("AppointmentDetails");
 
@@ -546,18 +664,22 @@ namespace FinalProject.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Remarks(int? id, AppointmentDTO appointment)
+        public ActionResult Remarks(int? id, string remarks)
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             if (!id.HasValue)
                 return RedirectToAction("AppointmentDetails");
 
-            if (!ModelState.IsValid && string.IsNullOrWhiteSpace(appointment.Symptoms))
+            if (string.IsNullOrWhiteSpace(remarks))
             {
                 return RedirectToAction("Remarks");
             }
+
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
                 return RedirectToAction("Create");
@@ -566,7 +688,7 @@ namespace FinalProject.Controllers
             if (appointmentInDb == null)
                 return HttpNotFound();
 
-            appointmentInDb.Remarks = appointment.Remarks;
+            appointmentInDb.Remarks = remarks;
             db.SaveChanges();
 
             return RedirectToAction("AppointmentDetails", new { id = appointmentInDb.AppointmentId });
@@ -577,6 +699,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
@@ -591,6 +716,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
@@ -616,6 +744,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
                 return RedirectToAction("Create");
@@ -629,6 +760,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
@@ -649,30 +783,37 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             if (!id.HasValue)
-                return RedirectToAction("AppointmentDetails");
+                return RedirectToAction("AppointmentDetails", new { AppointmentId = id.Value });
 
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
                 return RedirectToAction("Create");
 
-            FormPrescritpionDTO model = new FormPrescritpionDTO { AppointmentId = id.Value };
+            FormPrescriptionDTO model = new FormPrescriptionDTO { AppointmentId = id.Value };
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddPrescription(int? id, FormPrescritpionDTO prescription)
+        public ActionResult AddPrescription(int? id, FormPrescriptionDTO prescription)
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
             if (!id.HasValue)
-                return RedirectToAction("AppointmentDetails");
+                return RedirectToAction("AppointmentDetails",new { AppointmentId = id.Value });
 
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
                 return RedirectToAction("Create");
+
 
             if (!ModelState.IsValid)
             {
@@ -680,11 +821,165 @@ namespace FinalProject.Controllers
                 return View();
             }
 
-            var prescritionToDb = Mapper.Map<FormPrescritpionDTO, Prescription>(prescription);
+            var prescritionToDb = Mapper.Map<FormPrescriptionDTO, Prescription>(prescription);
             prescritionToDb.AppointmentId = id.Value;
             db.Prescriptions.Add(prescritionToDb);
             db.SaveChanges();
-            return RedirectToAction("Management");
+            return RedirectToAction("AppointmentDetails", new { AppointmentId = id.Value });
+        }
+
+        public ActionResult Vacations()
+        {
+            if (SessionIsNull())
+                return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
+            int? clinicId = GetClinicId();
+            if (!clinicId.HasValue)
+                return RedirectToAction("Create");
+
+            return View();
+        }
+
+        public ActionResult AddVacations()
+        {
+            if (SessionIsNull())
+                return RedirectToAction("SignIn", "Accounts");
+
+            int? clinicId = GetClinicId();
+            if (!clinicId.HasValue)
+                return RedirectToAction("Create");
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddVacations(VacationDTO vacation)
+        {
+            if (SessionIsNull())
+                return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
+            int? clinicId = GetClinicId();
+            if (!clinicId.HasValue)
+                return RedirectToAction("Create");
+
+            if (!ModelState.IsValid)
+                return View();
+
+            if (vacation.FromDate.Date > vacation.ToDate.Date || DateTime.Now > vacation.FromDate)
+            {
+                ModelState.AddModelError("", "Ivalid Data");
+                return View();
+            }
+
+            if (CheckVacationDate(clinicId.Value, vacation))
+            {
+                ModelState.AddModelError("", "Ivalid Data");
+                return View();
+            }
+
+            var vacationToDb = Mapper.Map<VacationDTO, Vacation>(vacation);
+            vacationToDb.ClinicId = clinicId.Value;
+            db.Vacations.Add(vacationToDb);
+            db.SaveChanges();
+            return RedirectToAction("Vacations");
+        }
+
+        public bool CheckVacationDate(int id, VacationDTO vacation)
+        {
+            var vacations = db.Vacations.Where(v => v.ClinicId == id).ToList();
+
+            foreach (var item in vacations)
+            {
+                if (item.VacationId == vacation.VacationId)
+                    continue;
+
+                if (CheckVacationBetween(vacation, item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool CheckVacationBetween(VacationDTO vacation, Vacation toCheck)
+        {
+            bool c1 = toCheck.FromDate <= vacation.FromDate;
+            bool c2 = vacation.FromDate <= toCheck.ToDate;
+
+            bool c3 = toCheck.FromDate <= vacation.ToDate;
+            bool c4 = vacation.ToDate <= toCheck.ToDate;
+
+            bool c5 = vacation.FromDate <= toCheck.FromDate;
+            bool c6 = toCheck.ToDate <= vacation.ToDate;
+
+            //       From <= Date <= To     DateFrom <= From && To <= DateTo
+            return (c1 && c2) || (c3 && c4) || (c5 && c6);
+        }
+
+
+        public ActionResult EditVacations(int? id)
+        {
+            if (SessionIsNull())
+                return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
+            int? clinicId = GetClinicId();
+            if (!clinicId.HasValue)
+                return RedirectToAction("Create");
+
+            if (!id.HasValue)
+                return RedirectToAction("Vacations");
+
+            var vacationInDb = db.Vacations.FirstOrDefault(v => v.VacationId == id);
+            if (vacationInDb.ToDate.Date < DateTime.Now.Date)
+                return RedirectToAction("acations");
+            return View(Mapper.Map<Vacation, VacationDTO>(vacationInDb));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditVacations(int? id, VacationDTO vacation)
+        {
+            if (SessionIsNull())
+                return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
+
+            int? clinicId = GetClinicId();
+            if (!clinicId.HasValue)
+                return RedirectToAction("Create");
+
+            if (!ModelState.IsValid)
+                return View();
+
+            if (vacation.FromDate > vacation.ToDate || DateTime.Now > vacation.FromDate)
+            {
+                ModelState.AddModelError("", "Ivalid Data");
+                return View();
+            }
+
+            if (CheckVacationDate(clinicId.Value, vacation))
+            {
+                ModelState.AddModelError("", "Ivalid Data");
+                return View();
+            }
+
+            var vacationInDb = db.Vacations.FirstOrDefault(v => v.VacationId == id);
+            vacationInDb.FromDate = vacation.FromDate;
+            vacationInDb.ToDate = vacation.ToDate;
+            vacationInDb.Statue = vacation.Statue;
+            vacationInDb.ClinicId = clinicId.Value;
+            db.SaveChanges();
+            return RedirectToAction("Vacations");
         }
 
         //Get: Clinics/EditCertification/{CertificationId}
@@ -692,6 +987,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
@@ -713,6 +1011,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsDoctor())
+                return RedirectToAction("Index", "Pharmacies");
 
             int? clinicId = GetClinicId();
             if (!clinicId.HasValue)
@@ -746,6 +1047,7 @@ namespace FinalProject.Controllers
         }
 
         public bool SessionIsNull() => Session["UserId"] == null;
+        private bool IsDoctor() => Session["UserTypeId"].ToString() == "20";
         public int GetUserId() => int.Parse(Session["UserId"].ToString());
     }
 }

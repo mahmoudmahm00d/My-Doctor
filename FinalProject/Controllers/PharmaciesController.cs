@@ -20,6 +20,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
+
             int userId = int.Parse(Session["UserId"].ToString());
             var pharmacy = db.Pharmacies.FirstOrDefault(c => c.UserId == userId);
             if (pharmacy == null)
@@ -33,6 +36,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
 
             int? pharmacyId = GetPharmacyId();
             var pharmacy = db.Pharmacies.FirstOrDefault(c => c.PharmacyId == pharmacyId.Value);
@@ -60,6 +66,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
+
             if (!ModelState.IsValid)
             {
                 return RedirectToAction("Location", "Longtude and latitude are requierd");
@@ -80,6 +89,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
 
             int userId = GetUserId();
             var pharmacy = db.Pharmacies.FirstOrDefault(c => c.UserId == userId);
@@ -103,25 +115,37 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
+
             if (!ModelState.IsValid || certificate == null || (certificate.ContentLength == 0 && certificate.ContentLength > 204800))//200KB
             {
                 return RedirectToAction("Create", new { errorMessage = "Invalid properties" });
             }
 
             string extention = Path.GetExtension(certificate.FileName);
-            if (extention != ".jpg" && extention != ".png")
+            if (extention != ".png")
             {
                 return RedirectToAction("Create", new { errorMessage = "Invalid file type" });
             }
 
+            int userId = GetUserId();
             var pharmacyInDB = Mapper.Map<CreatePharmacyDTO, Pharmacy>(Pharmacy);
-            string path = Path.Combine(Server.MapPath("~/Certificates"), certificate.FileName);
-            pharmacyInDB.UserId = int.Parse(Session["UserId"].ToString());
-            certificate.SaveAs(path);
-            pharmacyInDB.Certificate = path;
+            pharmacyInDB.UserId = userId;
             pharmacyInDB.IsActivePharmacy = false;
 
             db.Pharmacies.Add(pharmacyInDB);
+            db.SaveChanges();
+
+            var token = db.Tokens.FirstOrDefault(t => t.UserId == userId);
+            token.ObjectId = pharmacyInDB.PharmacyId;
+            token.ObjectType = "Pharmacy";
+
+            string certificateName = "pharmacy" + pharmacyInDB.PharmacyId;
+            string path = Path.Combine(Server.MapPath("~/Certificates"), certificateName +".png");
+
+            certificate.SaveAs(path);
+            pharmacyInDB.Certificate = certificateName;
             db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -131,6 +155,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
 
             int? pharmacyId = GetPharmacyId();
             if (!pharmacyId.HasValue)
@@ -155,6 +182,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
 
             int? pharmacyId = GetPharmacyId();
             if (!pharmacyId.HasValue)
@@ -184,6 +214,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
+
             int? pharmacyId = GetPharmacyId();
             if (!pharmacyId.HasValue)
                 return RedirectToAction("Create");
@@ -202,8 +235,6 @@ namespace FinalProject.Controllers
             return View(model);
         }
 
-        //ToDo
-        //AddMedicine Implemntation
 
         public ActionResult EditMedicine(int? id, string errorMessage = null)
         {
@@ -212,6 +243,9 @@ namespace FinalProject.Controllers
 
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
 
             int? pharmacyId = GetPharmacyId();
             if (!pharmacyId.HasValue)
@@ -244,6 +278,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
+
             if (!ModelState.IsValid)
             {
                 return RedirectToAction("AddMedicine", new { errorMessage = "Invalid Properties" });
@@ -272,6 +309,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
 
             int userId = GetUserId();
             int? pharmacyId = GetPharmacyId();
@@ -309,6 +349,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
+
             int? clinicId = GetPharmacyId();
             if (!clinicId.HasValue)
                 return RedirectToAction("Create");
@@ -337,10 +380,28 @@ namespace FinalProject.Controllers
             return RedirectToAction("Management");
         }
 
+        public ActionResult SelectMedicine()
+        {
+            if (SessionIsNull())
+                return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
+
+            int? pharmacyId = GetPharmacyId();
+            if (!pharmacyId.HasValue)
+                return RedirectToAction("Create");
+
+            return View();
+        }
+
         public ActionResult AddCertificate()
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
 
             int? pharmacyId = GetPharmacyId();
             if (!pharmacyId.HasValue)
@@ -355,6 +416,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
 
             int? pharmacyId = GetPharmacyId();
             if (!pharmacyId.HasValue)
@@ -381,6 +445,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
+
             int? pharmacyId = GetPharmacyId();
             if (!pharmacyId.HasValue)
                 return RedirectToAction("Create");
@@ -401,6 +468,9 @@ namespace FinalProject.Controllers
         {
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
+
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
 
             int? pharmacyId = GetPharmacyId();
             if (!pharmacyId.HasValue)
@@ -432,6 +502,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
+
             int? pharmacyId = GetPharmacyId();
             if (!pharmacyId.HasValue)
                 return RedirectToAction("Create");
@@ -458,6 +531,9 @@ namespace FinalProject.Controllers
             if (SessionIsNull())
                 return RedirectToAction("SignIn", "Accounts");
 
+            if (!IsPharamciest())
+                return RedirectToAction("Index", "Clinics");
+
             int? pharmacyId = GetPharmacyId();
             if (!pharmacyId.HasValue)
                 return RedirectToAction("Create");
@@ -482,6 +558,8 @@ namespace FinalProject.Controllers
 
         //Utilties
         private bool SessionIsNull() => Session["UserId"] == null;
+
+        private bool IsPharamciest() => Session["UserTypeId"].ToString() == "30";
 
         private int GetUserId() => int.Parse(Session["UserId"].ToString());
 

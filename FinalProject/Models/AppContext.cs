@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Web;
+﻿using System.Data.Entity;
 
 namespace FinalProject.Models
 {
-    public class MyAppContext:DbContext
+    public class MyAppContext : DbContext
     {
-        public MyAppContext():base("name=DefaultConnection")
+        public MyAppContext() : base("name=DefaultConnection")
         {
-            
+
         }
 
+        public DbSet<TokenProperties> Tokens { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
-        public DbSet<Certifcate> Certifcates{ get; set; }
+        public DbSet<Certifcate> Certifcates { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<ClinicType> ClinicTypes { get; set; }
@@ -28,6 +25,6 @@ namespace FinalProject.Models
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserType> Usertypes { get; set; }
-        public DbSet<Vacation> Vacations{ get; set; }
+        public DbSet<Vacation> Vacations { get; set; }
     }
 }

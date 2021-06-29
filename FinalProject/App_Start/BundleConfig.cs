@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace FinalProject
 {
@@ -21,7 +20,8 @@ namespace FinalProject
                       "~/Scripts/jquery-{version}.js",
                       "~/Scripts/DataTables/jquery.dataTables.js",
                       "~/Scripts/DataTables/dataTables.bootstrap.js",
-                      "~/Scripts/sweetalert2.min.js"));
+                      "~/Scripts/sweetalert2.min.js",
+                      "~/Scripts/typeahead.bundle.js"));
 
             bundles.Add(new StyleBundle("~/Content/loginStyle").Include("~/Content/login.css"));
 
@@ -30,7 +30,8 @@ namespace FinalProject
                       "~/Content/management.css",
                       "~/Content/shared.css",
                       "~/Content/datatables/css/dataTables.bootstap.css",
-                      "~/Content/sweetalert2.min.css"));
+                      "~/Content/sweetalert2.min.css",
+                      "~/Content/typeahead.css"));
         }
     }
 }

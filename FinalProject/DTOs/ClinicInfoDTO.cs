@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FinalProject.DTOs
 {
@@ -21,6 +17,5 @@ namespace FinalProject.DTOs
         public string ClinicPhone { get; set; }
 
         public string ClinicEmail { get; set; }
-
     }
 }

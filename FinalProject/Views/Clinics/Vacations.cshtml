@@ -1,0 +1,115 @@
+﻿
+@{
+    ViewBag.Title = "Vacations";
+    Layout = "~/Views/Shared/_Clinic.cshtml";
+}
+
+@model dynamic
+@{
+    ViewBag.Title = "Schedule";
+    Layout = "~/Views/Shared/_Clinic.cshtml";
+}
+<h4 class="text-color-primary">
+    جدول المواعيد
+</h4>
+<br />
+<div class="col">
+    @Html.ActionLink("إضافة عطلة", "AddVacations", "Clinics", new { @class = "btn background-color-primary" })
+</div>
+
+<div class="col-md-12 mt-3 table-responsive">
+    <table id="vacations" class="table table-hover col-12 bg-light border">
+        <thead>
+            <tr>
+                <th>من تاريخ</th>
+                <th>الى تاريخ</th>
+                <th>السبب</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+<br />
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            //Fetch Data
+            var table = $('#vacations').DataTable({
+                ajax: {
+                    url: "/api/clinics/vacations/@Session["ClinicId"]",
+                    headers: {
+                        Authorization: 'Basic ' + sessionStorage.getItem('token')
+                    },
+                    complete: function (e) {
+                        if (e.status == '401')
+                            window.location.href = '/accounts/signout';
+                    },
+                    dataSrc: ""
+                },
+                columns: [
+                    { data: "fromDate" },
+                    { data: "toDate" },
+                    { data: "status" },
+                    {
+                        data: "vacId",
+                        render: function (data,e,v) {
+                            //if(!(v.toDate < @DateTime.Now.ToShortDateString()))//Date.now()))//ToDo
+                                return `<a href='/clinics/editVacations/${data}' class='btn btn-sm border'>تعديل</a>`;
+                        }
+                    },
+                    {
+                        data: "vacId",
+                        render: function (data, e, v) {
+                            //if(!(v.fromDate < @DateTime.Now.ToShortDateString()))//Date.now()))//ToDo
+                                return `<button class="btn btn-sm js-delete btn-outline-danger" data-id='${data}'>حذف</button>`;
+                        }
+                    },
+                ], dom: '<"row w-100 pb-3" <"px-3" f> <"px-3 mr-auto" l>>' +
+                    '<"col-12"t>' +
+                    '<"col-12" <"row"p><"row" i>>'
+            });
+
+            table.on('click', '.js-delete', (button) => {
+                var btn = button.target;
+                var b = $(this);
+                Swal.fire({
+                    customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton: 'btn btn-light border'
+                    },
+                    icon: 'warning',
+                    title: 'Are You Sure?',
+                    showCancelButton: true,
+                    confirmButtonText: `Delete`,
+                    confirmButtonColor: `#dc3545`,
+                }).then((result) => {
+                    if (result.dismiss === Swal.isConfirmed) {
+                        $.ajax({
+                            url: `/api/clinics/vacation/${btn.attributes[1].value}`,
+                            method: 'DELETE',
+                            headers: {
+                                Authorization: 'Basic ' + sessionStorage.getItem('token')
+                            },
+                            complete: function (e) {
+                                if (e.status == '401')
+                                    window.location.href = '/accounts/signout';
+                            },
+                            success: function () {
+                                Swal.fire({
+                                    title: 'Done',
+                                    icon: 'success',
+                                    text: 'Day Deleted Successfuly',
+                                    timer: 2000
+                                });
+                                table.row(btn.parentElement.parentElement).remove().draw();
+                                console.log('deleted');
+                            }
+                        });
+                    }
+                });
+            });
+    });
+    </script>
+}

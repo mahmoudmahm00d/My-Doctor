@@ -52,12 +52,13 @@
 
 <hr class="w-25" />
 <h5 class="text-secondary col-md-9"> الوصفات</h5>
-@Html.ActionLink("اضافة", "AddPrescription", "Clinics", new { id = Model.AppointmentId }, new { @class = "btn btn-sm btn-light border col-md-3" })
+<div class="col-md-6 py-2">
+    @Html.ActionLink("اضافة", "AddPrescription", "Clinics", new { id = Model.AppointmentId }, new { @class = "btn btn-sm btn-light border col-md-3" })
+</div>
 <div class="col-md-12 table-responsive">
     <table id="prescriptions" class="table table-hover col-12 bg-light border">
         <thead>
             <tr>
-                <th>موعد الزيارة</th>
                 <th>الاسم العربي</th>
                 <th>الاسم الانكليزي</th>
                 <th>الكمية</th>
@@ -80,22 +81,28 @@
 
             var table = $("#prescriptions").DataTable({
                 ajax: {
-                    url: "/api/clinics/Appointment/Prescriptions/@Session["ClinicId"]",
+                    url: "/api/clinics/Appointment/Prescriptions/@Model.AppointmentId",
+                    headers: {
+                        Authorization: 'Basic ' + sessionStorage.getItem('token')
+                    },
+                    complete: function (e) {
+                        if (e.status == '401')
+                            window.location.href = '/accounts/signout';
+                    },
                     dataSrc: ""
             },
             columns: [
-                { data: "visitDate" },
                 { data: "medicineNameAr" },
                 { data: "medicineNameEn" },
                 { data: "dosage" },
                 { data: "medicineType" },
-                { data: "every" },
+                { data: "every", render: function (data) { return getTimeSpan(data) } },
                 { data: "for" },
-                { data: "timespan" },
+                { data: "timespan", render: function (data) { return getTimeSpan(data) }},
                 {
                     data: "compositId",
                     render: function (data) {
-                        return `<a href='clinics/prescription/${data}'>تعديل الوصفة</a>`;
+                        return `<a href='/clinics/EditPrescription/${data}'>تعديل الوصفة</a>`;
                     }
                 },
                 {
@@ -125,8 +132,15 @@
                 }).then((result) => {
                     if (result.dismiss === Swal.isConfirmed) {
                         $.ajax({
-                            url: `/api/clinics/Prescriptions/${btn.attributes[1].value}`,
+                            url: `/api/clinics/Appointment/Prescriptions/${btn.attributes[1].value}`,
                             method: 'DELETE',
+                            headers: {
+                                Authorization: 'Basic ' + sessionStorage.getItem('token')
+                            },
+                            complete: function (e) {
+                                if (e.status == '401')
+                                    window.location.href = '/accounts/signout';
+                            },
                             success: function () {
                                 Swal.fire({
                                     title: 'Done',
@@ -142,6 +156,19 @@
                 });
             });
         });
+
+        function getTimeSpan(number) {
+            switch (number) {
+                case 0:
+                    return 'يوم';
+                case 1:
+                    return 'اسبوع';
+                case 2:
+                    return 'شهر';
+                case 3:
+                    return 'سنة';
+            }
+        }
 
     </script>
 }

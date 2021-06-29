@@ -31,7 +31,6 @@
                 @Html.ActionLink("سجلات المواعيد", "Index", "Clinics", new { @class = "Nav-link" })
                 @Html.ActionLink("طلبات المواعيد", "Appointments", "Clinics", new { @class = "Nav-link" })
                 @Html.ActionLink("المواعيد القادمة", "UpcommingAppointments", "Clinics", new { @class = "Nav-link" })
-                @*@Html.ActionLink("سجلات الزيارة", "Appointments", "Clinics", new { @class = "Nav-link" })*@
                 @Html.ActionLink("الإدارة", "Management", "Clinics", new { @class = "Nav-link" })
             </div>
         </div>
@@ -47,10 +46,10 @@
         $('#dropdown-menu-btn').on('click', () => {
             if (menu.hasClass('closed-menu')) {
                 menu.removeClass('closed-menu');
-                menu.addClass('opened-menu');
+                menu.addClass('opend-menu');
             }
             else {
-                menu.removeClass('opened-menu');
+                menu.removeClass('opend-menu');
                 menu.addClass('closed-menu');
             }
         });

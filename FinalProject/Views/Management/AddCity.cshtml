@@ -1,6 +1,6 @@
 ﻿@model FinalProject.DTOs.CityDTO
 @{
-    ViewBag.Title = "AddCity";
+    ViewBag.Title = "اضافة مدينة";
     Layout = "~/Views/Shared/_Managment.cshtml";
 }
 
@@ -18,7 +18,7 @@
 
         <div class="form-group mx-auto round-this col-lg-5 col-md-6  px-0">
             <div>
-                @Html.EditorFor(model => model.CityName, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center", placholder = "معلومات الشهادة" } })
+                @Html.EditorFor(model => model.CityName, new { htmlAttributes = new { @class = "form-control round-this shadow placeholder-center", placeholder = "اسم المدينة" } })
                 @Html.ValidationMessageFor(model => model.CityName, "", new { @class = "text-danger" })
             </div>
         </div>

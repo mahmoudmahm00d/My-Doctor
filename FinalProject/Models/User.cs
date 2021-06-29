@@ -42,7 +42,6 @@ namespace FinalProject.Models
         public string UserEmail { get; set; }
 
         [Required]
-        [StringLength(255)]
         public string UserPassword { get; set; }
 
         [StringLength(6)]

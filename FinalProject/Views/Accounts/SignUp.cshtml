@@ -5,12 +5,12 @@
     ViewBag.Title = "Sign Up";
 }
 
-<div class="container">
+<div class="container pt-5">
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
-        <div class="ml-auto top-padding">
+        <div class="ml-auto pt-4">
 
             <h2 class="text-color-primary"> انشاء حساب</h2>
             <div class="form-row">
@@ -46,7 +46,7 @@
 
             <div class="form-row">
                 <div class="col-lg-3 col-md-6">
-                    @Html.EditorFor(model => model.Doctor.UserPhone, new { htmlAttributes = new { @class = "form-control round-this m-1 shadow", @placeholder = "*رقم الهاتف", @pattern = "+9639[0-9]{8}" } })
+                    @Html.EditorFor(model => model.Doctor.UserPhone, new { htmlAttributes = new { @class = "form-control round-this m-1 shadow",@type="tel", @placeholder = "*رقم الهاتف", @pattern = "\\+9639[0-9]{8}" } })
                     @Html.ValidationMessageFor(model => model.Doctor.UserPhone, "", new { @class = "text-danger" })
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -80,6 +80,13 @@
             </div>
         </div>
     }
+
+        <div class="ml-auto pt-4">
+            <p class="text-secondary">
+                *ملاحظة: يرجى ادخال رقم هاتف من الشكل   +9639xxxxxxxx
+            </p>
+        </div>
+
 </div>
 
 @section Scripts {
